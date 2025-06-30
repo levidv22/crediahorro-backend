@@ -1,0 +1,17 @@
+form .form-label {
+  font-weight: 500;
+}
+
+form input:focus, form select:focus {
+  box-shadow: 0 0 0 0.15rem rgba(78, 84, 200, 0.25);
+}
+
+.invalid-feedback {
+  font-size: 0.875rem;
+}
+
+input[readonly] {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  color: #6c757d;
+}

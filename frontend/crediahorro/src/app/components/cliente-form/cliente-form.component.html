@@ -1,0 +1,187 @@
+<div class="container mt-4">
+  <div class="card shadow-lg border-0 rounded-4 p-4 bg-light">
+    <h2 class="text-primary fw-bold mb-4">
+      <i class="bi bi-person-plus-fill"></i> Registrar Nuevo Cliente
+    </h2>
+
+    <form (ngSubmit)="guardarCliente()" #clienteForm="ngForm" novalidate>
+      <div class="row g-4">
+        <!-- Nombre -->
+        <div class="col-md-6">
+          <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+            <input
+              type="text"
+              id="nombre"
+              class="form-control"
+              [(ngModel)]="cliente.nombre"
+              name="nombre"
+              required
+              #nombre="ngModel"
+            />
+          </div>
+          <div class="text-danger small" *ngIf="nombre.invalid && nombre.touched">
+            El nombre es obligatorio.
+          </div>
+        </div>
+
+        <!-- DNI -->
+        <div class="col-md-6">
+          <label for="dni" class="form-label">DNI <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-credit-card-2-front-fill"></i></span>
+            <input
+              type="number"
+              id="dni"
+              class="form-control"
+              [(ngModel)]="cliente.dni"
+              name="dni"
+              required
+              #dni="ngModel"
+            />
+          </div>
+          <div class="text-danger small" *ngIf="dni.invalid && dni.touched">
+            El DNI es obligatorio.
+          </div>
+        </div>
+
+        <!-- Dirección -->
+        <div class="col-md-6">
+          <label for="direccion" class="form-label">Dirección <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+            <input
+              type="text"
+              id="direccion"
+              class="form-control"
+              [(ngModel)]="cliente.direccion"
+              name="direccion"
+              required
+              #direccion="ngModel"
+            />
+          </div>
+          <div class="text-danger small" *ngIf="direccion.invalid && direccion.touched">
+            La dirección es obligatoria.
+          </div>
+        </div>
+
+        <!-- WhatsApp -->
+        <div class="col-md-6">
+          <label for="telefonoWhatsapp" class="form-label">N° WhatsApp <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-whatsapp"></i></span>
+            <input
+              type="number"
+              id="telefonoWhatsapp"
+              class="form-control"
+              [(ngModel)]="cliente.telefonoWhatsapp"
+              name="telefonoWhatsapp"
+              required
+              #telefonoWhatsapp="ngModel"
+            />
+          </div>
+          <div class="text-danger small" *ngIf="telefonoWhatsapp.invalid && telefonoWhatsapp.touched">
+            El número de WhatsApp es obligatorio.
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="col-md-12">
+          <label for="correoElectronico" class="form-label">Email</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+            <input
+              type="email"
+              id="correoElectronico"
+              class="form-control"
+              [(ngModel)]="cliente.correoElectronico"
+              name="correoElectronico"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Préstamos -->
+      <div class="mt-5">
+        <h4 class="text-secondary">
+          <i class="bi bi-cash-coin"></i> Préstamos Asociados
+        </h4>
+
+        <div
+          *ngFor="let prestamo of cliente.prestamos; let i = index"
+          class="card p-3 mb-3 border-0 shadow-sm rounded-3 bg-white"
+        >
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label for="monto{{i}}" class="form-label">Monto <span class="text-danger">*</span></label>
+              <input
+                type="number"
+                id="monto{{i}}"
+                class="form-control"
+                [(ngModel)]="prestamo.monto"
+                name="prestamoMonto{{i}}"
+                required
+              />
+            </div>
+            <div class="col-md-3">
+              <label for="tasa{{i}}" class="form-label">Interés Mensual (%) <span class="text-danger">*</span></label>
+              <input
+                type="number"
+                id="tasa{{i}}"
+                class="form-control"
+                [(ngModel)]="prestamo.tasaInteresMensual"
+                name="prestamoTasa{{i}}"
+                required
+              />
+            </div>
+            <div class="col-md-3">
+              <label for="cuotas{{i}}" class="form-label">N° Cuotas <span class="text-danger">*</span></label>
+              <input
+                type="number"
+                id="cuotas{{i}}"
+                class="form-control"
+                [(ngModel)]="prestamo.numeroCuotas"
+                name="prestamoCuotas{{i}}"
+                required
+              />
+            </div>
+            <div class="col-md-3">
+              <label for="fecha{{i}}" class="form-label">Inicio <span class="text-danger">*</span></label>
+              <input
+                type="date"
+                id="fecha{{i}}"
+                class="form-control"
+                [(ngModel)]="prestamo.fechaInicio"
+                name="prestamoFecha{{i}}"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="text-end mt-3">
+            <button type="button" class="btn btn-outline-danger btn-sm" (click)="eliminarPrestamo(i)">
+              <i class="bi bi-trash3"></i> Quitar Préstamo
+            </button>
+          </div>
+        </div>
+
+        <div class="text-start">
+          <button type="button" class="btn btn-outline-info" (click)="agregarPrestamo()">
+            <i class="bi bi-plus-circle-fill"></i> Agregar Préstamo
+          </button>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="d-flex gap-2 justify-content-end mt-5">
+        <button type="submit" class="btn btn-success px-4" [disabled]="clienteForm.invalid">
+          <i class="bi bi-check2-circle"></i> Guardar
+        </button>
+        <button type="button" class="btn btn-secondary px-4" routerLink="/clientes">
+          <i class="bi bi-arrow-return-left"></i> Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

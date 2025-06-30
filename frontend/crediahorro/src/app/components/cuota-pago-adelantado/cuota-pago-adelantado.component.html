@@ -1,0 +1,55 @@
+<main class="container mt-4">
+  <div class="card shadow-lg border-0 rounded-4 bg-light">
+    <div class="card-header text-white rounded-top-4 d-flex align-items-center gap-2"
+         style="background: linear-gradient(to right, #36b9cc, #1cc88a);">
+      <i class="bi bi-fast-forward-fill fs-4"></i>
+      <h4 class="mb-0">Aplicar Pago Adelantado</h4>
+    </div>
+
+    <div class="card-body p-4">
+      <form (ngSubmit)="aplicarPagoAdelantado()" #adelantoForm="ngForm" novalidate>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <label for="monto" class="form-label fw-semibold">Monto Adelantado <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-white">S/</span>
+              <input type="number" step="0.01" min="0" id="monto" name="monto"
+                     [(ngModel)]="monto"
+                     class="form-control"
+                     required
+                     #montoInput="ngModel">
+            </div>
+            <div class="text-danger mt-1" *ngIf="montoInput.invalid && montoInput.touched">
+              El monto es obligatorio.
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="tipoReduccion" class="form-label fw-semibold">Tipo de Reducción <span class="text-danger">*</span></label>
+            <select id="tipoReduccion" name="tipoReduccion"
+                    class="form-select"
+                    [(ngModel)]="tipoReduccion"
+                    required
+                    #tipoInput="ngModel">
+              <option [ngValue]="null" disabled selected>Seleccione una opción</option>
+              <option value="CUOTA">Reducir Monto de Cuota</option>
+              <option value="PLAZO">Reducir Número de Cuotas</option>
+            </select>
+            <div class="text-danger mt-1" *ngIf="tipoInput.invalid && tipoInput.touched">
+              Debe seleccionar un tipo de reducción.
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-end gap-2">
+          <button type="submit" class="btn btn-success" [disabled]="adelantoForm.invalid">
+            <i class="bi bi-check-circle-fill"></i> Aplicar Adelanto
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="volver()">
+            <i class="bi bi-x-circle-fill"></i> Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>

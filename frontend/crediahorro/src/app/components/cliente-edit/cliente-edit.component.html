@@ -1,0 +1,143 @@
+<main class="container mt-4">
+  <div class="card shadow-lg border-0 rounded-4 p-4 bg-light">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+      <h2 class="fw-bold text-dark m-0">
+        <i class="bi bi-person-lines-fill"></i> Editar Cliente
+      </h2>
+      <a class="btn btn-outline-secondary" [routerLink]="['/clientes']">
+        <i class="bi bi-arrow-left-circle-fill"></i> Volver a Clientes
+      </a>
+    </div>
+
+    <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()" novalidate class="needs-validation">
+      <div class="row g-3">
+        <!-- Nombre -->
+        <div class="col-md-6">
+          <label for="nombre" class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+          <input
+            id="nombre"
+            type="text"
+            class="form-control"
+            formControlName="nombre"
+            [class.is-invalid]="clienteForm.get('nombre')?.invalid && clienteForm.get('nombre')?.touched"
+          />
+          <div class="invalid-feedback">El nombre es obligatorio.</div>
+        </div>
+
+        <!-- DNI -->
+        <div class="col-md-6">
+          <label for="dni" class="form-label fw-semibold">DNI <span class="text-danger">*</span></label>
+          <input
+            id="dni"
+            type="text"
+            class="form-control"
+            formControlName="dni"
+            [class.is-invalid]="clienteForm.get('dni')?.invalid && clienteForm.get('dni')?.touched"
+          />
+          <div class="invalid-feedback">El DNI es obligatorio.</div>
+        </div>
+
+        <!-- Dirección -->
+        <div class="col-md-6">
+          <label for="direccion" class="form-label fw-semibold">Dirección</label>
+          <input id="direccion" type="text" class="form-control" formControlName="direccion" />
+        </div>
+
+        <!-- WhatsApp -->
+        <div class="col-md-6">
+          <label for="telefonoWhatsapp" class="form-label fw-semibold">WhatsApp</label>
+          <input id="telefonoWhatsapp" type="text" class="form-control" formControlName="telefonoWhatsapp" />
+        </div>
+
+        <!-- Correo -->
+        <div class="col-md-12">
+          <label for="correoElectronico" class="form-label fw-semibold">Correo Electrónico</label>
+          <input id="correoElectronico" type="email" class="form-control" formControlName="correoElectronico" />
+        </div>
+      </div>
+
+      <!-- Préstamos -->
+      <div class="mt-5">
+        <h4 class="fw-bold mb-3"><i class="bi bi-cash-stack text-success"></i> Préstamos</h4>
+
+        <div formArrayName="prestamos">
+          <div
+            *ngFor="let prestamo of prestamos.controls; let i=index"
+            [formGroupName]="i"
+            class="bg-white border rounded-3 shadow-sm p-4 mb-4"
+          >
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label fw-semibold" for="monto{{i}}">Monto <span class="text-danger">*</span></label>
+                <input
+                  id="monto{{i}}"
+                  type="number"
+                  class="form-control"
+                  formControlName="monto"
+                  [class.is-invalid]="prestamo.get('monto')?.invalid && prestamo.get('monto')?.touched"
+                  [readonly]="true"
+                />
+                <div class="invalid-feedback">Monto obligatorio</div>
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label fw-semibold" for="tasa{{i}}">Interés Mensual (%) <span class="text-danger">*</span></label>
+                <input
+                  id="tasa{{i}}"
+                  type="number"
+                  class="form-control"
+                  formControlName="tasaInteresMensual"
+                  [class.is-invalid]="prestamo.get('tasaInteresMensual')?.invalid && prestamo.get('tasaInteresMensual')?.touched"
+                  [readonly]="true"
+                />
+                <div class="invalid-feedback">Tasa obligatoria</div>
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label fw-semibold" for="cuotas{{i}}">Cuotas <span class="text-danger">*</span></label>
+                <input
+                  id="cuotas{{i}}"
+                  type="number"
+                  class="form-control"
+                  formControlName="numeroCuotas"
+                  [class.is-invalid]="prestamo.get('numeroCuotas')?.invalid && prestamo.get('numeroCuotas')?.touched"
+                  [readonly]="true"
+                />
+                <div class="invalid-feedback">Cuotas obligatorias</div>
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label fw-semibold" for="fecha{{i}}">Fecha Inicio <span class="text-danger">*</span></label>
+                <input
+                  id="fecha{{i}}"
+                  type="date"
+                  class="form-control"
+                  formControlName="fechaInicio"
+                  [class.is-invalid]="prestamo.get('fechaInicio')?.invalid && prestamo.get('fechaInicio')?.touched"
+                  [readonly]="true"
+                />
+                <div class="invalid-feedback">Fecha obligatoria</div>
+              </div>
+            </div>
+
+            <!--<div class="text-end mt-3">
+              <button type="button" class="btn btn-outline-danger btn-sm" (click)="eliminarPrestamo(i)">
+                <i class="bi bi-trash-fill"></i> Eliminar Préstamo
+              </button>
+            </div>-->
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <button class="btn btn-primary px-4" type="submit" [disabled]="clienteForm.invalid">
+          <i class="bi bi-check-circle-fill"></i> Actualizar
+        </button>
+        <a class="btn btn-secondary px-4" [routerLink]="['/clientes']">
+          <i class="bi bi-x-circle-fill"></i> Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</main>

@@ -1,0 +1,154 @@
+<main class="container mt-4">
+  <div class="card shadow-lg border-0 rounded-4 bg-light">
+    <div class="card-header bg-gradient text-white d-flex justify-content-between align-items-center rounded-top-4"
+         style="background: linear-gradient(to right, #4e73df, #1cc88a);">
+      <h4 class="m-0" style="color: black;">
+        <i class="bi bi-calendar-check-fill"></i> Cuotas del Préstamo
+      </h4>
+      <button class="btn btn-light btn-sm" (click)="volver()">
+        <i class="bi bi-arrow-left-circle"></i> Volver a Clientes
+      </button>
+    </div>
+
+    <div class="card-body">
+      <!-- Contenedor padre que coloca las alertas a izquierda y derecha -->
+      <div class="d-flex justify-content-between mb-3">
+        <!-- Alerta a la izquierda -->
+        <div
+          *ngIf="mensajeVencimiento"
+          class="alert d-flex align-items-center gap-2 mb-0"
+          [ngClass]="mensajeVencimiento.includes('cuota pagada') ? 'alert-info' : 'alert-danger'"
+        >
+          {{ mensajeVencimiento }}
+        </div>
+
+        <!-- Alerta a la derecha -->
+        <div>
+          <div *ngIf="cuotasPendientes > 0" class="alert alert-warning d-flex align-items-center gap-2 mb-0">
+
+            Hay <strong>{{ cuotasPendientes }}</strong> cuota{{ cuotasPendientes === 1 ? '' : 's' }} pendiente{{ cuotasPendientes === 1 ? '' : 's' }} por pagar.
+          </div>
+          <div *ngIf="cuotasPendientes === 0" class="alert alert-success d-flex align-items-center gap-2 mb-0">
+
+            ¡Genial! Ya se completó el pago de todas sus cuotas.
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de cuotas -->
+      <div class="table-responsive rounded-3">
+        <table class="table table-hover align-middle text-center">
+          <thead class="table-dark">
+          <tr>
+            <th><i class="bi bi-calendar-event"></i> Fecha de Pago</th>
+            <th><i class="bi bi-calendar-event"></i> Fecha Pagada</th>
+            <th>S/ Monto Cuota</th>
+            <th><i class="bi bi-clipboard-check"></i> Estado</th>
+            <th><i class="bi bi-file-earmark-text"></i> Tipo de Pago</th>
+            <!-- <th><i class="bi bi-gear-fill"></i> Acciones</th> -->
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let cuota of cuotas">
+            <td>{{ cuota.fechaPago | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ cuota.fechaPagada ? (cuota.fechaPagada | date: 'dd/MM/yyyy') : '- -/- -/- - - -' }}</td>
+            <td>{{ cuota.montoCuota | currency: 'S/':'symbol':'1.2-2' }}</td>
+            <td>
+                <span [ngSwitch]="cuota.estado">
+                  <span *ngSwitchCase="'PAGADA'" class="badge rounded-pill bg-success px-3 py-2">Pagada</span>
+                  <span *ngSwitchCase="'PENDIENTE'" class="badge rounded-pill bg-warning text-dark px-3 py-2">Pendiente</span>
+                  <span *ngSwitchCase="'ADELANTADO'" class="badge rounded-pill bg-primary px-3 py-2">Adelantado</span>
+                  <span *ngSwitchDefault class="badge bg-secondary">{{ cuota.estado }}</span>
+                </span>
+            </td>
+            <td>
+              <span *ngIf="cuota.tipoPago"><strong>{{ cuota.tipoPago }}</strong></span>
+              <button *ngIf="!cuota.tipoPago" class="btn btn-sm btn-info ms-2" (click)="abrirModal(cuota)">
+                <i class="bi bi-search"></i> Ver Detalles
+              </button>
+            </td>
+            <!-- <td>
+              <button *ngIf="cuota.estado === 'PENDIENTE'" class="btn btn-success btn-sm px-3"
+                      (click)="pagarCuota(cuota.id)">
+                <i class="bi bi-cash-coin"></i> Pagar Completo
+              </button>
+            </td> -->
+          </tr>
+          </tbody>
+        </table>
+        <div class="row mt-4 g-3">
+          <div class="col-md-4">
+            <div class="card border-start border-4 border-primary shadow-sm h-100">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="card-title text-muted mb-1">Total a Pagar</h6>
+                  <h5 class="text-primary fw-bold">{{ totalAPagar | currency: 'S/':'symbol':'1.2-2' }}</h5>
+                </div>
+                <i class="bi bi-wallet2 fs-2 text-primary"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card border-start border-4 border-success shadow-sm h-100">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="card-title text-muted mb-1">Total Pagado</h6>
+                  <h5 class="text-success fw-bold">{{ totalPagado | currency: 'S/':'symbol':'1.2-2' }}</h5>
+                </div>
+                <i class="bi bi-check2-circle fs-2 text-success"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card border-start border-4 border-danger shadow-sm h-100">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="card-title text-muted mb-1">Falta Pagar</h6>
+                  <h5 class="text-danger fw-bold">{{ faltaPagar | currency: 'S/':'symbol':'1.2-2' }}</h5>
+                </div>
+                <i class="bi bi-exclamation-circle fs-2 text-danger"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pago Adelantado
+      <div class="mt-4 d-flex justify-content-end">
+        <button class="btn btn-outline-primary" (click)="irPagoAdelantado()">
+          <i class="bi bi-forward-fill"></i> Pagar Adelanto
+        </button>
+      </div>-->
+    </div>
+  </div>
+</main>
+
+<!-- Modal -->
+<div *ngIf="showModal" class="modal-overlay" (click)="cerrarModal()">
+  <div class="modal-content shadow" (click)="$event.stopPropagation()">
+    <h5 class="mb-3"><i class="bi bi-cash-stack text-primary"></i> Detalles de Cuota</h5>
+    <p><strong>Fecha de Pago:</strong> {{ cuotaSeleccionada?.fechaPago | date: 'dd/MM/yyyy' }}</p>
+    <p><strong>Capital:</strong> S/ {{ cuotaSeleccionada?.capital | number: '1.2-2' }}</p>
+    <p><strong>Interés:</strong> S/ {{ cuotaSeleccionada?.interes | number: '1.2-2' }}</p>
+    <p><strong>Monto Total:</strong> S/ {{
+      (cuotaSeleccionada?.capital ?? 0) + (cuotaSeleccionada?.interes ?? 0) | number: '1.2-2'
+      }}
+    </p>
+
+
+    <button class="btn btn-outline-success w-100 my-2" (click)="pagarAvanzado('Capital')">
+      <i class="bi bi-arrow-down-circle"></i> Pagar Solo Capital
+    </button>
+    <button class="btn btn-outline-warning w-100 my-2" (click)="pagarAvanzado('Interes')">
+      <i class="bi bi-arrow-up-circle"></i> Pagar Solo Interés
+    </button>
+    <button class="btn btn-outline-primary w-100 my-2" (click)="pagarAvanzado('Completo')">
+      <i class="bi bi-cash"></i> Pagar Monto Total
+    </button>
+    <button class="btn btn-outline-dark w-100" (click)="cerrarModal()">
+      <i class="bi bi-x-circle"></i> Cerrar
+    </button>
+  </div>
+</div>

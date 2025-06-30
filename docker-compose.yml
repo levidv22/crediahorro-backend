@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # 🗄️ Base de datos
+  db:
+    image: postgres:16.1
+    container_name: db-credi
+    restart: always
+    environment:
+      POSTGRES_DB: credi
+      POSTGRES_USER: crediahorro
+      POSTGRES_PASSWORD: levidv
+    ports:
+      - "5432:5432"
+
+  # Eureka
+  ms-registry-server:
+    build: ./registry-server
+    container_name: ms-registry-server
+    ports:
+      - "8761:8761"
+
+  # Config Server
+  ms-config-server:
+    build: ./config-server
+    container_name: ms-config-server
+    depends_on:
+      - ms-registry-server
+    environment:
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+    ports:
+      - "8888:8888"
+
+  # admin-core-service
+  ms-admin-core:
+    build: ./admin-core-service
+    container_name: ms-admin-core
+    depends_on:
+      - ms-config-server
+      - ms-registry-server
+      - db
+    environment:
+      CONFIG_SERVER_HOST: http://ms-config-server:8888
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+
+  # report-ms
+  ms-report:
+    build: ./report-ms
+    container_name: ms-report
+    depends_on:
+      - ms-config-server
+      - ms-registry-server
+    environment:
+      CONFIG_SERVER_HOST: http://ms-config-server:8888
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+
+  # report-grafico
+  ms-report-grafico:
+    build: ./report-grafico
+    container_name: ms-report-grafico
+    depends_on:
+      - ms-config-server
+      - ms-registry-server
+    environment:
+      CONFIG_SERVER_HOST: http://ms-config-server:8888
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+
+  # auth-service
+  ms-auth-service:
+    build: ./auth-service
+    container_name: ms-auth-service
+    depends_on:
+      - ms-config-server
+      - ms-registry-server
+      - db
+    environment:
+      CONFIG_SERVER_HOST: http://ms-config-server:8888
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+    ports:
+      - "3030:3030"
+
+  # notificacion-service
+  ms-notificacion-service:
+    build: ./notificacion-service
+    container_name: ms-notificacion-service
+    depends_on:
+      - ms-registry-server
+    environment:
+      TWILIO_SID: AC2f33c7c845f02841be5a7868200fcc00
+      TWILIO_TOKEN: aa595e4c095fa7b463048582cd2b9440
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+    ports:
+      - "8080:8080"
+
+  # Gateway
+  ms-gateway:
+    build: ./gateway
+    container_name: ms-gateway
+    depends_on:
+      - ms-registry-server
+    environment:
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+    ports:
+      - "4040:4040"

@@ -1,0 +1,68 @@
+<main class="container mt-4">
+  <div class="mb-4 d-flex align-items-center gap-2 text-primary">
+    <i class="bi bi-bar-chart-fill fs-3"></i>
+    <h3 class="mb-0">Panel de Gráficos</h3>
+  </div>
+
+  <!-- Selector de año -->
+  <div class="mb-3">
+    <label for="yearSelect" class="form-label">Seleccionar Año: </label>
+    <select
+      id="yearSelect"
+      class="form-select w-auto d-inline-block"
+      [(ngModel)]="selectedYear"
+    >
+      <option *ngFor="let year of availableYears" [value]="year">
+        {{ year }}
+      </option>
+    </select>
+  </div>
+
+  <div *ngFor="let item of anualConMesesData">
+    <div *ngIf="item.anio === selectedYear" class="mb-5">
+      <h5 class="text-secondary text-center mt-4">
+        <i class="bi bi-calendar-range"></i> Año {{ item.anio }}
+      </h5>
+
+      <ngx-charts-bar-vertical
+        [view]="view"
+        [scheme]="colorScheme"
+        [results]="item.chartData"
+        [gradient]="gradient"
+        [xAxis]="showXAxis"
+        [yAxis]="showYAxis"
+        [showXAxisLabel]="showXAxisLabel"
+        [xAxisLabel]="'Meses'"
+        [showYAxisLabel]="showYAxisLabel"
+        [yAxisLabel]="'Monto de Cuotas Pagadas'"
+        (select)="onBarSelect($event)">
+      </ngx-charts-bar-vertical>
+
+      <div class="row mt-3 g-2 justify-content-center">
+        <div *ngFor="let data of item.chartData" class="col-6 col-md-3">
+          <div class="prestamo-card shadow-sm p-2 rounded-3">
+            <div class="fw-semibold text-primary">{{ data.name }}</div>
+            <div class="fs-6">
+              <span class="text-muted">Monto Prestado:</span>
+              <strong>S/ {{ data.extra?.montoPrestado?.toFixed(2) || '0.00' }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Elegante -->
+  <div *ngIf="showModal" class="modal-overlay" (click)="showModal = false">
+    <div class="modal-content shadow" (click)="$event.stopPropagation()">
+      <h5 class="mb-3"><i class="bi bi-info-circle-fill text-primary"></i> Detalles del Mes</h5>
+      <p><strong>Año:</strong> {{ selectedData?.extra?.anio || 'N/A' }}</p>
+      <p><strong>Mes:</strong> {{ selectedData?.name || 'N/A' }}</p>
+      <p><strong>Monto Pagado:</strong> S/ {{ selectedData?.extra?.montoPagado?.toFixed(2) || '0.00' }}</p>
+      <!--<p><strong>Monto Prestado:</strong> S/ {{ selectedData?.extra?.montoPrestado?.toFixed(2) || '0.00' }}</p>-->
+      <button class="btn btn-outline-primary w-100 mt-3" (click)="showModal = false">
+        <i class="bi bi-x-circle"></i> Cerrar
+      </button>
+    </div>
+  </div>
+</main>

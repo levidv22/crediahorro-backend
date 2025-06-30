@@ -1,0 +1,85 @@
+<div class="auth-wrapper d-flex justify-content-center align-items-center">
+  <div class="auth-card glassmorphism p-4 rounded-4 shadow-lg">
+    <div class="text-center mb-4">
+      <i class="bi bi-person-circle text-primary fs-1"></i>
+      <h3 class="mt-2">{{ isLoginMode ? 'Iniciar Sesión' : 'Crear Cuenta' }}</h3>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" novalidate>
+
+      <!-- Usuario -->
+      <div class="mb-3 position-relative">
+        <label class="form-label">Usuario</label>
+        <input
+          type="text"
+          class="form-control ps-5"
+          [ngModel]="isLoginMode ? loginData.username : registerData.username"
+          (ngModelChange)="isLoginMode ? loginData.username = $event : registerData.username = $event"
+          [name]="isLoginMode ? 'loginUsername' : 'registerUsername'"
+          required
+        />
+        <i class="bi bi-person-fill input-icon"></i>
+      </div>
+
+      <!-- WhatsApp (solo registro) -->
+      <div class="mb-3 position-relative" *ngIf="!isLoginMode">
+        <label class="form-label">WhatsApp</label>
+        <input
+          type="number"
+          class="form-control ps-5"
+          [(ngModel)]="registerData.whatsapp"
+          name="whatsapp"
+          required
+        />
+        <i class="bi bi-whatsapp input-icon"></i>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="mb-3 position-relative">
+        <label class="form-label">Contraseña</label>
+        <div class="input-group">
+    <span class="input-group-text bg-transparent border-end-0">
+      <i class="bi bi-lock-fill text-secondary"></i>
+    </span>
+          <input
+            [type]="isLoginMode ? (showPasswordLogin ? 'text' : 'password') : (showPasswordRegister ? 'text' : 'password')"
+            class="form-control border-start-0"
+            [class.is-invalid]="passwordTouched && !isLoginMode && !passwordValid"
+            [ngModel]="isLoginMode ? loginData.password : registerData.password"
+            (ngModelChange)="isLoginMode ? loginData.password = $event : registerData.password = $event; validatePassword()"
+            (focus)="passwordTouched = true"
+            [name]="isLoginMode ? 'loginPassword' : 'registerPassword'"
+            required
+          />
+          <button type="button" class="btn btn-outline-secondary" (click)="togglePasswordVisibility(isLoginMode ? 'login' : 'register')">
+            <i class="bi" [ngClass]="isLoginMode ? (showPasswordLogin ? 'bi-eye-slash' : 'bi-eye') : (showPasswordRegister ? 'bi-eye-slash' : 'bi-eye')"></i>
+          </button>
+        </div>
+
+        <!-- Reglas -->
+        <small *ngIf="passwordTouched && !isLoginMode" class="text-muted d-block mt-1">
+          La contraseña debe tener al menos 8 caracteres, incluir letras y números.
+        </small>
+      </div>
+
+
+      <!-- Error -->
+      <div class="text-danger text-center mb-3" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Botón -->
+      <div class="d-grid mb-3">
+        <button type="submit" class="btn btn-primary py-2">
+          {{ isLoginMode ? 'Ingresar' : 'Registrarse' }}
+        </button>
+      </div>
+    </form>
+
+    <div class="text-center">
+      <button class="btn btn-link toggle-btn" (click)="toggleMode()">
+        {{ isLoginMode ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión' }}
+      </button>
+    </div>
+  </div>
+</div>

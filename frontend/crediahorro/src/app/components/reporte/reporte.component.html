@@ -1,0 +1,77 @@
+<main class="container mt-4">
+  <div class="card shadow-lg border-0 rounded-4 bg-light">
+    <div class="card-header text-white rounded-top-4 d-flex align-items-center gap-2"
+         style="background: linear-gradient(to right, #4e73df, #1cc88a);">
+      <i class="bi bi-bar-chart-line-fill fs-4"></i>
+      <h4 class="mb-0">Historial Crediticio</h4>
+    </div>
+
+    <div class="card-body p-4">
+      <form (ngSubmit)="generarReporte()" #reporteForm="ngForm" novalidate>
+        <div class="row g-4 align-items-end">
+          <div class="col-md-4 position-relative">
+            <label for="nombre" class="form-label fw-semibold">Nombre del Cliente <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-white"><i class="bi bi-person-lines-fill text-primary"></i></span>
+              <input type="text" id="nombre" class="form-control"
+                     [(ngModel)]="nombre"
+                     name="nombre"
+                     required
+                     (input)="buscarSugerencias()"
+                     autocomplete="off" #nombreCtrl="ngModel">
+            </div>
+
+            <!-- Sugerencias -->
+            <ul *ngIf="sugerencias.length > 0"
+                class="list-group position-absolute w-100 mt-1 shadow"
+                style="z-index: 1000; cursor: pointer;">
+              <li *ngFor="let sug of sugerencias"
+                  class="list-group-item list-group-item-action"
+                  (click)="seleccionarSugerencia(sug)">
+                {{ sug }}
+              </li>
+            </ul>
+
+            <div class="text-danger mt-1" *ngIf="nombreCtrl.invalid && nombreCtrl.touched">
+              El nombre es obligatorio.
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label for="tipo" class="form-label fw-semibold">Tipo de Reporte <span class="text-danger">*</span></label>
+            <select id="tipo" class="form-select" [(ngModel)]="tipo" name="tipo" required (change)="actualizarEstados()" #tipoCtrl="ngModel">
+              <option [ngValue]="null" disabled selected>Seleccione</option>
+              <option value="prestamos">Préstamos</option>
+              <option value="cuotas">Cuotas</option>
+            </select>
+            <div class="text-danger mt-1" *ngIf="tipoCtrl.invalid && tipoCtrl.touched">
+              El tipo de reporte es obligatorio.
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label for="estado" class="form-label fw-semibold">Estado <span class="text-danger">*</span></label>
+            <select id="estado" class="form-select" [(ngModel)]="estado" name="estado" required #estadoCtrl="ngModel">
+              <option [ngValue]="null" disabled selected>Seleccione</option>
+              <option *ngFor="let est of estadosDisponibles" [value]="est">{{ est }}</option>
+            </select>
+            <div class="text-danger mt-1" *ngIf="estadoCtrl.invalid && estadoCtrl.touched">
+              El estado es obligatorio.
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 text-end">
+          <button type="submit" class="btn btn-primary" [disabled]="reporteForm.invalid">
+            <i class="bi bi-file-bar-graph-fill"></i> Generar Reporte
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-5" *ngIf="resultadoReporte">
+        <h5 class="text-secondary">Resultado del Reporte:</h5>
+        <div class="bg-white p-4 border rounded shadow-sm" [innerHTML]="resultadoReporte"></div>
+      </div>
+    </div>
+  </div>
+</main>

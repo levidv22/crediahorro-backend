@@ -1,0 +1,44 @@
+<div class="card cliente-card shadow-sm border-0 h-100 position-relative">
+  <div class="badge-container position-absolute top-0 start-0 w-100 d-flex justify-content-between p-2">
+    <span *ngIf="cliente.cuotaPendienteTexto"
+          class="badge"
+          [ngClass]="{
+          'bg-info': cliente.cuotaPendienteTexto.includes('Se pagó la'),
+          'bg-danger': cliente.cuotaPendienteTexto.includes('vence') || cliente.cuotaPendienteTexto.includes('venció')
+          }">
+      {{ cliente.cuotaPendienteTexto }}
+    </span>
+
+    <span *ngIf="cliente.estadoPrestamoMasReciente !== 'SIN_PRESTAMO'"
+          class="badge"
+          [ngClass]="{
+            'bg-success': cliente.estadoPrestamoMasReciente === 'PAGADO',
+            'bg-warning text-dark': cliente.estadoPrestamoMasReciente === 'ACTIVO'
+          }">
+      {{ cliente.estadoPrestamoMasReciente === 'PAGADO' ? 'Préstamo Pagado' : 'Préstamo Activo' }}
+    </span>
+  </div>
+
+  <div class="card-body d-flex flex-column">
+    <div class="d-flex align-items-center mb-2">
+      <div class="icon-circle bg-primary text-white me-3">
+        <i class="bi bi-person-circle fs-4"></i>
+      </div>
+      <h5 class="card-title mb-0">{{ cliente.nombre }}</h5>
+    </div>
+
+    <p class="mb-1"><i class="bi bi-credit-card-2-front"></i> DNI: <strong>{{ cliente.dni }}</strong></p>
+    <p class="mb-1"><i class="bi bi-geo-alt"></i> {{ cliente.direccion }}</p>
+    <p class="mb-1"><i class="bi bi-whatsapp"></i> {{ cliente.telefonoWhatsapp }}</p>
+    <p class="mb-3"><i class="bi bi-envelope"></i> {{ cliente.correoElectronico }}</p>
+
+    <div class="mt-auto d-flex justify-content-between">
+      <a class="btn btn-outline-primary btn-sm" [routerLink]="['/clientes', 'prestamos', cliente.id]">
+        <i class="bi bi-book"></i> Ver Préstamo
+      </a>
+      <a class="btn btn-outline-secondary btn-sm" [routerLink]="['/clientes', 'editar', cliente.id]">
+        <i class="bi bi-pencil"></i> Editar Cliente
+      </a>
+    </div>
+  </div>
+</div>

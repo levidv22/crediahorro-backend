@@ -1,0 +1,12 @@
+input:focus, select:focus {
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.card h2, h4 {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.input-group-text {
+  background-color: #e9ecef;
+  border: none;
+}

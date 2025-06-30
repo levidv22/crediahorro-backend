@@ -1,0 +1,7 @@
+input:invalid.ng-touched,
+select:invalid.ng-touched {
+  border-color: #dc3545;
+}
+.form-label {
+  font-weight: 600;
+}

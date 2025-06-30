@@ -1,0 +1,89 @@
+body {
+  background: linear-gradient(-45deg, #e3f2fd, #fce4ec, #f3e5f5, #e8f5e9);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+@keyframes gradientBG {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+.auth-wrapper {
+  min-height: 100vh;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+input.form-control {
+  border-radius: 12px;
+  padding-left: 2.75rem;
+  background-color: #f9f9f9;
+  border: 1px solid #d0d7e2;
+  transition: 0.3s ease;
+}
+
+input.form-control:focus {
+  border-color: #0069d9;
+  box-shadow: 0 0 0 0.25rem rgba(0, 105, 217, 0.25);
+  background-color: #ffffff;
+}
+
+.input-icon {
+  position: absolute;
+  pointer-events: none;
+  top: 38px;
+  left: 15px;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+button.btn-primary {
+  background: linear-gradient(135deg, #0069d9, #003d91);
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0, 105, 217, 0.3);
+  transition: 0.3s ease;
+}
+
+button.btn-primary:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #0051b0, #002f6c);
+}
+
+.toggle-btn {
+  font-size: 0.95rem;
+  color: #0069d9;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.toggle-btn:hover {
+  color: #003d91;
+  text-decoration: underline;
+}
+
+input.is-invalid {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+}

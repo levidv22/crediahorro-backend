@@ -1,0 +1,102 @@
+<main class="container mt-4">
+  <div class="card shadow-lg border-0 rounded-4 bg-light p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold text-dark m-0">
+        <i class="bi bi-cash-coin text-success"></i> Editar Préstamo
+      </h2>
+      <button type="button" class="btn btn-outline-secondary" (click)="cancelar()">
+        <i class="bi bi-arrow-left-circle-fill"></i> Volver
+      </button>
+    </div>
+
+    <form (ngSubmit)="actualizarPrestamo()" #prestamoForm="ngForm" novalidate>
+      <div class="row g-4">
+        <!-- Monto -->
+        <div class="col-md-6">
+          <label for="monto" class="form-label fw-semibold">Monto del Préstamo <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">S/</span>
+            <input
+              type="number"
+              id="monto"
+              class="form-control border-start-0"
+              [(ngModel)]="prestamo.monto"
+              name="monto"
+              step="0.01"
+              required
+              #monto="ngModel"
+            />
+          </div>
+          <div class="text-danger small mt-1" *ngIf="monto.invalid && monto.touched">
+            El monto es obligatorio.
+          </div>
+        </div>
+
+        <!-- Tasa de interés -->
+        <div class="col-md-6">
+          <label for="tasaInteresMensual" class="form-label fw-semibold">Interés Mensual (%) <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-percent"></i></span>
+            <input
+              type="number"
+              id="tasaInteresMensual"
+              class="form-control border-start-0"
+              [(ngModel)]="prestamo.tasaInteresMensual"
+              name="tasaInteresMensual"
+              step="0.01"
+              required
+              #tasa="ngModel"
+            />
+          </div>
+          <div class="text-danger small mt-1" *ngIf="tasa.invalid && tasa.touched">
+            La tasa de interés es obligatoria.
+          </div>
+        </div>
+
+        <!-- Número de cuotas -->
+        <div class="col-md-6">
+          <label for="numeroCuotas" class="form-label fw-semibold">Número de Cuotas <span class="text-danger">*</span></label>
+          <input
+            type="number"
+            id="numeroCuotas"
+            class="form-control"
+            [(ngModel)]="prestamo.numeroCuotas"
+            name="numeroCuotas"
+            required
+            #cuotas="ngModel"
+          />
+          <div class="text-danger small mt-1" *ngIf="cuotas.invalid && cuotas.touched">
+            El número de cuotas es obligatorio.
+          </div>
+        </div>
+
+        <!-- Fecha de inicio -->
+        <div class="col-md-6">
+          <label for="fechaInicio" class="form-label fw-semibold">Fecha de Inicio <span class="text-danger">*</span></label>
+          <input
+            type="date"
+            id="fechaInicio"
+            class="form-control"
+            [(ngModel)]="prestamo.fechaInicio"
+            name="fechaInicio"
+            required
+            #fecha="ngModel"
+          />
+          <div class="text-danger small mt-1" *ngIf="fecha.invalid && fecha.touched">
+            La fecha de inicio es obligatoria.
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="mt-5 d-flex justify-content-end gap-3">
+        <button type="submit" class="btn btn-primary px-4" [disabled]="prestamoForm.invalid">
+          <i class="bi bi-check-circle-fill"></i> Actualizar
+        </button>
+        <button type="button" class="btn btn-secondary px-4" (click)="cancelar()">
+          <i class="bi bi-x-circle-fill"></i> Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</main>

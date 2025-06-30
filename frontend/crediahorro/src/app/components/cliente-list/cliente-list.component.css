@@ -1,0 +1,54 @@
+.resaltado {
+  background-color: yellow;
+  font-weight: bold;
+}
+
+.cliente-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 1rem;
+  background-color: #f8f9fa;
+  padding-top: 2rem;
+}
+
+.cliente-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.icon-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.badge-container {
+  pointer-events: none; /* Para que no interfiera con botones debajo */
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.4em 0.6em;
+  border-radius: 0.5rem;
+  white-space: nowrap;
+}
+
+.badge.bg-danger {
+  font-weight: bold;
+}
+
+.btn-primary {
+  border-radius: 2rem;
+  font-weight: 600;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.pagination .page-link {
+  cursor: pointer;
+}

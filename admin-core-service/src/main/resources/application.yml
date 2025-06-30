@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: admin-service
+  profiles:
+    default: prod
+  config:
+   #import: configserver:http://localhost:8888
+   import: configserver:${CONFIG_SERVER_HOST}
+  datasource:
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: ${db.maximum-pool-size}
+      connection-timeout: ${db.connection-timeout}
+    initialization-mode: always
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  main:
+    allow-bean-definition-overriding: 'true'
+
+server:
+  servlet:
+    context-path: /admin-service
+  port: 0
+logging:
+  level:
+    upeu.edu.pe.admin_core_service: INFO
+    org.springframework.cloud.config.client: DEBUG
+    org.springframework.cloud.bootstrap: DEBUG
+    org.springframework.boot.context.config: DEBUG
+    com.zaxxer.hikari: DEBUG
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+eureka:
+  instance:
+    instance-id: "${spring.application.name}:${random.value}"
+  client:
+    service-url:
+     #defaultZone: http://localhost:8761/eureka/
+     defaultZone: ${EUREKA_URL}

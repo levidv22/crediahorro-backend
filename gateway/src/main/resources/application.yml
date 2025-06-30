@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: gateway
+  profiles:
+    default: oauth2  #eureka-off, eureka-on, oauth2
+server:
+  port: 4040
+
+
+eureka:
+  client:
+    fetch-registry: true #luego true
+    service-url:
+      #defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL}

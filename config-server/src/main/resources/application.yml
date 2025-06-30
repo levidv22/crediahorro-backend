@@ -1,0 +1,26 @@
+spring:
+  profiles:
+    active: default
+  application:
+    name: config-server
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/Vane2706/Confi.git
+          default-label: master
+          clone-on-start: true
+          username: Vane2706
+          password: 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
+          #password: ${GIT_TOKEN}
+server:
+  port: 8888
+
+eureka:
+  instance:
+    instance-id: "${spring.application.name}:${random.value}"
+  client:
+    service-url:
+      #defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL}

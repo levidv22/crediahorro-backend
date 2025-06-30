@@ -1,0 +1,19 @@
+.input-group-text {
+  background-color: #f1f3f5;
+  border-radius: 0.375rem 0 0 0.375rem;
+  border-color: #ced4da;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.15rem rgba(86, 119, 252, 0.25);
+  border-color: #5677fc;
+}
+
+.btn-success {
+  background-color: #3cb371;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #2e9d5f;
+}

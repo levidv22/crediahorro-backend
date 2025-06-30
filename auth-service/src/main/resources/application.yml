@@ -1,0 +1,42 @@
+spring:
+  profiles:
+    default: prod
+  application:
+    name: auth-service
+  h2:
+    console:
+      enabled: true
+  config:
+    #import: "configserver:http://localhost:8888"
+    import: configserver:${CONFIG_SERVER_HOST}
+
+  datasource:
+    url: jdbc:postgresql://db-credi:5432/credi
+    username: crediahorro
+    password: levidv
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 20000
+    initialization-mode: always
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
+server:
+  port: 3030
+  servlet:
+    context-path: /auth-service
+
+eureka:
+  instance:
+    instance-id: "${spring.application.name}:${random.value}"
+  client:
+    service-url:
+      #defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL}
