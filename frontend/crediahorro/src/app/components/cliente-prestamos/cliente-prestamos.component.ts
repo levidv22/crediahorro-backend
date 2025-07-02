@@ -33,8 +33,13 @@ export class ClientePrestamosComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.clienteService.getClienteById(id).subscribe(cliente => {
-      // Asegurar que prestamos siempre sea un array aunque no venga del backend
-      if (!cliente.prestamos) {
+      if (cliente.prestamos) {
+        cliente.prestamos.forEach(prestamo => {
+          if (prestamo.cuotas?.length) {
+            prestamo.cuotas.sort((a, b) => new Date(a.fechaPago).getTime() - new Date(b.fechaPago).getTime());
+          }
+        });
+      } else {
         cliente.prestamos = [];
       }
       this.cliente = cliente;

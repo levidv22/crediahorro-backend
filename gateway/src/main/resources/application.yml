@@ -8,6 +8,9 @@ server:
 
 
 eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: false
   client:
     fetch-registry: true #luego true
     service-url:

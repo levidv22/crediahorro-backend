@@ -17,3 +17,13 @@
 .btn-success:hover {
   background-color: #2e9d5f;
 }
+
+.btn-check:checked + .btn-outline-primary {
+  background-color: #0d6efd;
+  color: #fff;
+}
+
+.btn-check:checked + .btn-outline-success {
+  background-color: #198754;
+  color: #fff;
+}

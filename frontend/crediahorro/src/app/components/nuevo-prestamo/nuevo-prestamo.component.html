@@ -11,8 +11,32 @@
 
     <form (ngSubmit)="guardarPrestamo()" #prestamoForm="ngForm" novalidate>
       <div class="row g-4">
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Tipo de Cuota</label>
+          <div class="btn-group w-100" role="group" aria-label="Tipo de cuota">
+            <input
+              type="radio"
+              class="btn-check"
+              [(ngModel)]="prestamo.tipoCuota"
+              [value]="'MENSUAL'"
+              name="tipoCuota"
+              id="mensual"
+              autocomplete="off">
+            <label class="btn btn-outline-primary" for="mensual">Mensual</label>
+
+            <input
+              type="radio"
+              class="btn-check"
+              [(ngModel)]="prestamo.tipoCuota"
+              [value]="'DIARIO'"
+              name="tipoCuota"
+              id="diario"
+              autocomplete="off">
+            <label class="btn btn-outline-success" for="diario">Diario</label>
+          </div>
+        </div>
         <!-- Monto -->
-        <div class="col-md-6">
+        <div class="col-md-5">
           <label for="monto" class="form-label fw-semibold">Monto del Préstamo <span class="text-danger">*</span></label>
           <div class="input-group">
             <span class="input-group-text">S/</span>
@@ -33,7 +57,7 @@
         </div>
 
         <!-- Tasa de Interés -->
-        <div class="col-md-6">
+        <div class="col-md-5">
           <label for="tasaInteresMensual" class="form-label fw-semibold">Tasa de Interés Mensual (%) <span class="text-danger">*</span></label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-percent"></i></span>

@@ -32,9 +32,11 @@ export class ClienteFormComponent {
       monto: 0,
       tasaInteresMensual: 0,
       numeroCuotas: 0,
-      fechaInicio: ''
+      fechaInicio: '',
+      tipoCuota: 'MENSUAL'
     });
   }
+
 
   eliminarPrestamo(index: number): void {
     this.cliente.prestamos!.splice(index, 1);

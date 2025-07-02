@@ -67,18 +67,20 @@
                 <i class="bi bi-eye-fill"></i> Ver cuotas
               </a>
               <a
+                *ngIf="!prestamo.cuotas?.length || prestamo.cuotas?.[0]?.estado !== 'PAGADA'"
                 class="btn btn-outline-primary btn-sm"
                 [routerLink]="[
-                    '/clientes',
-                    cliente.id,
-                    'prestamos',
-                    prestamo.id,
-                    'editar'
-                  ]"
+    '/clientes',
+    cliente.id,
+    'prestamos',
+    prestamo.id,
+    'editar'
+  ]"
                 title="Editar préstamo"
               >
                 <i class="bi bi-pencil-square"></i> Editar préstamo
               </a>
+
             </div>
           </td>
         </tr>

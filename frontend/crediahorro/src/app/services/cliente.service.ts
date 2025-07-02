@@ -19,6 +19,7 @@ export interface Prestamo {
   monto: number;
   tasaInteresMensual: number;
   numeroCuotas: number;
+  tipoCuota: 'MENSUAL' | 'DIARIO';
   fechaInicio: string;
   estado?: string;
   fechaCreacion?: string;

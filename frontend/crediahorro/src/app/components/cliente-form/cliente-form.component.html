@@ -113,6 +113,30 @@
           class="card p-3 mb-3 border-0 shadow-sm rounded-3 bg-white"
         >
           <div class="row g-3">
+            <div class="col-md-2">
+              <label class="form-label fw-semibold">Tipo de Cuota</label>
+              <div class="btn-group w-100" role="group" aria-label="Tipo de cuota">
+                <input
+                  type="radio"
+                  class="btn-check"
+                  [(ngModel)]="prestamo.tipoCuota"
+                  [value]="'MENSUAL'"
+                  name="tipoCuota{{i}}"
+                  id="mensual{{i}}"
+                  autocomplete="off">
+                <label class="btn btn-outline-primary" for="mensual{{i}}">Mensual</label>
+
+                <input
+                  type="radio"
+                  class="btn-check"
+                  [(ngModel)]="prestamo.tipoCuota"
+                  [value]="'DIARIO'"
+                  name="tipoCuota{{i}}"
+                  id="diario{{i}}"
+                  autocomplete="off">
+                <label class="btn btn-outline-success" for="diario{{i}}">Diario</label>
+              </div>
+            </div>
             <div class="col-md-3">
               <label for="monto{{i}}" class="form-label">Monto <span class="text-danger">*</span></label>
               <input
@@ -124,7 +148,7 @@
                 required
               />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label for="tasa{{i}}" class="form-label">Interés Mensual (%) <span class="text-danger">*</span></label>
               <input
                 type="number"
@@ -135,7 +159,7 @@
                 required
               />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label for="cuotas{{i}}" class="form-label">N° Cuotas <span class="text-danger">*</span></label>
               <input
                 type="number"

@@ -18,6 +18,8 @@ public class Prestamo {
     private double tasaInteresMensual;
     private int numeroCuotas;
 
+    private String tipoCuota; // valores: "MENSUAL" o "DIARIO"
+
     //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaCreacion;
@@ -67,6 +69,14 @@ public class Prestamo {
         this.numeroCuotas = numeroCuotas;
     }
 
+    public String getTipoCuota() {
+        return tipoCuota;
+    }
+
+    public void setTipoCuota(String tipoCuota) {
+        this.tipoCuota = tipoCuota;
+    }
+
     public LocalDate getFechaCreacion() {
         return fechaCreacion;
     }
@@ -107,6 +117,7 @@ public class Prestamo {
                 ", monto=" + monto +
                 ", tasaInteresMensual=" + tasaInteresMensual +
                 ", numeroCuotas=" + numeroCuotas +
+                ", tipoCuota='" + tipoCuota + '\'' +
                 ", fechaCreacion=" + fechaCreacion +
                 ", fechaInicio=" + fechaInicio +
                 ", estado='" + estado + '\'' +
@@ -118,11 +129,11 @@ public class Prestamo {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Prestamo prestamo = (Prestamo) o;
-        return Double.compare(monto, prestamo.monto) == 0 && Double.compare(tasaInteresMensual, prestamo.tasaInteresMensual) == 0 && numeroCuotas == prestamo.numeroCuotas && Objects.equals(id, prestamo.id) && Objects.equals(fechaCreacion, prestamo.fechaCreacion) && Objects.equals(fechaInicio, prestamo.fechaInicio) && Objects.equals(estado, prestamo.estado) && Objects.equals(cuotas, prestamo.cuotas);
+        return Double.compare(monto, prestamo.monto) == 0 && Double.compare(tasaInteresMensual, prestamo.tasaInteresMensual) == 0 && numeroCuotas == prestamo.numeroCuotas && Objects.equals(id, prestamo.id) && Objects.equals(tipoCuota, prestamo.tipoCuota) && Objects.equals(fechaCreacion, prestamo.fechaCreacion) && Objects.equals(fechaInicio, prestamo.fechaInicio) && Objects.equals(estado, prestamo.estado) && Objects.equals(cuotas, prestamo.cuotas);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, monto, tasaInteresMensual, numeroCuotas, fechaCreacion, fechaInicio, estado, cuotas);
+        return Objects.hash(id, monto, tasaInteresMensual, numeroCuotas, tipoCuota, fechaCreacion, fechaInicio, estado, cuotas);
     }
 }

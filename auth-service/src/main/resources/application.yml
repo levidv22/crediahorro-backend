@@ -11,7 +11,7 @@ spring:
     import: configserver:${CONFIG_SERVER_HOST}
 
   datasource:
-    url: jdbc:postgresql://db-credi:5432/credi
+    url: jdbc:postgresql://localhost:5432/credi
     username: crediahorro
     password: levidv
     driver-class-name: org.postgresql.Driver
@@ -35,6 +35,8 @@ server:
 
 eureka:
   instance:
+    hostname: localhost
+    prefer-ip-address: false
     instance-id: "${spring.application.name}:${random.value}"
   client:
     service-url:

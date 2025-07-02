@@ -50,8 +50,16 @@ public class ClienteServiceImpl implements ClienteService{
 
     @Override
     public void generarCuotas(Prestamo prestamo) {
+        if (prestamo.getTipoCuota().equals("DIARIO")) {
+            generarCuotasDiarias(prestamo);
+        } else {
+            generarCuotasMensuales(prestamo);
+        }
+    }
+
+    private void generarCuotasMensuales(Prestamo prestamo) {
         double monto = prestamo.getMonto();
-        double tasa = prestamo.getTasaInteresMensual() / 100; // convertir a decimal
+        double tasa = prestamo.getTasaInteresMensual() / 100.0;
         int numeroCuotas = prestamo.getNumeroCuotas();
         LocalDate fechaInicio = prestamo.getFechaInicio();
 
@@ -59,16 +67,50 @@ public class ClienteServiceImpl implements ClienteService{
 
         List<Cuota> cuotas = new ArrayList<>();
         double saldoPendiente = monto;
+
         for (int i = 0; i < numeroCuotas; i++) {
             double interes = saldoPendiente * tasa;
             double capital = cuota - interes;
             saldoPendiente -= capital;
+
             Cuota nuevaCuota = new Cuota();
             nuevaCuota.setFechaPago(fechaInicio.plusMonths(i));
             nuevaCuota.setMontoCuota(cuota);
             nuevaCuota.setCapital(Math.round(capital * 100.0) / 100.0);
             nuevaCuota.setInteres(Math.round(interes * 100.0) / 100.0);
             nuevaCuota.setEstado("PENDIENTE");
+
+            cuotas.add(nuevaCuota);
+        }
+        prestamo.setCuotas(cuotas);
+    }
+
+    private void generarCuotasDiarias(Prestamo prestamo) {
+        double monto = prestamo.getMonto();
+        double tasaAnual = prestamo.getTasaInteresMensual() * 12 / 100.0; // Convierte tasa mensual a anual
+        double tasaDiaria = tasaAnual / 360; // O usa 365 según tu política
+        LocalDate fechaInicio = prestamo.getFechaInicio();
+
+        int numeroDias = prestamo.getNumeroCuotas(); // Aquí número de cuotas es número de días
+
+        double pagoDiario = monto / numeroDias; // capital diario base
+        double saldoPendiente = monto;
+
+        List<Cuota> cuotas = new ArrayList<>();
+
+        for (int i = 0; i < numeroDias; i++) {
+            double interes = saldoPendiente * tasaDiaria;
+            double capital = pagoDiario;
+            double montoCuota = capital + interes;
+            saldoPendiente -= capital;
+
+            Cuota nuevaCuota = new Cuota();
+            nuevaCuota.setFechaPago(fechaInicio.plusDays(i));
+            nuevaCuota.setMontoCuota(Math.round(montoCuota * 100.0) / 100.0);
+            nuevaCuota.setCapital(Math.round(capital * 100.0) / 100.0);
+            nuevaCuota.setInteres(Math.round(interes * 100.0) / 100.0);
+            nuevaCuota.setEstado("PENDIENTE");
+
             cuotas.add(nuevaCuota);
         }
         prestamo.setCuotas(cuotas);

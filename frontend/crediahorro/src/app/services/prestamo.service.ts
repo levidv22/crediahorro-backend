@@ -3,14 +3,27 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export interface Cuota {
+  id: number;
+  fechaPago: string;
+  montoCuota: number;
+  capital: number;
+  interes: number;
+  estado: string;
+  tipoPago: string;
+  fechaPagada: string;
+}
+
 export interface Prestamo {
   id?: number;
   monto: number;
   tasaInteresMensual: number;
   numeroCuotas: number;
+  tipoCuota: 'MENSUAL' | 'DIARIO';
   fechaInicio: string;
   estado?: string;
   fechaCreacion?: string;
+  cuotas?: Cuota[]
 }
 
 @Injectable({
