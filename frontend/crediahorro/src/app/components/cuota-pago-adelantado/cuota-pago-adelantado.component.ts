@@ -16,7 +16,10 @@ import { ViewEncapsulation } from '@angular/core';
 export class CuotaPagoAdelantadoComponent implements OnInit {
   prestamoId!: number;
   monto: number = 0;
-  tipoReduccion: string = 'CUOTA';
+  tipoPago: string = 'CAPITAL';
+  saldoCapital: number = 0;
+  saldoInteres: number = 0;
+  saldoTotal: number = 0;
 
   constructor(
     private cuotaService: CuotaService,
@@ -26,11 +29,51 @@ export class CuotaPagoAdelantadoComponent implements OnInit {
 
   ngOnInit(): void {
     this.prestamoId = +this.route.snapshot.paramMap.get('prestamoId')!;
+    this.cargarSaldos();
   }
 
+  cargarSaldos() {
+      this.cuotaService.getSaldosByPrestamo(this.prestamoId).subscribe({
+        next: data => {
+          this.saldoCapital = data.capital;
+          this.saldoInteres = data.interes;
+          this.saldoTotal = data.total;
+
+          // Inicializa el monto con capital por defecto
+          this.actualizarMonto();
+        },
+        error: err => {
+          alert('Error al cargar saldos: ' + err.message);
+        }
+      });
+    }
+
+  actualizarMonto() {
+      switch (this.tipoPago) {
+        case 'CAPITAL':
+          this.monto = this.saldoCapital;
+          break;
+        case 'INTERES':
+          this.monto = this.saldoInteres;
+          break;
+        case 'COMPLETO':
+          this.monto = this.saldoTotal;
+          break;
+        default:
+          this.monto = 0;
+          break;
+      }
+    }
+
   aplicarPagoAdelantado() {
-    this.cuotaService.aplicarPagoAdelantado(this.prestamoId, this.monto, this.tipoReduccion).subscribe(() => {
-      this.router.navigate(['/cuotas', this.prestamoId]);
+    this.cuotaService.aplicarPagoAdelantado(this.prestamoId, this.monto, this.tipoPago).subscribe({
+      next: () => {
+        alert('¡Pago adelantado aplicado correctamente!');
+        this.router.navigate(['/cuotas', this.prestamoId]);
+      },
+      error: err => {
+        alert('Error al aplicar pago adelantado: ' + err.message);
+      }
     });
   }
 

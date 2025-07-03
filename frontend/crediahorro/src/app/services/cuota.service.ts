@@ -30,11 +30,17 @@ export class CuotaService {
     return this.http.post<void>(`${this.baseUrl}/${cuotaId}/pagar`, {});
   }
 
-  aplicarPagoAdelantado(prestamoId: number, monto: number, tipoReduccion: string): Observable<void> {
+  getSaldosByPrestamo(prestamoId: number): Observable<{ capital: number; interes: number; total: number }> {
+    return this.http.get<{ capital: number; interes: number; total: number }>(
+      `${this.baseUrl}/prestamos/${prestamoId}/saldos`
+    );
+  }
+
+  aplicarPagoAdelantado(prestamoId: number, monto: number, tipoPago: string): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/prestamos/${prestamoId}/pago-adelantado`, null, {
       params: {
         monto: monto.toString(),
-        tipoReduccion
+        tipoPago
       }
     });
   }

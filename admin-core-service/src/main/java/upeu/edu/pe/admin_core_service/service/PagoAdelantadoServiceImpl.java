@@ -27,124 +27,152 @@ public class PagoAdelantadoServiceImpl implements PagoAdelantadoService {
     }
 
     @Override
-    public Prestamo aplicarPagoAdelantado(Long prestamoId, double montoAdelantado, String tipoReduccion) {
+    public Prestamo aplicarPagoAdelantado(Long prestamoId, double monto, String tipoPago) {
         Prestamo prestamo = prestamoRepository.findById(prestamoId)
                 .orElseThrow(() -> new RuntimeException("Préstamo no encontrado"));
 
-        double tasa = prestamo.getTasaInteresMensual() / 100;
         List<Cuota> cuotasPendientes = prestamo.getCuotas().stream()
                 .filter(c -> c.getEstado().equalsIgnoreCase("PENDIENTE"))
+                .sorted(Comparator.comparing(Cuota::getFechaPago))
                 .collect(Collectors.toList());
 
         if (cuotasPendientes.isEmpty()) {
-            throw new RuntimeException("No hay cuotas pendientes para este préstamo.");
+            throw new RuntimeException("No hay cuotas pendientes");
         }
 
-        // Calcular el capital restante (no el total de las cuotas, que incluye intereses)
-        double capitalRestante = calcularCapitalRestante(prestamo, tasa);
+        double montoCapital = prestamo.getMonto();
+        double interesPagado = prestamo.getCuotas().stream()
+                .filter(c -> c.getEstado().equalsIgnoreCase("PAGADA"))
+                .mapToDouble(Cuota::getInteres)
+                .sum();
+        double montoInteres = prestamo.getInteresTotal() - interesPagado;
+        if (montoInteres < 0) montoInteres = 0;
 
-        // Aplicar adelanto directamente al capital
-        double nuevoCapital = capitalRestante - montoAdelantado;
-        if (nuevoCapital < 0) {
-            nuevoCapital = 0;
+        switch (tipoPago.toUpperCase()) {
+            case "CAPITAL":
+                if (monto != montoCapital) {
+                    throw new RuntimeException("El monto debe coincidir exactamente con el saldo de capital");
+                }
+                aplicarPagoCapital(prestamo, cuotasPendientes, montoCapital, montoInteres);
+                break;
+
+            case "INTERES":
+                if (monto != montoInteres) {
+                    throw new RuntimeException("El monto debe coincidir exactamente con el saldo de interés");
+                }
+                aplicarPagoInteres(prestamo, cuotasPendientes, montoCapital, montoInteres);
+                break;
+
+            case "COMPLETO":
+                aplicarPagoCompleto(prestamo);
+                break;
+
+            default:
+                throw new RuntimeException("Tipo de pago inválido: usa CAPITAL, INTERES o COMPLETO");
         }
-
-        int n = cuotasPendientes.size();
-        double cuotaOriginal = cuotasPendientes.get(0).getMontoCuota();
-
-        if ("CUOTA".equalsIgnoreCase(tipoReduccion)) {
-            // Reducir el valor de la cuota (mantener número de cuotas)
-            double nuevaCuota = calcularCuota(nuevoCapital, tasa, n);
-            for (Cuota cuota : cuotasPendientes) {
-                cuota.setMontoCuota(nuevaCuota);
-            }
-
-        } else if ("PLAZO".equalsIgnoreCase(tipoReduccion)) {
-            int nuevoNumeroCuotas = calcularNumeroCuotas(nuevoCapital, tasa, cuotaOriginal);
-
-            List<Cuota> nuevasCuotas = new ArrayList<>();
-
-            // Encuentra la última cuota pagada (si existe)
-            Optional<Cuota> ultimaCuotaPagada = prestamo.getCuotas().stream()
-                    .filter(c -> c.getEstado().equalsIgnoreCase("PAGADA"))
-                    .max(Comparator.comparing(Cuota::getFechaPago));
-
-            LocalDate fechaInicio;
-
-            if (ultimaCuotaPagada.isPresent()) {
-                // Empieza desde la última fecha pagada + 1 mes
-                fechaInicio = ultimaCuotaPagada.get().getFechaPago().plusMonths(1);
-            } else {
-                // Si no hay cuotas pagadas, usa la primera fecha de las cuotas pendientes
-                fechaInicio = cuotasPendientes.get(0).getFechaPago();
-            }
-
-            for (int i = 0; i < nuevoNumeroCuotas; i++) {
-                Cuota nuevaCuota = new Cuota();
-                nuevaCuota.setMontoCuota(cuotaOriginal);
-                nuevaCuota.setEstado("PENDIENTE");
-                nuevaCuota.setFechaPago(fechaInicio.plusMonths(i));
-                nuevasCuotas.add(nuevaCuota);
-            }
-
-            prestamo.getCuotas().removeIf(c -> c.getEstado().equalsIgnoreCase("PENDIENTE"));
-            prestamo.getCuotas().addAll(nuevasCuotas);
-            //prestamo.setNumeroCuotas(nuevoNumeroCuotas);
-        } else {
-            throw new RuntimeException("Tipo de reducción inválido. Usa 'CUOTA' o 'PLAZO'.");
-        }
-
-        // Añadimos el registro del pago adelantado en la tabla 'cuotas'
-        Cuota cuotaAdelanto = new Cuota();
-        cuotaAdelanto.setFechaPago(LocalDate.now());
-        cuotaAdelanto.setMontoCuota(montoAdelantado);
-        cuotaAdelanto.setEstado("ADELANTADO");
-        cuotaRepository.save(cuotaAdelanto);
-        prestamo.getCuotas().add(cuotaAdelanto);
-
-        // Actualizar el número de cuotas con el total de cuotas en la lista
-        prestamo.setNumeroCuotas(prestamo.getCuotas().size());
 
         return prestamoRepository.save(prestamo);
     }
 
-    private double calcularCapitalRestante(Prestamo prestamo, double tasa) {
-        List<Cuota> cuotasPendientes = prestamo.getCuotas().stream()
+    private void aplicarPagoCapital(Prestamo prestamo, List<Cuota> cuotasPendientes, double saldoCapital, double saldoInteres) {
+        LocalDate fechaOriginal = cuotasPendientes.get(0).getFechaPago();
+
+        // 1. Elimina todas las pendientes
+        List<Cuota> cuotasAPendientesEliminar = prestamo.getCuotas().stream()
                 .filter(c -> c.getEstado().equalsIgnoreCase("PENDIENTE"))
-                .collect(Collectors.toList());
+                .toList();
+        cuotaRepository.deleteAll(cuotasAPendientesEliminar);
+        prestamo.getCuotas().removeAll(cuotasAPendientesEliminar);
 
-        double saldo = 0;
-        double cuota = cuotasPendientes.get(0).getMontoCuota();
-        int n = cuotasPendientes.size();
+        // 2. Registra cuota pagada de capital
+        Cuota pagadaCapital = new Cuota();
+        pagadaCapital.setFechaPago(fechaOriginal);
+        pagadaCapital.setFechaPagada(LocalDate.now());
+        pagadaCapital.setMontoCuota(saldoCapital);
+        pagadaCapital.setCapital(saldoCapital);
+        pagadaCapital.setInteres(0);
+        pagadaCapital.setEstado("PAGADA");
+        pagadaCapital.setTipoPago("Adelanto Capital");
+        prestamo.getCuotas().add(pagadaCapital);
 
-        // Fórmula inversa para calcular el capital restante en un préstamo
-        saldo = cuota * ((1 - Math.pow(1 + tasa, -n)) / tasa);
+        // 3. Verifica si el interés ya está pagado
+        boolean interesYaPagado = prestamo.getCuotas().stream()
+                .filter(c -> c.getEstado().equalsIgnoreCase("PAGADA"))
+                .mapToDouble(Cuota::getInteres).sum() >= prestamo.getInteresTotal();
 
-        return Math.round(saldo * 100.0) / 100.0;
-    }
-
-    private double calcularCuota(double monto, double tasa, int n) {
-        //if (tasa == 0) return Math.round((monto / n) * 100.0) / 100.0;
-        //double cuota = monto * (tasa * Math.pow(1 + tasa, n)) / (Math.pow(1 + tasa, n) - 1);
-        //return Math.round(cuota * 100.0) / 100.0;
-        double cuota;
-        if (tasa == 0) {
-            cuota = monto / n;
-        } else {
-            cuota = monto * (tasa * Math.pow(1 + tasa, n)) / (Math.pow(1 + tasa, n) - 1);
+        if (!interesYaPagado && saldoInteres > 0) {
+            // Crear cuota pendiente solo si aún falta
+            Cuota pendienteInteres = new Cuota();
+            pendienteInteres.setFechaPago(fechaOriginal.plusMonths(1));
+            pendienteInteres.setMontoCuota(saldoInteres);
+            pendienteInteres.setCapital(0);
+            pendienteInteres.setInteres(saldoInteres);
+            pendienteInteres.setEstado("PENDIENTE");
+            pendienteInteres.setTipoPago("Pendiente Interés");
+            prestamo.getCuotas().add(pendienteInteres);
         }
 
-        // Redondear para que el segundo decimal siempre sea 0
-        cuota = Math.round(cuota * 10) * 10.0 / 100.0;
-
-        return cuota;
+        actualizarEstadoPrestamo(prestamo);
     }
 
-    private int calcularNumeroCuotas(double monto, double tasa, double cuota) {
-        if (tasa == 0) return (int) Math.ceil(monto / cuota);
-        int n = (int) Math.ceil(
-                Math.log(1 / (1 - (tasa * monto / cuota))) / Math.log(1 + tasa)
-        );
-        return n;
+    private void aplicarPagoInteres(Prestamo prestamo, List<Cuota> cuotasPendientes, double saldoCapital, double saldoInteres) {
+        LocalDate fechaOriginal = cuotasPendientes.get(0).getFechaPago();
+
+        // 1. Elimina todas las pendientes
+        List<Cuota> cuotasAPendientesEliminar = prestamo.getCuotas().stream()
+                .filter(c -> c.getEstado().equalsIgnoreCase("PENDIENTE"))
+                .toList();
+        cuotaRepository.deleteAll(cuotasAPendientesEliminar);
+        prestamo.getCuotas().removeAll(cuotasAPendientesEliminar);
+
+        // 2. Registra cuota pagada de interés
+        Cuota pagadaInteres = new Cuota();
+        pagadaInteres.setFechaPago(fechaOriginal);
+        pagadaInteres.setFechaPagada(LocalDate.now());
+        pagadaInteres.setMontoCuota(saldoInteres);
+        pagadaInteres.setCapital(0);
+        pagadaInteres.setInteres(saldoInteres);
+        pagadaInteres.setEstado("PAGADA");
+        pagadaInteres.setTipoPago("Adelanto Interés");
+        prestamo.getCuotas().add(pagadaInteres);
+
+        // 3. Verifica si el capital ya está pagado
+        boolean capitalYaPagado = prestamo.getCuotas().stream()
+                .filter(c -> c.getEstado().equalsIgnoreCase("PAGADA"))
+                .mapToDouble(Cuota::getCapital).sum() >= prestamo.getMonto();
+
+        if (!capitalYaPagado && saldoCapital > 0) {
+            Cuota pendienteCapital = new Cuota();
+            pendienteCapital.setFechaPago(fechaOriginal.plusMonths(1));
+            pendienteCapital.setMontoCuota(saldoCapital);
+            pendienteCapital.setCapital(saldoCapital);
+            pendienteCapital.setInteres(0);
+            pendienteCapital.setEstado("PENDIENTE");
+            pendienteCapital.setTipoPago("Pendiente Capital");
+            prestamo.getCuotas().add(pendienteCapital);
+        }
+
+        actualizarEstadoPrestamo(prestamo);
+    }
+
+    private void actualizarEstadoPrestamo(Prestamo prestamo) {
+        boolean tienePendientes = prestamo.getCuotas().stream()
+                .anyMatch(c -> c.getEstado().equalsIgnoreCase("PENDIENTE"));
+        if (!tienePendientes) {
+            prestamo.setEstado("PAGADO");
+        } else {
+            prestamo.setEstado("ACTIVO");
+        }
+    }
+
+    private void aplicarPagoCompleto(Prestamo prestamo) {
+        for (Cuota cuota : prestamo.getCuotas()) {
+            cuota.setEstado("PAGADA");
+            cuota.setFechaPagada(LocalDate.now());
+            cuota.setTipoPago("Completo");
+        }
+        prestamo.setEstado("PAGADO");
     }
 }
+
+

@@ -59,12 +59,42 @@ public class CuotaController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping(path = "/prestamos/{prestamoId}/saldos")
+    public ResponseEntity<Map<String, Double>> obtenerSaldos(@PathVariable Long prestamoId) {
+        Optional<Prestamo> prestamoOpt = prestamoRepository.findById(prestamoId);
+        if (prestamoOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Prestamo prestamo = prestamoOpt.get();
+
+        double montoCapital = prestamo.getMonto();
+
+        double interesPagado = prestamo.getCuotas().stream()
+                .filter(c -> c.getEstado().equalsIgnoreCase("PAGADA"))
+                .mapToDouble(Cuota::getInteres)
+                .sum();
+
+        double montoInteresPendiente = prestamo.getInteresTotal() - interesPagado;
+
+        if (montoInteresPendiente < 0) montoInteresPendiente = 0;
+
+        double saldoTotal = montoCapital + montoInteresPendiente;
+
+        Map<String, Double> response = new HashMap<>();
+        response.put("capital", Math.round(montoCapital * 100.0) / 100.0);
+        response.put("interes", Math.round(montoInteresPendiente * 100.0) / 100.0);
+        response.put("total", Math.round(saldoTotal * 100.0) / 100.0);
+
+        return ResponseEntity.ok(response);
+    }
+
+
     @PostMapping(path = "/prestamos/{prestamoId}/pago-adelantado")
     public ResponseEntity<Void> aplicarPagoAdelantado(
             @PathVariable Long prestamoId,
             @RequestParam double monto,
-            @RequestParam String tipoReduccion) {
-        pagoAdelantadoService.aplicarPagoAdelantado(prestamoId, monto, tipoReduccion);
+            @RequestParam String tipoPago) {
+        pagoAdelantadoService.aplicarPagoAdelantado(prestamoId, monto, tipoPago);
         return ResponseEntity.ok().build();
     }
 

@@ -76,13 +76,18 @@ public class ClienteServiceImpl implements ClienteService{
             Cuota nuevaCuota = new Cuota();
             nuevaCuota.setFechaPago(fechaInicio.plusMonths(i));
             nuevaCuota.setMontoCuota(cuota);
-            nuevaCuota.setCapital(Math.round(capital * 100.0) / 100.0);
-            nuevaCuota.setInteres(Math.round(interes * 100.0) / 100.0);
+            nuevaCuota.setCapital(Math.round(capital * 10) * 10.0 / 100.0);
+            nuevaCuota.setInteres(Math.round(interes * 10) * 10.0 / 100.0);
             nuevaCuota.setEstado("PENDIENTE");
 
             cuotas.add(nuevaCuota);
         }
         prestamo.setCuotas(cuotas);
+
+        double interesTotal = cuotas.stream()
+                .mapToDouble(Cuota::getInteres)
+                .sum();
+        prestamo.setInteresTotal(Math.round(interesTotal * 10) * 10.0 / 100.0);
     }
 
     private void generarCuotasDiarias(Prestamo prestamo) {
@@ -106,14 +111,19 @@ public class ClienteServiceImpl implements ClienteService{
 
             Cuota nuevaCuota = new Cuota();
             nuevaCuota.setFechaPago(fechaInicio.plusDays(i));
-            nuevaCuota.setMontoCuota(Math.round(montoCuota * 100.0) / 100.0);
-            nuevaCuota.setCapital(Math.round(capital * 100.0) / 100.0);
-            nuevaCuota.setInteres(Math.round(interes * 100.0) / 100.0);
+            nuevaCuota.setMontoCuota(Math.round(montoCuota * 10) * 10.0 / 100.0);
+            nuevaCuota.setCapital(Math.round(capital * 10) * 10.0 / 100.0);
+            nuevaCuota.setInteres(Math.round(interes * 10) * 10.0 / 100.0);
             nuevaCuota.setEstado("PENDIENTE");
 
             cuotas.add(nuevaCuota);
         }
         prestamo.setCuotas(cuotas);
+
+        double interesTotal = cuotas.stream()
+                .mapToDouble(Cuota::getInteres)
+                .sum();
+        prestamo.setInteresTotal(Math.round(interesTotal * 10) * 10.0 / 100.0);
     }
 
     @Override

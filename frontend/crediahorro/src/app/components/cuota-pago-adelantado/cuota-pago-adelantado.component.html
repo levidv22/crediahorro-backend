@@ -25,18 +25,20 @@
           </div>
 
           <div class="col-md-6">
-            <label for="tipoReduccion" class="form-label fw-semibold">Tipo de Reducción <span class="text-danger">*</span></label>
-            <select id="tipoReduccion" name="tipoReduccion"
+            <label for="tipoPago" class="form-label fw-semibold">Tipo de Pago <span class="text-danger">*</span></label>
+            <select id="tipoPago" name="tipoPago"
                     class="form-select"
-                    [(ngModel)]="tipoReduccion"
+                    [(ngModel)]="tipoPago"
+                    (change)="actualizarMonto()"
                     required
                     #tipoInput="ngModel">
               <option [ngValue]="null" disabled selected>Seleccione una opción</option>
-              <option value="CUOTA">Reducir Monto de Cuota</option>
-              <option value="PLAZO">Reducir Número de Cuotas</option>
+              <option value="CAPITAL">Reducir Capital</option>
+              <option value="INTERES">Reducir Interés</option>
+              <option value="COMPLETO">Pago Completo</option>
             </select>
             <div class="text-danger mt-1" *ngIf="tipoInput.invalid && tipoInput.touched">
-              Debe seleccionar un tipo de reducción.
+              Debe seleccionar un tipo de pago válido.
             </div>
           </div>
         </div>
