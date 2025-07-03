@@ -47,6 +47,7 @@ public class CuotaController {
             Map<String, Object> response = new HashMap<>();
             response.put("cuotas", cuotas);
             response.put("prestamoId", prestamoId);
+            response.put("tipoCuota", prestamo.getTipoCuota());
             response.put("cuotasPendientes", cuotasPendientes);
             return ResponseEntity.ok(response);
         }

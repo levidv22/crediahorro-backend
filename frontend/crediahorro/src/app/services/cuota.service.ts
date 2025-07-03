@@ -14,6 +14,19 @@ export interface Cuota {
   fechaPagada: string;
 }
 
+export interface Prestamo {
+  id?: number;
+  tipoCuota?: string;
+  cuotas?: Cuota[];
+}
+
+export interface PrestamoCuotasResponse {
+  prestamoId: number;
+  tipoCuota: string;
+  cuotas: Cuota[];
+  cuotasPendientes: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,8 +35,8 @@ export class CuotaService {
 
   constructor(private http: HttpClient) {}
 
-  getCuotasByPrestamo(prestamoId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/prestamo/${prestamoId}`);
+  getCuotasByPrestamo(prestamoId: number): Observable<PrestamoCuotasResponse> {
+    return this.http.get<PrestamoCuotasResponse>(`${this.baseUrl}/prestamo/${prestamoId}`);
   }
 
   pagarCuota(cuotaId: number): Observable<void> {

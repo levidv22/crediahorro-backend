@@ -24,7 +24,7 @@ public class JwtHelper {
 
     public String createToken(String username) {
         final var now = new Date();
-        final var expirationDate = new Date(now.getTime() + (3 * 60 * 1000));
+        final var expirationDate = new Date(now.getTime() + (3600 * 1000));
         return Jwts
                 .builder()
                 .setSubject(username)

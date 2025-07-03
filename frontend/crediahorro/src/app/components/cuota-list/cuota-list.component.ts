@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CuotaService, Cuota } from '../../services/cuota.service';
+import { CuotaService, Cuota, Prestamo, PrestamoCuotasResponse } from '../../services/cuota.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
@@ -24,6 +24,7 @@ export class CuotaListComponent implements OnInit {
   mensajeVencimiento: string = '';
   showModal: boolean = false;
   cuotaSeleccionada: Cuota | null = null;
+  prestamo: Prestamo | null = null;
 
   constructor(
     private cuotaService: CuotaService,
@@ -38,9 +39,14 @@ export class CuotaListComponent implements OnInit {
   }
 
   loadCuotas() {
-    this.cuotaService.getCuotasByPrestamo(this.prestamoId).subscribe(data => {
-      this.cuotas = data.cuotas;
-      this.cuotasPendientes = data.cuotasPendientes;
+    this.cuotaService.getCuotasByPrestamo(this.prestamoId).subscribe((data: PrestamoCuotasResponse) => {
+        this.prestamo = {
+          id: data.prestamoId,
+          tipoCuota: data.tipoCuota,
+          cuotas: data.cuotas
+        };
+        this.cuotas = this.prestamo.cuotas || [];
+        this.cuotasPendientes = data.cuotasPendientes;
 
       this.totalAPagar = this.cuotas.reduce((sum, c) => sum + c.montoCuota, 0);
       this.totalPagado = this.cuotas
@@ -54,7 +60,7 @@ export class CuotaListComponent implements OnInit {
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0); // Medianoche local
 
-      // Ordenamos las cuotas por fechaPago
+      // Ordenar cuotas por fechaPago
       const cuotasOrdenadas = [...this.cuotas].sort(
         (a, b) => new Date(a.fechaPago).getTime() - new Date(b.fechaPago).getTime()
       );
@@ -96,17 +102,16 @@ export class CuotaListComponent implements OnInit {
           this.mensajeVencimiento = `Venció la ${this.ordinal(index + 1)} cuota hace ${diffDays} día${diffDays === 1 ? '' : 's'}`;
         } else {
           const cuotasPagadas = cuotasOrdenadas.filter(c => c.estado === 'PAGADA');
-            if (cuotasPagadas.length > 0) {
-              const lastPagada = cuotasPagadas[cuotasPagadas.length - 1];
-              const indexLastPagada = cuotasOrdenadas.indexOf(lastPagada);
+          if (cuotasPagadas.length > 0) {
+            const lastPagada = cuotasPagadas[cuotasPagadas.length - 1];
+            const indexLastPagada = cuotasOrdenadas.indexOf(lastPagada);
 
-              // solo mostramos si hay cuotas pendientes
-              const hayPendientes = cuotasOrdenadas.some(c => c.estado === 'PENDIENTE');
-              if (hayPendientes) {
-                this.mensajeVencimiento = `${this.ordinal(indexLastPagada + 1)} cuota pagada`;
-              }
+            const hayPendientes = cuotasOrdenadas.some(c => c.estado === 'PENDIENTE');
+            if (hayPendientes) {
+              this.mensajeVencimiento = `${this.ordinal(indexLastPagada + 1)} cuota pagada`;
             }
           }
+        }
       }
     });
   }
@@ -187,14 +192,19 @@ export class CuotaListComponent implements OnInit {
     return true; // Si está pagada pero no tiene tipoPago
   }
 
-  get esUltimaCuota(): boolean {
-    if (!this.cuotaSeleccionada || this.cuotas.length === 0) return false;
-    // Ordena por fechaPago si no está ordenada
+  get esModalSimplificado(): boolean {
+    if (!this.cuotaSeleccionada) return false;
+
     const cuotasOrdenadas = [...this.cuotas].sort(
       (a, b) => new Date(a.fechaPago).getTime() - new Date(b.fechaPago).getTime()
     );
     const ultima = cuotasOrdenadas[cuotasOrdenadas.length - 1];
-    return this.cuotaSeleccionada.id === ultima.id;
+    const esUltima = this.cuotaSeleccionada.id === ultima.id;
+
+    const esDiaria = this.prestamo?.tipoCuota?.toUpperCase() === 'DIARIO';
+
+    return esUltima || esDiaria;
   }
+
 
 }
