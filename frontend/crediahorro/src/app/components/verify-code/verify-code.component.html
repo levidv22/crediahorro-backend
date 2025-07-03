@@ -1,0 +1,30 @@
+<div class="auth-wrapper d-flex justify-content-center align-items-center">
+  <div class="auth-card glassmorphism p-4 rounded-4 shadow-lg">
+    <div class="text-center mb-4">
+      <i class="bi bi-shield-lock-fill text-primary fs-1"></i>
+      <h3 class="mt-2">Verificar Código de Acceso</h3>
+      <p class="text-muted mb-0" style="font-size: 0.95rem;">Ingresa el código enviado a tu correo</p>
+    </div>
+
+    <form (ngSubmit)="verify()" novalidate>
+      <div class="mb-3 position-relative">
+        <label class="form-label">Código de Acceso</label>
+        <input
+          type="text"
+          class="form-control ps-5"
+          [(ngModel)]="accessCode"
+          name="accessCode"
+          placeholder="######"
+          required
+        />
+        <i class="bi bi-key-fill input-icon"></i>
+      </div>
+
+      <div class="d-grid mb-3">
+        <button type="submit" class="btn btn-primary py-2">
+          Verificar Código
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

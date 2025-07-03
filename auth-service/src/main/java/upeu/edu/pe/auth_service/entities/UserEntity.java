@@ -11,15 +11,19 @@ public class UserEntity {
     private String username;
     private String password;
     private String whatsapp;
+    private String email;
+    private String accessCode;
 
     public UserEntity() {
     }
 
-    public UserEntity(Long id, String username, String password, String whatsapp) {
+    public UserEntity(Long id, String username, String password, String whatsapp, String email, String accessCode) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.whatsapp = whatsapp;
+        this.email = email;
+        this.accessCode = accessCode;
     }
 
     public Long getId() {
@@ -54,11 +58,29 @@ public class UserEntity {
         this.whatsapp = whatsapp;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAccessCode() {
+        return accessCode;
+    }
+
+    public void setAccessCode(String accessCode) {
+        this.accessCode = accessCode;
+    }
+
     public static class Builder {
         private Long id;
         private String username;
         private String password;
         private String whatsapp;
+        private String email;
+        private String accessCode;
 
         public Builder id(Long id) {
             this.id = id;
@@ -80,9 +102,19 @@ public class UserEntity {
             return this;
         }
 
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder accessCode(String accessCode) {
+            this.accessCode = accessCode;
+            return this;
+        }
+
 
         public UserEntity build() {
-            return new UserEntity(id, username, password, whatsapp);
+            return new UserEntity(id, username, password, whatsapp, email, accessCode);
         }
     }
 

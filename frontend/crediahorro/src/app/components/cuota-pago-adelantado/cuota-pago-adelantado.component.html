@@ -10,6 +10,25 @@
       <form (ngSubmit)="aplicarPagoAdelantado()" #adelantoForm="ngForm" novalidate>
         <div class="row g-4">
           <div class="col-md-6">
+            <label for="tipoPago" class="form-label fw-semibold">Tipo de Pago <span class="text-danger">*</span></label>
+            <select id="tipoPago" name="tipoPago"
+                    class="form-select"
+                    [(ngModel)]="tipoPago"
+                    (change)="actualizarMonto()"
+                    required
+                    #tipoInput="ngModel">
+
+              <option [ngValue]="null" disabled [selected]="!tipoPago">Seleccione una opción</option>
+
+              <option *ngIf="opcionesDisponibles.includes('CAPITAL')" value="CAPITAL">Reducir Capital</option>
+              <option *ngIf="opcionesDisponibles.includes('INTERES')" value="INTERES">Reducir Interés</option>
+              <option *ngIf="opcionesDisponibles.includes('COMPLETO')" value="COMPLETO">Pago Completo</option>
+            </select>
+            <div class="text-danger mt-1" *ngIf="tipoInput.invalid && tipoInput.touched">
+              Debe seleccionar un tipo de pago válido.
+            </div>
+          </div>
+          <div class="col-md-6">
             <label for="monto" class="form-label fw-semibold">Monto Adelantado <span class="text-danger">*</span></label>
             <div class="input-group">
               <span class="input-group-text bg-white">S/</span>
@@ -21,24 +40,6 @@
             </div>
             <div class="text-danger mt-1" *ngIf="montoInput.invalid && montoInput.touched">
               El monto es obligatorio.
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <label for="tipoPago" class="form-label fw-semibold">Tipo de Pago <span class="text-danger">*</span></label>
-            <select id="tipoPago" name="tipoPago"
-                    class="form-select"
-                    [(ngModel)]="tipoPago"
-                    (change)="actualizarMonto()"
-                    required
-                    #tipoInput="ngModel">
-              <option [ngValue]="null" disabled selected>Seleccione una opción</option>
-              <option value="CAPITAL">Reducir Capital</option>
-              <option value="INTERES">Reducir Interés</option>
-              <option value="COMPLETO">Pago Completo</option>
-            </select>
-            <div class="text-danger mt-1" *ngIf="tipoInput.invalid && tipoInput.touched">
-              Debe seleccionar un tipo de pago válido.
             </div>
           </div>
         </div>

@@ -155,4 +155,46 @@ export class CuotaListComponent implements OnInit {
       }
     });
   }
+
+  get mostrarBotonPagarAdelanto(): boolean {
+    if (!this.cuotas || this.cuotas.length === 0) return false;
+
+    // Verifica si ya hay un Adelanto Capital y un Adelanto Interés
+    const tieneAdelantoCapital = this.cuotas.some(c =>
+      c.tipoPago?.toLowerCase().includes('adelanto') &&
+      c.tipoPago?.toLowerCase().includes('capital')
+    );
+    const tieneAdelantoInteres = this.cuotas.some(c =>
+      c.tipoPago?.toLowerCase().includes('adelanto') &&
+      c.tipoPago?.toLowerCase().includes('interés')
+    );
+
+    if (tieneAdelantoCapital && tieneAdelantoInteres) {
+      return false; // Ya se hicieron ambos pagos adelantados, se oculta el botón
+    }
+
+    // Regla normal de la primera cuota
+    const primeraCuota = this.cuotas[0];
+    if (primeraCuota.estado !== 'PAGADA') {
+      return true;
+    }
+
+    if (primeraCuota.tipoPago) {
+      const tipoPago = primeraCuota.tipoPago.toLowerCase();
+      return !['capital', 'interes', 'completo'].includes(tipoPago);
+    }
+
+    return true; // Si está pagada pero no tiene tipoPago
+  }
+
+  get esUltimaCuota(): boolean {
+    if (!this.cuotaSeleccionada || this.cuotas.length === 0) return false;
+    // Ordena por fechaPago si no está ordenada
+    const cuotasOrdenadas = [...this.cuotas].sort(
+      (a, b) => new Date(a.fechaPago).getTime() - new Date(b.fechaPago).getTime()
+    );
+    const ultima = cuotasOrdenadas[cuotasOrdenadas.length - 1];
+    return this.cuotaSeleccionada.id === ultima.id;
+  }
+
 }

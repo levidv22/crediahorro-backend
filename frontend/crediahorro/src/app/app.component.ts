@@ -73,7 +73,7 @@ import { AlertComponent } from './components/alert/alert.component';
 
             <!-- Usuario en sesión -->
             <div *ngIf="username" class="text-light me-3">
-              <i class="bi bi-person-circle me-1"></i>{{ username }}
+              <i class="bi bi-person-circle me-1"></i>¡Bienvenido, {{ username }}!
             </div>
             <button *ngIf="username" class="btn btn-outline-light" (click)="cerrarSesion()" title="Cerrar Sesión">
               <i class="bi bi-box-arrow-right me-1"></i>
@@ -220,7 +220,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.currentUrl = this.router.url;
+    //this.currentUrl = this.router.url;
 
     this.authService.username$.subscribe(nombre => {
       this.username = nombre;
@@ -232,7 +232,7 @@ export class AppComponent implements OnInit {
   }
 
   isAuthRoute(): boolean {
-    return this.currentUrl === '/auth';
+    return ['/auth', '/verify-code'].includes(this.currentUrl);
   }
 
   onBuscarCliente(event: Event) {

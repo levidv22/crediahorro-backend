@@ -4,6 +4,7 @@ import { CuotaService } from '../../services/cuota.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ViewEncapsulation } from '@angular/core';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-cuota-pago-adelantado',
@@ -20,16 +21,30 @@ export class CuotaPagoAdelantadoComponent implements OnInit {
   saldoCapital: number = 0;
   saldoInteres: number = 0;
   saldoTotal: number = 0;
+  opcionesDisponibles: string[] = [];
 
   constructor(
     private cuotaService: CuotaService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
     this.prestamoId = +this.route.snapshot.paramMap.get('prestamoId')!;
     this.cargarSaldos();
+
+    const ultimoPago = localStorage.getItem(`ultimoTipoPago-${this.prestamoId}`);
+    if (ultimoPago === 'CAPITAL') {
+      this.opcionesDisponibles = ['INTERES'];
+      this.tipoPago = 'INTERES';
+    } else if (ultimoPago === 'INTERES') {
+      this.opcionesDisponibles = ['CAPITAL'];
+      this.tipoPago = 'CAPITAL';
+    } else {
+      this.opcionesDisponibles = ['CAPITAL', 'INTERES', 'COMPLETO'];
+      this.tipoPago = null!;
+    }
   }
 
   cargarSaldos() {
@@ -68,11 +83,16 @@ export class CuotaPagoAdelantadoComponent implements OnInit {
   aplicarPagoAdelantado() {
     this.cuotaService.aplicarPagoAdelantado(this.prestamoId, this.monto, this.tipoPago).subscribe({
       next: () => {
-        alert('¡Pago adelantado aplicado correctamente!');
+        if (this.tipoPago === 'CAPITAL' || this.tipoPago === 'INTERES') {
+          localStorage.setItem(`ultimoTipoPago-${this.prestamoId}`, this.tipoPago);
+        } else {
+          localStorage.removeItem(`ultimoTipoPago-${this.prestamoId}`);
+        }
+        this.notificationService.show('success', '✅ ¡Pago adelantado aplicado correctamente!');
         this.router.navigate(['/cuotas', this.prestamoId]);
       },
       error: err => {
-        alert('Error al aplicar pago adelantado: ' + err.message);
+        this.notificationService.show('error', `❌ Error al aplicar pago adelantado: ${err.message}`);
       }
     });
   }

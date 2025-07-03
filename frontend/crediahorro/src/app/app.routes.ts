@@ -10,6 +10,7 @@ import { CuotaPagoAdelantadoComponent } from './components/cuota-pago-adelantado
 import { ReporteComponent } from './components/reporte/reporte.component';
 import { DashboardGraficosComponent } from './components/dashboard-graficos/dashboard-graficos.component';
 import { AuthComponent } from './components/auth/auth.component';
+import { VerifyCodeComponent } from './components/verify-code/verify-code.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/auth', pathMatch: 'full' },
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'reportes', component: ReporteComponent },
   { path: 'graficos', component: DashboardGraficosComponent },
   { path: 'auth', component: AuthComponent },
+  { path: 'verify-code', component: VerifyCodeComponent },
   { path: '**', redirectTo: '/clientes' }
 ];
 

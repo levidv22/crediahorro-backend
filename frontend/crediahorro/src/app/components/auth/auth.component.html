@@ -1,4 +1,9 @@
 <div class="auth-wrapper d-flex justify-content-center align-items-center">
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
+  </div>
   <div class="auth-card glassmorphism p-4 rounded-4 shadow-lg">
     <div class="text-center mb-4">
       <i class="bi bi-person-circle text-primary fs-1"></i>
@@ -32,6 +37,19 @@
           required
         />
         <i class="bi bi-whatsapp input-icon"></i>
+      </div>
+
+      <!-- Email (solo registro y solo si NO existe admin) -->
+      <div class="mb-3 position-relative" *ngIf="!isLoginMode && showEmailField">
+        <label class="form-label">Correo electrónico</label>
+        <input
+          type="email"
+          class="form-control ps-5"
+          [(ngModel)]="registerData.email"
+          name="email"
+          required
+        />
+        <i class="bi bi-envelope-fill input-icon"></i>
       </div>
 
       <!-- Contraseña -->
