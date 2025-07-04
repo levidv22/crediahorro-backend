@@ -26,7 +26,7 @@ public class NotificacionScheduler {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "0 12 15 * * *") // Todos los días a las 8 AM
+    @Scheduled(cron = "0 0 16 * * *") // Todos los días a las 3:35 PM
     public void enviarNotificaciones() {
         List<Cliente> clientes = adminClient.obtenerClientes();
         String adminEmail = authClient.obtenerAdminEmail();
@@ -35,14 +35,38 @@ public class NotificacionScheduler {
         for (Cliente cliente : clientes) {
             for (Prestamo prestamo : cliente.getPrestamos()) {
                 for (Cuota cuota : prestamo.getCuotas()) {
+
+                    // Saltar cuotas ya pagadas
+                    if (cuota.getEstado().equalsIgnoreCase("PAGADA")) {
+                        continue;
+                    }
+
                     long diasRestantes = ChronoUnit.DAYS.between(hoy, cuota.getFechaPago());
 
-                    String datos = String.format("""
-                        Cliente: %s (%s)
-                        Préstamo: %.2f | Estado: %s | #Cuota: %d
-                        Monto cuota: %.2f | Capital: %.2f | Interés: %.2f
-                        Fecha Pago: %s | Estado cuota: %s
-                        """,
+                    String datosHtml = """
+                        <div style="font-family: Arial, sans-serif; color: #333;">
+                            <h2 style="color: #007bff;">💼 Detalles del Cliente</h2>
+                            <ul>
+                                <li><strong>👤 Nombre:</strong> %s</li>
+                                <li><strong>🆔 DNI:</strong> %s</li>
+                            </ul>
+                            <h3 style="color: #007bff;">💳 Detalles del Préstamo</h3>
+                            <ul>
+                                <li><strong>Monto:</strong> %.2f</li>
+                                <li><strong>Estado:</strong> %s</li>
+                            </ul>
+                            <h3 style="color: #007bff;">📅 Detalles de la Cuota</h3>
+                            <ul>
+                                <li><strong># Cuota:</strong> %d</li>
+                                <li><strong>Monto Cuota:</strong> %.2f</li>
+                                <li><strong>Capital:</strong> %.2f</li>
+                                <li><strong>Interés:</strong> %.2f</li>
+                                <li><strong>Fecha de Pago:</strong> %s</li>
+                                <li><strong>Estado Cuota:</strong> %s</li>
+                            </ul>
+                            <p style="margin-top:20px; font-size: 12px; color: #888; text-align:center;">© 2025 CrediAhorro - Todos los derechos reservados</p>
+                        </div>
+                        """.formatted(
                             cliente.getNombre(),
                             cliente.getDni(),
                             prestamo.getMonto(),
@@ -52,34 +76,39 @@ public class NotificacionScheduler {
                             cuota.getCapital(),
                             cuota.getInteres(),
                             cuota.getFechaPago(),
-                            cuota.getEstado());
+                            cuota.getEstado()
+                    );
 
-                    if (cuota.getEstado().equalsIgnoreCase("PAGADA")) {
-                        emailService.enviarCorreo(
-                                adminEmail,
-                                "✔️ Confirmación de cuota pagada",
-                                "✅ La cuota ha sido pagada:\n\n" + datos
-                        );
-                    } else {
-                        if (diasRestantes == 3) {
-                            emailService.enviarCorreo(
-                                    adminEmail,
-                                    "⏰ Aviso: cuota próxima a vencer",
-                                    "⚠️ Faltan 3 días para la fecha de pago:\n\n" + datos
-                            );
-                        } else if (diasRestantes == 0) {
-                            emailService.enviarCorreo(
-                                    adminEmail,
-                                    "📅 Aviso: cuota vence hoy",
-                                    "📌 Hoy se vence la cuota:\n\n" + datos
-                            );
-                        } else if (diasRestantes == -1) {
-                            emailService.enviarCorreo(
-                                    adminEmail,
-                                    "❗ Aviso: cuota vencida ayer",
-                                    "🚨 La cuota se venció ayer:\n\n" + datos
-                            );
-                        }
+                    String asunto = "";
+                    String mensaje = "";
+
+                    if (diasRestantes == 3 || diasRestantes == 2 || diasRestantes == 1) {
+                        asunto = "⏰ Aviso: cuota próxima a vencer";
+                        mensaje = """
+                            <h1 style="color: #ffc107;">⚠️ Cuota próxima a vencer</h1>
+                            <p>Estimado administrador,</p>
+                            <p>Faltan %d día%s para la fecha de pago de la siguiente cuota:</p>
+                            """.formatted(diasRestantes, diasRestantes == 1 ? "" : "s") + datosHtml;
+
+                    } else if (diasRestantes == 0) {
+                        asunto = "📅 Aviso: cuota vence hoy";
+                        mensaje = """
+                            <h1 style="color: #007bff;">📌 Cuota vence hoy</h1>
+                            <p>Estimado administrador,</p>
+                            <p>Hoy se vence la siguiente cuota:</p>
+                            """ + datosHtml;
+
+                    } else if (diasRestantes < 0) {
+                        asunto = "❗ Aviso: cuota vencida";
+                        mensaje = """
+                            <h1 style="color: #dc3545;">🚨 Cuota vencida</h1>
+                            <p>Estimado administrador,</p>
+                            <p>La siguiente cuota se venció hace %d día%s:</p>
+                            """.formatted(Math.abs(diasRestantes), Math.abs(diasRestantes) == 1 ? "" : "s") + datosHtml;
+                    }
+
+                    if (!asunto.isEmpty()) {
+                        emailService.enviarCorreoHtml(adminEmail, asunto, mensaje);
                     }
                 }
             }
