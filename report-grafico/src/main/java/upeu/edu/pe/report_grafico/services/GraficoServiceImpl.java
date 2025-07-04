@@ -43,7 +43,7 @@ public class GraficoServiceImpl implements GraficoService {
                 Map<String, Object> mesData = new HashMap<>();
                 mesData.put("mes", mes.getDisplayName(TextStyle.FULL, new Locale("es")));
                 mesData.put("montoPrestado", 0.0);
-                mesData.put("montoPagado", 0.0);
+                mesData.put("interesPagado", 0.0);
                 meses.add(mesData);
             }
             resultado.put(String.valueOf(anio), meses);
@@ -63,7 +63,7 @@ public class GraficoServiceImpl implements GraficoService {
             mesData.put("montoPrestado", ((Number) mesData.get("montoPrestado")).doubleValue() + prestamo.getMonto());
         }
 
-        // Sumar montos pagados según fechaPago de cuotas pagadas
+        // Sumar intereses pagados según fechaPago de cuotas pagadas
         for (Prestamo prestamo : prestamos) {
             for (Cuota cuota : prestamo.getCuotas()) {
                 if (!"PAGADA".equalsIgnoreCase(cuota.getEstado())) {
@@ -78,8 +78,21 @@ public class GraficoServiceImpl implements GraficoService {
                         .findFirst()
                         .orElseThrow();
 
-                mesData.put("montoPagado", ((Number) mesData.get("montoPagado")).doubleValue() + cuota.getMontoCuota());
+                // Sumamos solo el INTERÉS
+                mesData.put("interesPagado", ((Number) mesData.getOrDefault("interesPagado", 0.0)).doubleValue() + cuota.getInteres());
             }
+        }
+
+        for (Map.Entry<String, List<Map<String, Object>>> entry : resultado.entrySet()) {
+            double totalInteresesAnio = entry.getValue().stream()
+                    .mapToDouble(m -> ((Number) m.get("interesPagado")).doubleValue())
+                    .sum();
+
+            // Agrega un objeto especial "TOTAL"
+            Map<String, Object> totalData = new HashMap<>();
+            totalData.put("mes", "TOTAL");
+            totalData.put("interesPagado", totalInteresesAnio);
+            entry.getValue().add(totalData);
         }
 
         return resultado;

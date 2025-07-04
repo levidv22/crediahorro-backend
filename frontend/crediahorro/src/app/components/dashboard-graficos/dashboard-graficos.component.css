@@ -74,3 +74,57 @@ ngx-charts-bar-vertical {
     padding: 1rem;
   }
 }
+
+/* Contenedor responsive elegante */
+.mb-3.d-flex {
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #ffffff;
+}
+
+#yearSelect {
+  min-width: 120px;
+}
+
+@media (max-width: 768px) {
+  .mb-3.d-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mb-3.d-flex .text-end {
+    width: 100%;
+    text-align: left !important;
+    margin-top: 0.5rem;
+  }
+}
+
+.total-intereses {
+  font-weight: 500;
+}
+
+.badge.bg-success-subtle {
+  background-color: #d1e7dd; /* Bootstrap verde suave */
+}
+
+.total-intereses i {
+  color: #198754; /* Bootstrap verde éxito */
+}
+
+.total-intereses span.fs-5 {
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .total-intereses {
+    text-align: left !important;
+    margin-top: 0.5rem;
+  }
+}
+
+.total-intereses span {
+  transition: all 0.3s ease;
+}
+
+

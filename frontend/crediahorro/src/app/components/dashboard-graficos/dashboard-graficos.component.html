@@ -4,18 +4,30 @@
     <h3 class="mb-0">Panel de Gráficos</h3>
   </div>
 
-  <!-- Selector de año -->
-  <div class="mb-3">
-    <label for="yearSelect" class="form-label">Seleccionar Año: </label>
-    <select
-      id="yearSelect"
-      class="form-select w-auto d-inline-block"
-      [(ngModel)]="selectedYear"
-    >
-      <option *ngFor="let year of availableYears" [value]="year">
-        {{ year }}
-      </option>
-    </select>
+  <!-- Selector de año + Total de Intereses alineados -->
+  <div class="mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <label for="yearSelect" class="form-label fw-semibold mb-1">Seleccionar Año:</label>
+      <select
+        id="yearSelect"
+        class="form-select d-inline-block"
+        [(ngModel)]="selectedYear"
+      >
+        <option *ngFor="let year of availableYears" [value]="year">
+          {{ year }}
+        </option>
+      </select>
+    </div>
+    <!-- Total a la derecha alineado con estilo -->
+    <div *ngFor="let item of anualConMesesData">
+      <div *ngIf="item.anio === selectedYear" class="total-intereses text-end">
+    <span class="badge rounded-pill bg-success-subtle text-success d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm">
+      <i class="bi bi-cash-coin fs-5"></i>
+      <span class="fw-bold">Total de Intereses:</span>
+      <span class="fs-5">S/ {{ item.totalIntereses?.toFixed(2) || '0.00' }}</span>
+    </span>
+      </div>
+    </div>
   </div>
 
   <div *ngFor="let item of anualConMesesData">
@@ -34,21 +46,9 @@
         [showXAxisLabel]="showXAxisLabel"
         [xAxisLabel]="'Meses'"
         [showYAxisLabel]="showYAxisLabel"
-        [yAxisLabel]="'Monto de Cuotas Pagadas'"
+        [yAxisLabel]="'yAxisLabel'"
         (select)="onBarSelect($event)">
       </ngx-charts-bar-vertical>
-
-      <div class="row mt-3 g-2 justify-content-center">
-        <div *ngFor="let data of item.chartData" class="col-6 col-md-3">
-          <div class="prestamo-card shadow-sm p-2 rounded-3">
-            <div class="fw-semibold text-primary">{{ data.name }}</div>
-            <div class="fs-6">
-              <span class="text-muted">Monto Prestado:</span>
-              <strong>S/ {{ data.extra?.montoPrestado?.toFixed(2) || '0.00' }}</strong>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -58,7 +58,7 @@
       <h5 class="mb-3"><i class="bi bi-info-circle-fill text-primary"></i> Detalles del Mes</h5>
       <p><strong>Año:</strong> {{ selectedData?.extra?.anio || 'N/A' }}</p>
       <p><strong>Mes:</strong> {{ selectedData?.name || 'N/A' }}</p>
-      <p><strong>Monto Pagado:</strong> S/ {{ selectedData?.extra?.montoPagado?.toFixed(2) || '0.00' }}</p>
+      <p><strong>Interés Pagado:</strong> S/ {{ selectedData?.extra?.interesPagado?.toFixed(2) || '0.00' }}</p>
       <!--<p><strong>Monto Prestado:</strong> S/ {{ selectedData?.extra?.montoPrestado?.toFixed(2) || '0.00' }}</p>-->
       <button class="btn btn-outline-primary w-100 mt-3" (click)="showModal = false">
         <i class="bi bi-x-circle"></i> Cerrar

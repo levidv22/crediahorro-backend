@@ -10,6 +10,8 @@ public class Prestamo {
     private double monto;
     private double tasaInteresMensual;
     private int numeroCuotas;
+    private String tipoCuota; // valores: "MENSUAL" o "DIARIO"
+    private double interesTotal;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaCreacion;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -20,11 +22,13 @@ public class Prestamo {
     public Prestamo() {
     }
 
-    public Prestamo(Long id, double monto, double tasaInteresMensual, int numeroCuotas, LocalDate fechaCreacion, LocalDate fechaInicio, String estado, List<Cuota> cuotas) {
+    public Prestamo(Long id, double monto, double tasaInteresMensual, int numeroCuotas, String tipoCuota, double interesTotal, LocalDate fechaCreacion, LocalDate fechaInicio, String estado, List<Cuota> cuotas) {
         this.id = id;
         this.monto = monto;
         this.tasaInteresMensual = tasaInteresMensual;
         this.numeroCuotas = numeroCuotas;
+        this.tipoCuota = tipoCuota;
+        this.interesTotal = interesTotal;
         this.fechaCreacion = fechaCreacion;
         this.fechaInicio = fechaInicio;
         this.estado = estado;
@@ -95,11 +99,29 @@ public class Prestamo {
         this.cuotas = cuotas;
     }
 
+    public String getTipoCuota() {
+        return tipoCuota;
+    }
+
+    public void setTipoCuota(String tipoCuota) {
+        this.tipoCuota = tipoCuota;
+    }
+
+    public double getInteresTotal() {
+        return interesTotal;
+    }
+
+    public void setInteresTotal(double interesTotal) {
+        this.interesTotal = interesTotal;
+    }
+
     public static class Builder {
         private Long id;
         private double monto;
         private double tasaInteresMensual;
         private int numeroCuotas;
+        private String tipoCuota; // valores: "MENSUAL" o "DIARIO"
+        private double interesTotal;
         private LocalDate fechaCreacion;
         private LocalDate fechaInicio;
         private String estado;
@@ -117,6 +139,16 @@ public class Prestamo {
 
         public Builder tasaInteresMensual(double tasaInteresMensual) {
             this.tasaInteresMensual = tasaInteresMensual;
+            return this;
+        }
+
+        public Builder tipoCuota(String tipoCuota) {
+            this.tipoCuota = tipoCuota;
+            return this;
+        }
+
+        public Builder interesTotal(double interesTotal) {
+            this.interesTotal = interesTotal;
             return this;
         }
 
@@ -146,7 +178,7 @@ public class Prestamo {
         }
 
         public Prestamo build() {
-            return new Prestamo(id, monto, tasaInteresMensual, numeroCuotas, fechaCreacion, fechaInicio, estado, cuotas);
+            return new Prestamo(id, monto, tasaInteresMensual, numeroCuotas, tipoCuota, interesTotal, fechaCreacion, fechaInicio, estado, cuotas);
         }
     }
 

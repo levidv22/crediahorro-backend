@@ -29,7 +29,7 @@ export class DashboardGraficosComponent implements OnInit {
   showXAxisLabel = true;
   xAxisLabel = 'Periodo';
   showYAxisLabel = true;
-  yAxisLabel = 'Cantidad';
+  yAxisLabel = 'Intereses Pagados';
 
   colorScheme: any = {
     name: 'custom',
@@ -82,15 +82,17 @@ export class DashboardGraficosComponent implements OnInit {
       const meses = mesesRaw as Array<any>;
       return {
         anio: anio,
-        chartData: meses.map((m: any) => ({
-          name: m.mes,
-          value: m.montoPagado,  // Lo que la barra muestra: monto pagado
-          extra: {
-            montoPrestado: m.montoPrestado,
-            montoPagado: m.montoPagado,
-            anio: anio
-          }
-        }))
+        chartData: meses
+          .filter(m => m.mes !== 'TOTAL') // ⚡ Excluye el TOTAL del gráfico
+          .map((m: any) => ({
+            name: m.mes,
+            value: m.interesPagado,  // 👈 Ahora muestra interés
+            extra: {
+              interesPagado: m.interesPagado,
+              anio: anio
+            }
+          })),
+        totalIntereses: meses.find(m => m.mes === 'TOTAL')?.interesPagado || 0.0
       };
     });
   }
