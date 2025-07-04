@@ -26,7 +26,7 @@ public class NotificacionScheduler {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "0 0 16 * * *") // Todos los días a las 3:35 PM
+    @Scheduled(cron = "0 18 16 * * *") // Todos los días a las 4:00 PM
     public void enviarNotificaciones() {
         List<Cliente> clientes = adminClient.obtenerClientes();
         String adminEmail = authClient.obtenerAdminEmail();
@@ -36,79 +36,85 @@ public class NotificacionScheduler {
             for (Prestamo prestamo : cliente.getPrestamos()) {
                 for (Cuota cuota : prestamo.getCuotas()) {
 
-                    // Saltar cuotas ya pagadas
+                    // Saltar cuotas pagadas
                     if (cuota.getEstado().equalsIgnoreCase("PAGADA")) {
                         continue;
                     }
 
                     long diasRestantes = ChronoUnit.DAYS.between(hoy, cuota.getFechaPago());
 
-                    String datosHtml = """
-                        <div style="font-family: Arial, sans-serif; color: #333;">
-                            <h2 style="color: #007bff;">💼 Detalles del Cliente</h2>
-                            <ul>
-                                <li><strong>👤 Nombre:</strong> %s</li>
-                                <li><strong>🆔 DNI:</strong> %s</li>
-                            </ul>
-                            <h3 style="color: #007bff;">💳 Detalles del Préstamo</h3>
-                            <ul>
-                                <li><strong>Monto:</strong> %.2f</li>
-                                <li><strong>Estado:</strong> %s</li>
-                            </ul>
-                            <h3 style="color: #007bff;">📅 Detalles de la Cuota</h3>
-                            <ul>
-                                <li><strong># Cuota:</strong> %d</li>
-                                <li><strong>Monto Cuota:</strong> %.2f</li>
-                                <li><strong>Capital:</strong> %.2f</li>
-                                <li><strong>Interés:</strong> %.2f</li>
-                                <li><strong>Fecha de Pago:</strong> %s</li>
-                                <li><strong>Estado Cuota:</strong> %s</li>
-                            </ul>
-                            <p style="margin-top:20px; font-size: 12px; color: #888; text-align:center;">© 2025 CrediAhorro - Todos los derechos reservados</p>
-                        </div>
-                        """.formatted(
-                            cliente.getNombre(),
-                            cliente.getDni(),
-                            prestamo.getMonto(),
-                            prestamo.getEstado(),
-                            cuota.getId(),
-                            cuota.getMontoCuota(),
-                            cuota.getCapital(),
-                            cuota.getInteres(),
-                            cuota.getFechaPago(),
-                            cuota.getEstado()
-                    );
-
-                    String asunto = "";
-                    String mensaje = "";
+                    // Título dinámico del correo
+                    String titulo = "";
+                    String subtitulo = "";
+                    String color = "";
 
                     if (diasRestantes == 3 || diasRestantes == 2 || diasRestantes == 1) {
-                        asunto = "⏰ Aviso: cuota próxima a vencer";
-                        mensaje = """
-                            <h1 style="color: #ffc107;">⚠️ Cuota próxima a vencer</h1>
-                            <p>Estimado administrador,</p>
-                            <p>Faltan %d día%s para la fecha de pago de la siguiente cuota:</p>
-                            """.formatted(diasRestantes, diasRestantes == 1 ? "" : "s") + datosHtml;
+                        titulo = "⏰ Cuota próxima a vencer";
+                        subtitulo = "Faltan %d día%s para la fecha de pago de la siguiente cuota.".formatted(
+                                diasRestantes, diasRestantes == 1 ? "" : "s");
+                        color = "#ffc107"; // amarillo
 
                     } else if (diasRestantes == 0) {
-                        asunto = "📅 Aviso: cuota vence hoy";
-                        mensaje = """
-                            <h1 style="color: #007bff;">📌 Cuota vence hoy</h1>
-                            <p>Estimado administrador,</p>
-                            <p>Hoy se vence la siguiente cuota:</p>
-                            """ + datosHtml;
+                        titulo = "📅 Cuota vence hoy";
+                        subtitulo = "Hoy se vence la siguiente cuota.";
+                        color = "#007bff"; // azul
 
                     } else if (diasRestantes < 0) {
-                        asunto = "❗ Aviso: cuota vencida";
-                        mensaje = """
-                            <h1 style="color: #dc3545;">🚨 Cuota vencida</h1>
-                            <p>Estimado administrador,</p>
-                            <p>La siguiente cuota se venció hace %d día%s:</p>
-                            """.formatted(Math.abs(diasRestantes), Math.abs(diasRestantes) == 1 ? "" : "s") + datosHtml;
+                        titulo = "❗ Cuota vencida";
+                        subtitulo = "La siguiente cuota se venció hace %d día%s.".formatted(
+                                Math.abs(diasRestantes), Math.abs(diasRestantes) == 1 ? "" : "s");
+                        color = "#dc3545"; // rojo
                     }
 
-                    if (!asunto.isEmpty()) {
-                        emailService.enviarCorreoHtml(adminEmail, asunto, mensaje);
+                    if (!titulo.isEmpty()) {
+                        String htmlContent = """
+                            <div style="background: #f9f9f9; padding: 40px 0;">
+                              <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; font-family: Arial, sans-serif;">
+                                <div style="background: %s; color: #fff; padding: 20px; text-align: center;">
+                                  <h1 style="margin: 0; font-size: 24px;">%s</h1>
+                                </div>
+                                <div style="padding: 30px; color: #333;">
+                                  <p style="font-size: 16px;">Hola <strong>Administrador</strong>,</p>
+                                  <p style="font-size: 16px;">%s</p>
+                                  <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+                                  <h3 style="color: #007bff;">📋 Información del Cliente</h3>
+                                  <table style="width: 100%%; border-collapse: collapse;">
+                                    <tr><td><strong>👤 Nombre:</strong></td><td>%s</td></tr>
+                                    <tr><td><strong>🆔 DNI:</strong></td><td>%s</td></tr>
+                                  </table>
+                                  <h3 style="color: #007bff; margin-top: 20px;">💳 Información del Préstamo</h3>
+                                  <table style="width: 100%%; border-collapse: collapse;">
+                                    <tr><td><strong>Monto:</strong></td><td>%.2f</td></tr>
+                                    <tr><td><strong>Estado:</strong></td><td>%s</td></tr>
+                                  </table>
+                                  <h3 style="color: #007bff; margin-top: 20px;">📅 Información de la Cuota</h3>
+                                  <table style="width: 100%%; border-collapse: collapse;">
+                                    <tr><td><strong>Monto Cuota:</strong></td><td>%.2f</td></tr>
+                                    <tr><td><strong>Capital:</strong></td><td>%.2f</td></tr>
+                                    <tr><td><strong>Interés:</strong></td><td>%.2f</td></tr>
+                                    <tr><td><strong>Fecha de Pago:</strong></td><td>%s</td></tr>
+                                    <tr><td><strong>Estado Cuota:</strong></td><td>%s</td></tr>
+                                  </table>
+                                  <p style="text-align: center; font-size: 12px; color: #aaa;">© 2025 CrediAhorro - Todos los derechos reservados</p>
+                                </div>
+                              </div>
+                            </div>
+                            """.formatted(
+                                color, // banner color
+                                titulo,
+                                subtitulo,
+                                cliente.getNombre(),
+                                cliente.getDni(),
+                                prestamo.getMonto(),
+                                prestamo.getEstado(),
+                                cuota.getMontoCuota(),
+                                cuota.getCapital(),
+                                cuota.getInteres(),
+                                cuota.getFechaPago(),
+                                cuota.getEstado()
+                        );
+
+                        emailService.enviarCorreoHtml(adminEmail, titulo, htmlContent);
                     }
                 }
             }
