@@ -16,6 +16,7 @@ import { ViewEncapsulation } from '@angular/core';
 })
 export class DashboardGraficosComponent implements OnInit {
   anualConMesesData: any[] = [];
+  anualPrestamosData: any[] = [];
   availableYears: string[] = [];
   selectedYear: string = '';
 
@@ -31,32 +32,83 @@ export class DashboardGraficosComponent implements OnInit {
   showYAxisLabel = true;
   yAxisLabel = 'Intereses Pagados';
 
-  colorScheme: any = {
-    name: 'custom',
+  // Esquema para INTERESES (NARANJA)
+  colorSchemeIntereses: any = {
+    name: 'intereses',
     selectable: true,
     group: 'Ordinal',
-    domain: ['#7aa3e5', '#a8385d', '#aae3f5', '#A58ABF', '#E3B075', '#FFF293', '#C9DC92', '#E07C3E', '#FFF8DC', '#8B0000', '#FFFAF0', '#E0FFFF']
+    domain: ['#FF9800']  // un naranja vibrante
+  };
+
+  // Esquema para PRESTAMOS (AZUL)
+  colorSchemePrestamos: any = {
+    name: 'prestamos',
+    selectable: true,
+    group: 'Ordinal',
+    domain: ['#2196F3']  // un azul elegante
   };
 
   selectedData: any = null;
+  modalTipo: string = '';
   showModal: boolean = false;
 
   constructor(private reportService: ReportGraficoService) {}
 
   ngOnInit(): void {
-      this.adjustChartView();
-      this.reportService.getPorAnioConMeses().subscribe(data => {
-        this.anualConMesesData = this.mapAnualConMesesToChart(data);
+    this.adjustChartView();
+    this.reportService.getPorAnioConMeses().subscribe(data => {
+      // Mapea INTERESES
+      this.anualConMesesData = this.mapIntereses(data);
 
-        // Extraer los años y ordenarlos decrecientemente
-        this.availableYears = this.anualConMesesData
-          .map(item => item.anio)
-          .sort((a, b) => +b - +a);
+      // Mapea PRESTAMOS
+      this.anualPrestamosData = this.mapPrestamos(data);
 
-        // Seleccionar el año más reciente por defecto
-        this.selectedYear = this.availableYears[0];
-      });
-    }
+      // Años disponibles
+      this.availableYears = this.anualConMesesData
+        .map(item => item.anio)
+        .sort((a, b) => +b - +a);
+
+      this.selectedYear = this.availableYears[0];
+    });
+  }
+
+  mapIntereses(data: any): any[] {
+    return Object.entries(data).map(([anio, mesesRaw]) => {
+      const meses = mesesRaw as Array<any>;
+      return {
+        anio: anio,
+        chartData: meses.filter(m => m.mes !== 'TOTAL')
+          .map((m: any) => ({
+            name: m.mes,
+            value: m.interesPagado,
+            extra: {
+              interesPagado: m.interesPagado,
+              anio: anio
+            }
+          })),
+        totalIntereses: meses.find(m => m.mes === 'TOTAL')?.interesPagado || 0.0
+      };
+    });
+  }
+
+  mapPrestamos(data: any): any[] {
+    return Object.entries(data).map(([anio, mesesRaw]) => {
+      const meses = mesesRaw as Array<any>;
+      return {
+        anio: anio,
+        chartData: meses.filter(m => m.mes !== 'TOTAL')
+          .map((m: any) => ({
+            name: m.mes,
+            value: m.montoPrestado,
+            extra: {
+              montoPrestado: m.montoPrestado,
+              anio: anio
+            }
+          })),
+        totalPrestamos: meses.reduce((sum, m) => sum + (m.montoPrestado || 0), 0)
+      };
+    });
+  }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -95,10 +147,29 @@ export class DashboardGraficosComponent implements OnInit {
         totalIntereses: meses.find(m => m.mes === 'TOTAL')?.interesPagado || 0.0
       };
     });
+
+    this.anualPrestamosData = Object.entries(data).map(([anio, mesesRaw]) => {
+        const meses = mesesRaw as Array<any>;
+        return {
+          anio: anio,
+          chartData: meses
+            .filter(m => m.mes !== 'TOTAL')
+            .map((m: any) => ({
+              name: m.mes,
+              value: m.montoPrestado,
+              extra: {
+                montoPrestado: m.montoPrestado,
+                anio: anio
+              }
+            })),
+          totalPrestamos: meses.find(m => m.mes === 'TOTAL')?.montoPrestado || 0.0
+        };
+      });
   }
 
-  onBarSelect(event: any): void {
+  onBarSelect(event: any, tipo: 'interes' | 'prestamo'): void {
     this.selectedData = event;
+    this.modalTipo = tipo;
     this.showModal = true;
   }
 

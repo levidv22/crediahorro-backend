@@ -1,44 +1,54 @@
 <main class="container mt-4">
+  <!-- Título principal -->
   <div class="mb-4 d-flex align-items-center gap-2 text-primary">
     <i class="bi bi-bar-chart-fill fs-3"></i>
     <h3 class="mb-0">Panel de Gráficos</h3>
   </div>
 
-  <!-- Selector de año + Total de Intereses alineados -->
+  <!-- Selector de año con contenedor bonito -->
   <div class="mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
     <div>
       <label for="yearSelect" class="form-label fw-semibold mb-1">Seleccionar Año:</label>
-      <select
-        id="yearSelect"
-        class="form-select d-inline-block"
-        [(ngModel)]="selectedYear"
-      >
-        <option *ngFor="let year of availableYears" [value]="year">
-          {{ year }}
-        </option>
+      <select id="yearSelect"
+              class="form-select d-inline-block"
+              [(ngModel)]="selectedYear">
+        <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
       </select>
     </div>
-    <!-- Total a la derecha alineado con estilo -->
-    <div *ngFor="let item of anualConMesesData">
-      <div *ngIf="item.anio === selectedYear" class="total-intereses text-end">
-    <span class="badge rounded-pill bg-success-subtle text-success d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm">
-      <i class="bi bi-cash-coin fs-5"></i>
-      <span class="fw-bold">Total de Intereses:</span>
-      <span class="fs-5">S/ {{ item.totalIntereses?.toFixed(2) || '0.00' }}</span>
-    </span>
-      </div>
+
+    <!-- Totales alineados bonitos -->
+    <div class="text-end">
+      <ng-container *ngFor="let item of anualConMesesData">
+        <div *ngIf="item.anio === selectedYear" class="total-intereses mb-1">
+          <span class="badge rounded-pill bg-success-subtle text-success d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm">
+            <i class="bi bi-cash-coin fs-5"></i>
+            <span class="fw-bold">Total de Intereses:</span>
+            <span class="fs-5">S/ {{ item.totalIntereses?.toFixed(2) || '0.00' }}</span>
+          </span>
+        </div>
+      </ng-container>
+      <ng-container *ngFor="let item of anualPrestamosData">
+        <div *ngIf="item.anio === selectedYear" class="total-prestamos">
+          <span class="badge rounded-pill bg-primary-subtle text-primary d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm">
+            <i class="bi bi-cash-stack fs-5"></i>
+            <span class="fw-bold">Total de Préstamos:</span>
+            <span class="fs-5">S/ {{ item.totalPrestamos?.toFixed(2) || '0.00' }}</span>
+          </span>
+        </div>
+      </ng-container>
     </div>
   </div>
 
+  <!-- Bloque: Gráfico de Intereses -->
   <div *ngFor="let item of anualConMesesData">
     <div *ngIf="item.anio === selectedYear" class="mb-5">
       <h5 class="text-secondary text-center mt-4">
-        <i class="bi bi-calendar-range"></i> Año {{ item.anio }}
+        <i class="bi bi-bar-chart"></i> Intereses Pagados - Año {{ item.anio }}
       </h5>
 
       <ngx-charts-bar-vertical
         [view]="view"
-        [scheme]="colorScheme"
+        [scheme]="colorSchemeIntereses"
         [results]="item.chartData"
         [gradient]="gradient"
         [xAxis]="showXAxis"
@@ -46,20 +56,50 @@
         [showXAxisLabel]="showXAxisLabel"
         [xAxisLabel]="'Meses'"
         [showYAxisLabel]="showYAxisLabel"
-        [yAxisLabel]="'yAxisLabel'"
-        (select)="onBarSelect($event)">
+        [yAxisLabel]="'Intereses Pagados'"
+        (select)="onBarSelect($event, 'interes')">
       </ngx-charts-bar-vertical>
     </div>
   </div>
 
-  <!-- Modal Elegante -->
+  <!-- Bloque: Gráfico de Montos Prestados -->
+  <div *ngFor="let item of anualPrestamosData">
+    <div *ngIf="item.anio === selectedYear" class="mb-5">
+      <h5 class="text-secondary text-center mt-4">
+        <i class="bi bi-bar-chart-fill"></i> Monto de Préstamos - Año {{ item.anio }}
+      </h5>
+
+      <ngx-charts-bar-vertical
+        [view]="view"
+        [scheme]="colorSchemePrestamos"
+        [results]="item.chartData"
+        [gradient]="gradient"
+        [xAxis]="showXAxis"
+        [yAxis]="showYAxis"
+        [showXAxisLabel]="showXAxisLabel"
+        [xAxisLabel]="'Meses'"
+        [showYAxisLabel]="showYAxisLabel"
+        [yAxisLabel]="'Monto Prestado'"
+        (select)="onBarSelect($event, 'prestamo')">
+      </ngx-charts-bar-vertical>
+    </div>
+  </div>
+
+  <!-- Modal único dinámico -->
   <div *ngIf="showModal" class="modal-overlay" (click)="showModal = false">
     <div class="modal-content shadow" (click)="$event.stopPropagation()">
       <h5 class="mb-3"><i class="bi bi-info-circle-fill text-primary"></i> Detalles del Mes</h5>
       <p><strong>Año:</strong> {{ selectedData?.extra?.anio || 'N/A' }}</p>
       <p><strong>Mes:</strong> {{ selectedData?.name || 'N/A' }}</p>
-      <p><strong>Interés Pagado:</strong> S/ {{ selectedData?.extra?.interesPagado?.toFixed(2) || '0.00' }}</p>
-      <!--<p><strong>Monto Prestado:</strong> S/ {{ selectedData?.extra?.montoPrestado?.toFixed(2) || '0.00' }}</p>-->
+
+      <ng-container *ngIf="modalTipo === 'interes'">
+        <p><strong>Interés Pagado:</strong> S/ {{ selectedData?.extra?.interesPagado?.toFixed(2) || '0.00' }}</p>
+      </ng-container>
+
+      <ng-container *ngIf="modalTipo === 'prestamo'">
+        <p><strong>Monto Prestado:</strong> S/ {{ selectedData?.extra?.montoPrestado?.toFixed(2) || '0.00' }}</p>
+      </ng-container>
+
       <button class="btn btn-outline-primary w-100 mt-3" (click)="showModal = false">
         <i class="bi bi-x-circle"></i> Cerrar
       </button>

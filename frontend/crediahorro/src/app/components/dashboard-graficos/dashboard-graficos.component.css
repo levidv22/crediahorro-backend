@@ -127,4 +127,29 @@ ngx-charts-bar-vertical {
   transition: all 0.3s ease;
 }
 
+.total-prestamos {
+  font-weight: 500;
+}
 
+.badge.bg-primary-subtle {
+  background-color: #cfe2ff; /* Bootstrap azul clarito */
+}
+
+.total-prestamos i {
+  color: #0d6efd; /* Bootstrap azul primario */
+}
+
+.total-prestamos span.fs-5 {
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .total-prestamos {
+    text-align: left !important;
+    margin-top: 0.5rem;
+  }
+}
+
+.total-prestamos span {
+  transition: all 0.3s ease;
+}
