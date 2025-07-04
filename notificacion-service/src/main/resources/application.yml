@@ -1,22 +1,19 @@
 spring:
   application:
     name: notificacion-service
-    server:
-      port: 8080
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: levidiaz222@gmail.com
+    password: amxc hlnt ldtb wlgp
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 
-twilio:
-  account:
-    sid: ${TWILIO_SID}
-  auth:
-    token: ${TWILIO_TOKEN}
-  whatsapp:
-    from: +14155238886
+server:
+  port: 5555
+
 eureka:
-  instance:
-    hostname: localhost
-    prefer-ip-address: false
-    instance-id: "${spring.application.name}:${random.value}"
   client:
     service-url:
-      #defaultZone: http://localhost:8761/eureka/
       defaultZone: ${EUREKA_URL}

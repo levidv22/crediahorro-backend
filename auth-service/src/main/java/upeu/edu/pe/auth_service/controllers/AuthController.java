@@ -56,4 +56,14 @@ public class AuthController {
     public ResponseEntity<TokenDto> verifyAccessCode(@RequestBody CodeDto codeDto) {
         return ResponseEntity.ok(authService.verifyAccessCode(codeDto));
     }
+
+    @GetMapping(path = "admin-email")
+    public String getAdminEmail() {
+        return userRepository.findAll().stream()
+                .filter(u -> u.getEmail() != null && !u.getEmail().isEmpty())
+                .map(UserEntity::getEmail)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No admin email found"));
+    }
+
 }

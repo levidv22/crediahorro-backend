@@ -15,36 +15,53 @@
         <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
       </select>
     </div>
+  </div>
 
-    <!-- Totales alineados bonitos -->
-    <div class="text-end">
-      <ng-container *ngFor="let item of anualConMesesData">
-        <div *ngIf="item.anio === selectedYear" class="total-intereses mb-1">
-          <span class="badge rounded-pill bg-success-subtle text-success d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm">
-            <i class="bi bi-cash-coin fs-5"></i>
-            <span class="fw-bold">Total de Intereses:</span>
-            <span class="fs-5">S/ {{ item.totalIntereses?.toFixed(2) || '0.00' }}</span>
-          </span>
-        </div>
-      </ng-container>
-      <ng-container *ngFor="let item of anualPrestamosData">
-        <div *ngIf="item.anio === selectedYear" class="total-prestamos">
+  <!-- Bloque: Gráfico de Montos Prestados -->
+  <div *ngFor="let item of anualPrestamosData">
+    <div *ngIf="item.anio === selectedYear" class="mb-5">
+      <div class="text-end">
+        <ng-container *ngFor="let item of anualPrestamosData">
+          <div *ngIf="item.anio === selectedYear" class="total-prestamos">
           <span class="badge rounded-pill bg-primary-subtle text-primary d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm">
             <i class="bi bi-cash-stack fs-5"></i>
-            <span class="fw-bold">Total de Préstamos:</span>
+            <span class="fw-bold">Capital Total:</span>
             <span class="fs-5">S/ {{ item.totalPrestamos?.toFixed(2) || '0.00' }}</span>
           </span>
-        </div>
-      </ng-container>
+          </div>
+        </ng-container>
+      </div>
+
+      <ngx-charts-bar-vertical
+        [view]="view"
+        [scheme]="colorSchemePrestamos"
+        [results]="item.chartData"
+        [gradient]="gradient"
+        [xAxis]="showXAxis"
+        [yAxis]="showYAxis"
+        [showXAxisLabel]="showXAxisLabel"
+        [xAxisLabel]="'Meses'"
+        [showYAxisLabel]="showYAxisLabel"
+        [yAxisLabel]="'Monto Capital'"
+        (select)="onBarSelect($event, 'prestamo')">
+      </ngx-charts-bar-vertical>
     </div>
   </div>
 
   <!-- Bloque: Gráfico de Intereses -->
   <div *ngFor="let item of anualConMesesData">
     <div *ngIf="item.anio === selectedYear" class="mb-5">
-      <h5 class="text-secondary text-center mt-4">
-        <i class="bi bi-bar-chart"></i> Intereses Pagados - Año {{ item.anio }}
-      </h5>
+      <div class="text-end">
+        <ng-container *ngFor="let item of anualConMesesData">
+          <div *ngIf="item.anio === selectedYear" class="total-intereses mb-1">
+          <span class="badge rounded-pill bg-success-subtle text-success d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm">
+            <i class="bi bi-cash-coin fs-5"></i>
+            <span class="fw-bold">Interés Generado:</span>
+            <span class="fs-5">S/ {{ item.totalIntereses?.toFixed(2) || '0.00' }}</span>
+          </span>
+          </div>
+        </ng-container>
+      </div>
 
       <ngx-charts-bar-vertical
         [view]="view"
@@ -58,29 +75,6 @@
         [showYAxisLabel]="showYAxisLabel"
         [yAxisLabel]="'Intereses Pagados'"
         (select)="onBarSelect($event, 'interes')">
-      </ngx-charts-bar-vertical>
-    </div>
-  </div>
-
-  <!-- Bloque: Gráfico de Montos Prestados -->
-  <div *ngFor="let item of anualPrestamosData">
-    <div *ngIf="item.anio === selectedYear" class="mb-5">
-      <h5 class="text-secondary text-center mt-4">
-        <i class="bi bi-bar-chart-fill"></i> Monto de Préstamos - Año {{ item.anio }}
-      </h5>
-
-      <ngx-charts-bar-vertical
-        [view]="view"
-        [scheme]="colorSchemePrestamos"
-        [results]="item.chartData"
-        [gradient]="gradient"
-        [xAxis]="showXAxis"
-        [yAxis]="showYAxis"
-        [showXAxisLabel]="showXAxisLabel"
-        [xAxisLabel]="'Meses'"
-        [showYAxisLabel]="showYAxisLabel"
-        [yAxisLabel]="'Monto Prestado'"
-        (select)="onBarSelect($event, 'prestamo')">
       </ngx-charts-bar-vertical>
     </div>
   </div>
