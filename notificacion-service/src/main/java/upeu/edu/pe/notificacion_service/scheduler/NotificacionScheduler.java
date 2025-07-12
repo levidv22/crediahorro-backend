@@ -10,6 +10,7 @@ import upeu.edu.pe.notificacion_service.model.Prestamo;
 import upeu.edu.pe.notificacion_service.service.EmailService;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -26,11 +27,12 @@ public class NotificacionScheduler {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "0 40 17 * * *") // Todos los días a las 6:00 AM
+    @Scheduled(cron = "0 36 18 * * *") // Todos los días a las 6:00 AM
     public void enviarNotificaciones() {
         List<Cliente> clientes = adminClient.obtenerClientes();
         String adminEmail = authClient.obtenerAdminEmail();
         LocalDate hoy = LocalDate.now();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         for (Cliente cliente : clientes) {
             for (Prestamo prestamo : cliente.getPrestamos()) {
@@ -90,8 +92,6 @@ public class NotificacionScheduler {
                                   <h3 style="color: #007bff; margin-top: 20px;">📅 Información de la Cuota</h3>
                                   <table style="width: 100%%; border-collapse: collapse;">
                                     <tr><td><strong>Monto Cuota:</strong></td><td>%.2f</td></tr>
-                                    <tr><td><strong>Capital:</strong></td><td>%.2f</td></tr>
-                                    <tr><td><strong>Interés:</strong></td><td>%.2f</td></tr>
                                     <tr><td><strong>Fecha de Pago:</strong></td><td>%s</td></tr>
                                     <tr><td><strong>Estado Cuota:</strong></td><td>%s</td></tr>
                                   </table>
@@ -108,9 +108,7 @@ public class NotificacionScheduler {
                                 prestamo.getMonto(),
                                 prestamo.getEstado(),
                                 cuota.getMontoCuota(),
-                                cuota.getCapital(),
-                                cuota.getInteres(),
-                                cuota.getFechaPago(),
+                                cuota.getFechaPago().format(formato),
                                 cuota.getEstado()
                         );
 

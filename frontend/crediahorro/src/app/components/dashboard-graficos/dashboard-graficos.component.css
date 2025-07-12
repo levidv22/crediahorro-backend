@@ -175,3 +175,37 @@ ngx-charts-bar-vertical {
   color: #495057;
 }
 
+.recaudo-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1200;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.recaudo-panel {
+  background-color: #ffffff;
+  width: 320px;
+  max-width: 100%;
+  padding: 1.5rem;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-in-out;
+  height: 100%;
+  overflow-y: auto;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+
+@media (max-width: 576px) {
+  .recaudo-panel {
+    width: 100%;
+  }
+}

@@ -130,11 +130,11 @@
 
     <p><strong>Fecha de Pago:</strong> {{ cuotaSeleccionada?.fechaPago | date: 'dd/MM/yyyy' }}</p>
 
-    <!-- Mostrar Capital e Interés solo si NO es simplificado -->
+    <!-- Mostrar Capital e Interés solo si NO es simplificado
     <ng-container *ngIf="!esModalSimplificado">
       <p><strong>Capital:</strong> S/ {{ cuotaSeleccionada?.capital | number: '1.2-2' }}</p>
       <p><strong>Interés:</strong> S/ {{ cuotaSeleccionada?.interes | number: '1.2-2' }}</p>
-    </ng-container>
+    </ng-container>-->
 
     <p><strong>Monto Total:</strong>
       S/ {{
@@ -142,7 +142,7 @@
       }}
     </p>
 
-    <!-- Mostrar botones parciales solo si NO es simplificado -->
+    <!-- Mostrar botones parciales solo si NO es simplificado
     <ng-container *ngIf="!esModalSimplificado">
       <button class="btn btn-outline-success w-100 my-2" (click)="pagarAvanzado('Capital')">
         <i class="bi bi-arrow-down-circle"></i> Pagar Solo Capital
@@ -150,7 +150,7 @@
       <button class="btn btn-outline-warning w-100 my-2" (click)="pagarAvanzado('Interes')">
         <i class="bi bi-arrow-up-circle"></i> Pagar Solo Interés
       </button>
-    </ng-container>
+    </ng-container>-->
 
     <!-- Siempre mostrar Pagar Monto Total -->
     <button class="btn btn-outline-primary w-100 my-2" (click)="pagarAvanzado('Completo')">

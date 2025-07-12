@@ -20,6 +20,7 @@ export class DashboardGraficosComponent implements OnInit {
   availableYears: string[] = [];
   prestamosPorAdmin: any[] = [];
   selectedYear: string = '';
+  showRecaudoPanel: boolean = false;
 
   view: [number, number] = [1200, 300];
 
@@ -191,5 +192,19 @@ export class DashboardGraficosComponent implements OnInit {
 
   changeYear(year: string): void {
     this.selectedYear = year;
+  }
+
+  get totalCapital(): number {
+    const data = this.anualPrestamosData.find(d => d.anio === this.selectedYear);
+    return data?.totalPrestamos || 0;
+  }
+
+  get totalInteres(): number {
+    const data = this.anualConMesesData.find(d => d.anio === this.selectedYear);
+    return data?.totalIntereses || 0;
+  }
+
+  get totalIngresos(): number {
+    return this.totalCapital + this.totalInteres;
   }
 }

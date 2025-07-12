@@ -5,6 +5,12 @@
     <h3 class="mb-0">Panel de Gráficos</h3>
   </div>
 
+  <button class="btn btn-outline-secondary d-flex align-items-center gap-2"
+          (click)="showRecaudoPanel = true">
+    <i class="bi bi-list"></i> Ver Detalle de Recaudo
+  </button>
+  <br>
+
   <!-- Selector de año con contenedor bonito -->
   <div class="mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
     <div>
@@ -107,6 +113,26 @@
       </ng-container>
 
       <button class="btn btn-outline-primary w-100 mt-3" (click)="showModal = false">
+        <i class="bi bi-x-circle"></i> Cerrar
+      </button>
+    </div>
+  </div>
+  <!-- Panel Lateral Recaudo -->
+  <div class="recaudo-overlay" *ngIf="showRecaudoPanel" (click)="showRecaudoPanel = false">
+    <div class="recaudo-panel" (click)="$event.stopPropagation()">
+      <h5 class="mb-3 text-primary"><i class="bi bi-cash-coin"></i> Detalle de Recaudo</h5>
+
+      <div class="mb-2"><strong>Capital:</strong> S/ {{ totalCapital.toFixed(2) }}</div>
+      <div class="mb-2"><strong>Int. Gen.:</strong> S/ {{ totalInteres.toFixed(2) }}</div>
+      <div class="mb-5"><strong>Ingresos:</strong> S/ {{ totalIngresos.toFixed(2) }}</div>
+
+      <div class="mb-2"><strong>Prest. a socios:</strong> S/ 0.00</div>
+      <div class="mb-5"><strong>Saldo Banco:</strong> S/ 0.00</div>
+
+      <div class="mb-2"><strong>Int. x Rec:</strong> S/ 0.00</div>
+      <div class="mb-2"><strong>Sald. Cont.:</strong> S/ 0.00</div>
+
+      <button class="btn btn-outline-danger w-100 mt-3" (click)="showRecaudoPanel = false">
         <i class="bi bi-x-circle"></i> Cerrar
       </button>
     </div>
