@@ -13,4 +13,9 @@ export class ReportGraficoService {
   getPorAnioConMeses(): Observable<any> {
     return this.http.get(`${this.apiUrl}/prestamos-por-anio`);
   }
+
+  getPorAdmin(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/prestamos-por-admin`);
+  }
+
 }

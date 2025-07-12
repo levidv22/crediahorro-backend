@@ -25,5 +25,6 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, Long> {
     @Query(value = "SELECT id_clientes FROM prestamos WHERE id = :prestamoId", nativeQuery = true)
     Long findClienteIdByPrestamoId(@Param("prestamoId") Long prestamoId);
 
+    List<Prestamo> findByUsernameAdministrador(String username);
 }
 

@@ -1,6 +1,6 @@
 spring:
   profiles:
-    default: prod
+    default: default
   application:
     name: auth-service
   h2:
@@ -11,7 +11,7 @@ spring:
     import: configserver:${CONFIG_SERVER_HOST}
 
   datasource:
-    url: jdbc:postgresql://db-credi:5432/credi
+    url: jdbc:postgresql://localhost:5432/credi
     username: crediahorro
     password: levidv
     driver-class-name: org.postgresql.Driver
@@ -23,7 +23,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: 'create-drop'
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
 
@@ -47,6 +47,8 @@ server:
 
 eureka:
   instance:
+    hostname: localhost
+    prefer-ip-address: false
     instance-id: "${spring.application.name}:${random.value}"
   client:
     service-url:

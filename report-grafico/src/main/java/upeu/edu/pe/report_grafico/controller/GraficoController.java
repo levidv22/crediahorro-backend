@@ -23,4 +23,10 @@ public class GraficoController {
     public Map<String, List<Map<String, Object>>> getPrestamosPorAnioConMeses() {
         return graficoService.resumenPorAnioConMeses();
     }
+
+    @GetMapping("/prestamos-por-admin")
+    public Map<String, Map<String, Double>> getPrestamosPorAdmin() {
+        return graficoService.resumenPrestamosPorAdminPorAnio();
+    }
+
 }

@@ -8,7 +8,6 @@ server:
 
 
 eureka:
-  instance:
   client:
     fetch-registry: true #luego true
     service-url:

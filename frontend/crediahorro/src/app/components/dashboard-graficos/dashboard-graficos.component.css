@@ -153,3 +153,25 @@ ngx-charts-bar-vertical {
 .total-prestamos span {
   transition: all 0.3s ease;
 }
+
+.prestamos-admin-card {
+  min-width: 280px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  max-height: 230px;
+  overflow-y: auto;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.prestamos-admin-card .list-group-item {
+  padding: 0.4rem 0.5rem;
+  font-size: 0.9rem;
+}
+
+.prestamos-admin-card label {
+  font-size: 0.95rem;
+  color: #495057;
+}
+

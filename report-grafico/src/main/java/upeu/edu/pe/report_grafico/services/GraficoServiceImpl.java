@@ -97,4 +97,24 @@ public class GraficoServiceImpl implements GraficoService {
 
         return resultado;
     }
+
+    @Override
+    public Map<String, Map<String, Double>> resumenPrestamosPorAdminPorAnio() {
+        List<Prestamo> prestamos = prestamoRepository.obtenerTodosLosPrestamos();
+
+        Map<String, Map<String, Double>> resumen = new HashMap<>();
+
+        for (Prestamo p : prestamos) {
+            String admin = p.getUsernameAdministrador();
+            String anio = String.valueOf(p.getFechaCreacion().getYear());
+            double monto = p.getMonto();
+
+            resumen
+                    .computeIfAbsent(admin, k -> new HashMap<>())
+                    .merge(anio, monto, Double::sum);
+        }
+
+        return resumen;
+    }
+
 }

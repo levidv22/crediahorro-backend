@@ -18,6 +18,7 @@ export class DashboardGraficosComponent implements OnInit {
   anualConMesesData: any[] = [];
   anualPrestamosData: any[] = [];
   availableYears: string[] = [];
+  prestamosPorAdmin: any[] = [];
   selectedYear: string = '';
 
   view: [number, number] = [1200, 300];
@@ -56,20 +57,35 @@ export class DashboardGraficosComponent implements OnInit {
 
   ngOnInit(): void {
     this.adjustChartView();
+
     this.reportService.getPorAnioConMeses().subscribe(data => {
-      // Mapea INTERESES
       this.anualConMesesData = this.mapIntereses(data);
-
-      // Mapea PRESTAMOS
       this.anualPrestamosData = this.mapPrestamos(data);
-
-      // Años disponibles
-      this.availableYears = this.anualConMesesData
-        .map(item => item.anio)
-        .sort((a, b) => +b - +a);
-
+      this.availableYears = this.anualConMesesData.map(item => item.anio).sort((a, b) => +b - +a);
       this.selectedYear = this.availableYears[0];
     });
+
+    this.reportService.getPorAdmin().subscribe(data => {
+      this.prestamosPorAdmin = this.mapPrestamosPorAdmin(data);
+    });
+  }
+
+  mapPrestamosPorAdmin(data: any): any[] {
+    const resultado: any[] = [];
+    for (const admin in data) {
+      for (const anio in data[admin]) {
+        resultado.push({
+          admin,
+          anio,
+          monto: data[admin][anio]
+        });
+      }
+    }
+    return resultado;
+  }
+
+  get prestamosFiltradosPorAdmin(): any[] {
+    return this.prestamosPorAdmin.filter(p => p.anio === this.selectedYear);
   }
 
   mapIntereses(data: any): any[] {
