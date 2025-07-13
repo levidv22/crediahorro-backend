@@ -24,9 +24,9 @@ public class GraficoController {
         return graficoService.resumenPorAnioConMeses();
     }
 
-    @GetMapping("/prestamos-por-admin")
-    public Map<String, Map<String, Double>> getPrestamosPorAdmin() {
-        return graficoService.resumenPrestamosPorAdminPorAnio();
+    @GetMapping(path = "/capital-interes-por-admin")
+    public Map<String, Map<String, Map<String, Double>>> getCapitalEInteresPorAdmin() {
+        return graficoService.resumenCapitalEInteresPorAdminPorAnio();
     }
 
 }

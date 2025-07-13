@@ -99,21 +99,30 @@ public class GraficoServiceImpl implements GraficoService {
     }
 
     @Override
-    public Map<String, Map<String, Double>> resumenPrestamosPorAdminPorAnio() {
+    public Map<String, Map<String, Map<String, Double>>> resumenCapitalEInteresPorAdminPorAnio() {
         List<Prestamo> prestamos = prestamoRepository.obtenerTodosLosPrestamos();
 
-        Map<String, Map<String, Double>> resumen = new HashMap<>();
+        Map<String, Map<String, Map<String, Double>>> resumen = new HashMap<>();
+        for (Prestamo prestamo : prestamos) {
+            String admin = prestamo.getUsernameAdministrador();
+            String anio = String.valueOf(prestamo.getFechaCreacion().getYear());
 
-        for (Prestamo p : prestamos) {
-            String admin = p.getUsernameAdministrador();
-            String anio = String.valueOf(p.getFechaCreacion().getYear());
-            double monto = p.getMonto();
+            double capital = prestamo.getMonto();
+            double interes = prestamo.getCuotas().stream()
+                    .filter(c -> "PAGADA".equalsIgnoreCase(c.getEstado()))
+                    .mapToDouble(Cuota::getInteres)
+                    .sum();
 
             resumen
                     .computeIfAbsent(admin, k -> new HashMap<>())
-                    .merge(anio, monto, Double::sum);
-        }
+                    .computeIfAbsent(anio, k -> new HashMap<>())
+                    .merge("capital", capital, Double::sum);
 
+            resumen
+                    .get(admin)
+                    .get(anio)
+                    .merge("interes", interes, Double::sum);
+        }
         return resumen;
     }
 

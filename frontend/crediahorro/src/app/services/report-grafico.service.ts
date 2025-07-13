@@ -14,8 +14,8 @@ export class ReportGraficoService {
     return this.http.get(`${this.apiUrl}/prestamos-por-anio`);
   }
 
-  getPorAdmin(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/prestamos-por-admin`);
+  getCapitalInteresPorAdmin(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/capital-interes-por-admin`);
   }
 
 }

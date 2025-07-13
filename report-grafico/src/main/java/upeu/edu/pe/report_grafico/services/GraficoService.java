@@ -5,5 +5,5 @@ import java.util.Map;
 
 public interface GraficoService {
     Map<String, List<Map<String, Object>>> resumenPorAnioConMeses();
-    Map<String, Map<String, Double>> resumenPrestamosPorAdminPorAnio();
+    Map<String, Map<String, Map<String, Double>>> resumenCapitalEInteresPorAdminPorAnio();
 }

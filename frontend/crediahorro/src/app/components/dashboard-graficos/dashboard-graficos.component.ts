@@ -18,7 +18,7 @@ export class DashboardGraficosComponent implements OnInit {
   anualConMesesData: any[] = [];
   anualPrestamosData: any[] = [];
   availableYears: string[] = [];
-  prestamosPorAdmin: any[] = [];
+  capitalInteresAdmin: any[] = [];
   selectedYear: string = '';
   showRecaudoPanel: boolean = false;
 
@@ -66,27 +66,28 @@ export class DashboardGraficosComponent implements OnInit {
       this.selectedYear = this.availableYears[0];
     });
 
-    this.reportService.getPorAdmin().subscribe(data => {
-      this.prestamosPorAdmin = this.mapPrestamosPorAdmin(data);
+    this.reportService.getCapitalInteresPorAdmin().subscribe(data => {
+      this.capitalInteresAdmin = this.mapCapitalInteresPorAdmin(data);
     });
   }
 
-  mapPrestamosPorAdmin(data: any): any[] {
-    const resultado: any[] = [];
+  mapCapitalInteresPorAdmin(data: any): any[] {
+    const lista = [];
     for (const admin in data) {
       for (const anio in data[admin]) {
-        resultado.push({
+        lista.push({
           admin,
           anio,
-          monto: data[admin][anio]
+          capital: data[admin][anio]["capital"] || 0,
+          interes: data[admin][anio]["interes"] || 0
         });
       }
     }
-    return resultado;
+    return lista;
   }
 
-  get prestamosFiltradosPorAdmin(): any[] {
-    return this.prestamosPorAdmin.filter(p => p.anio === this.selectedYear);
+  get capitalInteresFiltrado(): any[] {
+    return this.capitalInteresAdmin.filter(p => p.anio === this.selectedYear);
   }
 
   mapIntereses(data: any): any[] {
