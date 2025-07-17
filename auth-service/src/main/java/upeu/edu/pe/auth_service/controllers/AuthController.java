@@ -47,9 +47,11 @@ public class AuthController {
                         this.authService.validateToken(TokenDto.builder().accessToken(accessToken).build()));
     }
 
-    @GetMapping(path = "admin-exists")
-    public boolean adminExists() {
-        return userRepository.findAll().stream().anyMatch(u -> u.getEmail() != null);
+    @GetMapping("/admin-exists")
+    public boolean existeAdminRegistrado() {
+        return userRepository.findAll().stream()
+                .filter(u -> u.getEmail() != null && !u.getEmail().isBlank())
+                .count() >= 2;
     }
 
     @PostMapping(path = "verify-code") // Valida código y genera JWT real
@@ -57,13 +59,11 @@ public class AuthController {
         return ResponseEntity.ok(authService.verifyAccessCode(codeDto));
     }
 
-    @GetMapping(path = "admin-email")
-    public String getAdminEmail() {
-        return userRepository.findAll().stream()
-                .filter(u -> u.getEmail() != null && !u.getEmail().isEmpty())
+    @GetMapping(path = "admin-email/{username}")
+    public String getEmailByUsername(@PathVariable String username) {
+        return userRepository.findByUsername(username)
                 .map(UserEntity::getEmail)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No admin email found"));
+                .orElseThrow(() -> new RuntimeException("Email no encontrado para el administrador"));
     }
 
 }

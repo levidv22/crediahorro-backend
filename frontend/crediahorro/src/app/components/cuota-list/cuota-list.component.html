@@ -153,7 +153,10 @@
     </ng-container>-->
 
     <!-- Siempre mostrar Pagar Monto Total -->
-    <button class="btn btn-outline-primary w-100 my-2" (click)="pagarAvanzado('Completo')">
+    <button
+      class="btn btn-outline-primary w-100 my-2"
+      [disabled]="!esCuotaHabilitadaParaPago(cuotaSeleccionada!)"
+      (click)="pagarAvanzado('Completo')">
       <i class="bi bi-cash"></i> Pagar Monto Total
     </button>
 

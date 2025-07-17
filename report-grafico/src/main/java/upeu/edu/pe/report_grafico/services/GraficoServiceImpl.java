@@ -66,27 +66,19 @@ public class GraficoServiceImpl implements GraficoService {
         // Intereses: por cuota si está ACTIVO, o usar interesTotal si está PAGADO
         for (Prestamo prestamo : prestamos) {
             if ("PAGADO".equalsIgnoreCase(prestamo.getEstado())) {
-                // Usar el interesTotal solo cuando el préstamo está PAGADO
-                Optional<Cuota> ultimaCuotaPagada = prestamo.getCuotas().stream()
-                        .filter(c -> c.getFechaPagada() != null)
-                        .max(Comparator.comparing(Cuota::getFechaPagada));
+                LocalDate fecha = prestamo.getFechaInicio();  // Usamos fechaInicio del préstamo
+                String anio = String.valueOf(fecha.getYear());
+                String mesNombre = fecha.getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
+                List<Map<String, Object>> meses = resultado.get(anio);
 
-                if (ultimaCuotaPagada.isPresent()) {
-                    LocalDate fecha = ultimaCuotaPagada.get().getFechaPagada();
-                    String anio = String.valueOf(fecha.getYear());
-                    String mesNombre = fecha.getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
-                    List<Map<String, Object>> meses = resultado.get(anio);
+                if (meses != null) {
+                    Map<String, Object> mesData = meses.stream()
+                            .filter(m -> m.get("mes").equals(mesNombre))
+                            .findFirst()
+                            .orElseThrow();
 
-                    if (meses != null) {
-                        Map<String, Object> mesData = meses.stream()
-                                .filter(m -> m.get("mes").equals(mesNombre))
-                                .findFirst()
-                                .orElseThrow();
-
-                        mesData.put("interesPagado", ((Number) mesData.get("interesPagado")).doubleValue() + prestamo.getInteresTotal());
-                    }
+                    mesData.put("interesPagado", ((Number) mesData.get("interesPagado")).doubleValue() + prestamo.getInteresTotal());
                 }
-
             } else {
                 // ACTIVO: sumar intereses de cuotas pagadas
                 for (Cuota cuota : prestamo.getCuotas()) {

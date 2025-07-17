@@ -46,19 +46,18 @@ public class AuthServiceImpl implements AuthService {
 
         this.validPassword(user, userFromDB);
 
+        // Solo administradores (con correo) pueden iniciar sesión
+        if (userFromDB.getEmail() == null || userFromDB.getEmail().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Solo los administradores pueden iniciar sesión");
+        }
+
         // Generar código de acceso
         String code = String.valueOf((int) ((Math.random() * 900000) + 100000));
         userFromDB.setAccessCode(code);
         userRepository.save(userFromDB);
 
-        // Enviar email si existe
-        String adminEmail = userRepository.findAll().stream()
-                .filter(u -> u.getEmail() != null)
-                .map(UserEntity::getEmail)
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Admin email not found"));
-
-        enviarEmail(adminEmail, code, userFromDB);
+        // Enviar al correo del admin que está intentando iniciar sesión
+        enviarEmail(userFromDB.getEmail(), code, userFromDB);
 
         return TokenDto.builder().accessToken("Código enviado. Verifica tu correo.").build();
     }
@@ -66,28 +65,28 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void register(RegisterDto registerDto) {
         if (userRepository.findByUsername(registerDto.getUsername()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre de usuario ya existe");
         }
 
-        boolean adminExists = userRepository.findAll().stream().anyMatch(u -> u.getEmail() != null);
+        long cantidadAdmins = userRepository.findAll().stream()
+                .filter(u -> u.getEmail() != null && !u.getEmail().isBlank())
+                .count();
 
-        if (adminExists && registerDto.getEmail() != null && !registerDto.getEmail().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only first user can register with email");
+        if (cantidadAdmins >= 2 && registerDto.getEmail() != null && !registerDto.getEmail().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solo se permiten 2 administradores con correo");
         }
 
-        if (!adminExists && (registerDto.getEmail() == null || registerDto.getEmail().isBlank())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "First user must provide an email");
+        if (cantidadAdmins < 2 && (registerDto.getEmail() == null || registerDto.getEmail().isBlank())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Los primeros 2 usuarios deben registrar su correo electrónico");
         }
 
-        UserEntity newUser = new UserEntity();
-        newUser.setUsername(registerDto.getUsername());
-        newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        newUser.setWhatsapp(registerDto.getWhatsapp());
-        if (!adminExists) {
-            newUser.setEmail(registerDto.getEmail());
-        }
+        UserEntity nuevo = new UserEntity();
+        nuevo.setUsername(registerDto.getUsername());
+        nuevo.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        nuevo.setWhatsapp(registerDto.getWhatsapp());
+        nuevo.setEmail(registerDto.getEmail());
 
-        userRepository.save(newUser);
+        userRepository.save(nuevo);
     }
 
     @Override

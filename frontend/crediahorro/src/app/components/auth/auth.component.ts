@@ -40,10 +40,10 @@ export class AuthComponent implements OnInit {
   checkAdminExists(): void {
     this.http.get<boolean>(`${environment.apiUrl}/auth-service/auth/admin-exists`)
       .subscribe({
-        next: (exists) => {
-          this.showEmailField = !exists; // Solo muestra si NO existe admin
-          if (exists) {
-            this.registerData.email = ''; // Limpia por si acaso
+        next: (twoAdminsExist) => {
+          this.showEmailField = !twoAdminsExist;
+          if (twoAdminsExist) {
+            this.registerData.email = '';
           }
         },
         error: () => {

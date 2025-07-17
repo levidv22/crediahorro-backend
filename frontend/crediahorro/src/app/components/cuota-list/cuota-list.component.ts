@@ -206,5 +206,20 @@ export class CuotaListComponent implements OnInit {
     return esUltima || esDiaria;
   }
 
+  esCuotaHabilitadaParaPago(cuota: Cuota): boolean {
+    if (!this.cuotas || this.cuotas.length === 0) return false;
+
+    const index = this.cuotas.findIndex(c => c.id === cuota.id);
+    if (index === -1) return false;
+
+    // Si es la primera cuota
+    if (index === 0) {
+      return cuota.estado === 'PENDIENTE';
+    }
+
+    // Verifica si la cuota anterior está pagada
+    const cuotaAnterior = this.cuotas[index - 1];
+    return cuota.estado === 'PENDIENTE' && cuotaAnterior.estado === 'PAGADA';
+  }
 
 }

@@ -12,6 +12,7 @@ public class Prestamo {
     private int numeroCuotas;
     private String tipoCuota; // valores: "MENSUAL" o "DIARIO"
     private double interesTotal;
+    private String usernameAdministrador;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaCreacion;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -22,13 +23,14 @@ public class Prestamo {
     public Prestamo() {
     }
 
-    public Prestamo(Long id, double monto, double tasaInteresMensual, int numeroCuotas, String tipoCuota, double interesTotal, LocalDate fechaCreacion, LocalDate fechaInicio, String estado, List<Cuota> cuotas) {
+    public Prestamo(Long id, double monto, double tasaInteresMensual, int numeroCuotas, String tipoCuota, double interesTotal, String usernameAdministrador, LocalDate fechaCreacion, LocalDate fechaInicio, String estado, List<Cuota> cuotas) {
         this.id = id;
         this.monto = monto;
         this.tasaInteresMensual = tasaInteresMensual;
         this.numeroCuotas = numeroCuotas;
         this.tipoCuota = tipoCuota;
         this.interesTotal = interesTotal;
+        this.usernameAdministrador = usernameAdministrador;
         this.fechaCreacion = fechaCreacion;
         this.fechaInicio = fechaInicio;
         this.estado = estado;
@@ -115,6 +117,14 @@ public class Prestamo {
         this.interesTotal = interesTotal;
     }
 
+    public String getUsernameAdministrador() {
+        return usernameAdministrador;
+    }
+
+    public void setUsernameAdministrador(String usernameAdministrador) {
+        this.usernameAdministrador = usernameAdministrador;
+    }
+
     public static class Builder {
         private Long id;
         private double monto;
@@ -122,6 +132,7 @@ public class Prestamo {
         private int numeroCuotas;
         private String tipoCuota; // valores: "MENSUAL" o "DIARIO"
         private double interesTotal;
+        private String usernameAdministrador;
         private LocalDate fechaCreacion;
         private LocalDate fechaInicio;
         private String estado;
@@ -152,6 +163,11 @@ public class Prestamo {
             return this;
         }
 
+        public Builder usernameAdministrador(String usernameAdministrador) {
+            this.usernameAdministrador = usernameAdministrador;
+            return this;
+        }
+
         public Builder numeroCuotas(int numeroCuotas) {
             this.numeroCuotas = numeroCuotas;
             return this;
@@ -178,7 +194,7 @@ public class Prestamo {
         }
 
         public Prestamo build() {
-            return new Prestamo(id, monto, tasaInteresMensual, numeroCuotas, tipoCuota, interesTotal, fechaCreacion, fechaInicio, estado, cuotas);
+            return new Prestamo(id, monto, tasaInteresMensual, numeroCuotas, tipoCuota, interesTotal, usernameAdministrador, fechaCreacion, fechaInicio, estado, cuotas);
         }
     }
 
