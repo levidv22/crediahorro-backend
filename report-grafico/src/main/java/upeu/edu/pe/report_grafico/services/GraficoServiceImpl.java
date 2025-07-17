@@ -28,7 +28,6 @@ public class GraficoServiceImpl implements GraficoService {
 
         Map<String, List<Map<String, Object>>> resultado = new TreeMap<>();
 
-        // Recolectar todos los años presentes: años con préstamos o cuotas pagadas
         Set<Integer> anios = new HashSet<>();
         prestamos.forEach(p -> {
             anios.add(p.getFechaCreacion().getYear());
@@ -37,7 +36,7 @@ public class GraficoServiceImpl implements GraficoService {
                     .forEach(c -> anios.add(c.getFechaPago().getYear()));
         });
 
-        // Inicializar los meses para cada año
+        // Inicializa meses para cada año
         for (Integer anio : anios) {
             List<Map<String, Object>> meses = new ArrayList<>();
             for (Month mes : Month.values()) {
@@ -50,7 +49,7 @@ public class GraficoServiceImpl implements GraficoService {
             resultado.put(String.valueOf(anio), meses);
         }
 
-        // Sumar montos prestados según fechaCreacion
+        // Monto prestado según fechaCreacion
         for (Prestamo prestamo : prestamos) {
             int anio = prestamo.getFechaCreacion().getYear();
             String mesNombre = prestamo.getFechaCreacion().getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
@@ -64,32 +63,57 @@ public class GraficoServiceImpl implements GraficoService {
             mesData.put("montoPrestado", ((Number) mesData.get("montoPrestado")).doubleValue() + prestamo.getMonto());
         }
 
-        // Sumar intereses pagados según fechaPago de cuotas pagadas
+        // Intereses: por cuota si está ACTIVO, o usar interesTotal si está PAGADO
         for (Prestamo prestamo : prestamos) {
-            for (Cuota cuota : prestamo.getCuotas()) {
-                if (!"PAGADA".equalsIgnoreCase(cuota.getEstado())) {
-                    continue;
+            if ("PAGADO".equalsIgnoreCase(prestamo.getEstado())) {
+                // Usar el interesTotal solo cuando el préstamo está PAGADO
+                Optional<Cuota> ultimaCuotaPagada = prestamo.getCuotas().stream()
+                        .filter(c -> c.getFechaPagada() != null)
+                        .max(Comparator.comparing(Cuota::getFechaPagada));
+
+                if (ultimaCuotaPagada.isPresent()) {
+                    LocalDate fecha = ultimaCuotaPagada.get().getFechaPagada();
+                    String anio = String.valueOf(fecha.getYear());
+                    String mesNombre = fecha.getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
+                    List<Map<String, Object>> meses = resultado.get(anio);
+
+                    if (meses != null) {
+                        Map<String, Object> mesData = meses.stream()
+                                .filter(m -> m.get("mes").equals(mesNombre))
+                                .findFirst()
+                                .orElseThrow();
+
+                        mesData.put("interesPagado", ((Number) mesData.get("interesPagado")).doubleValue() + prestamo.getInteresTotal());
+                    }
                 }
-                int anio = cuota.getFechaPago().getYear();
-                String mesNombre = cuota.getFechaPago().getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
-                List<Map<String, Object>> meses = resultado.get(String.valueOf(anio));
 
-                Map<String, Object> mesData = meses.stream()
-                        .filter(m -> m.get("mes").equals(mesNombre))
-                        .findFirst()
-                        .orElseThrow();
+            } else {
+                // ACTIVO: sumar intereses de cuotas pagadas
+                for (Cuota cuota : prestamo.getCuotas()) {
+                    if (!"PAGADA".equalsIgnoreCase(cuota.getEstado())) continue;
 
-                // Sumamos solo el INTERÉS
-                mesData.put("interesPagado", ((Number) mesData.getOrDefault("interesPagado", 0.0)).doubleValue() + cuota.getInteres());
+                    int anio = cuota.getFechaPago().getYear();
+                    String mesNombre = cuota.getFechaPago().getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
+                    List<Map<String, Object>> meses = resultado.get(String.valueOf(anio));
+
+                    if (meses != null) {
+                        Map<String, Object> mesData = meses.stream()
+                                .filter(m -> m.get("mes").equals(mesNombre))
+                                .findFirst()
+                                .orElseThrow();
+
+                        mesData.put("interesPagado", ((Number) mesData.get("interesPagado")).doubleValue() + cuota.getInteres());
+                    }
+                }
             }
         }
 
+        // Agrega resumen anual por año
         for (Map.Entry<String, List<Map<String, Object>>> entry : resultado.entrySet()) {
             double totalInteresesAnio = entry.getValue().stream()
                     .mapToDouble(m -> ((Number) m.get("interesPagado")).doubleValue())
                     .sum();
 
-            // Agrega un objeto especial "TOTAL"
             Map<String, Object> totalData = new HashMap<>();
             totalData.put("mes", "TOTAL");
             totalData.put("interesPagado", totalInteresesAnio);
@@ -104,15 +128,25 @@ public class GraficoServiceImpl implements GraficoService {
         List<Prestamo> prestamos = prestamoRepository.obtenerTodosLosPrestamos();
 
         Map<String, Map<String, Map<String, Double>>> resumen = new HashMap<>();
+
         for (Prestamo prestamo : prestamos) {
             String admin = prestamo.getUsernameAdministrador();
             String anio = String.valueOf(prestamo.getFechaCreacion().getYear());
-
             double capital = prestamo.getMonto();
-            double interes = prestamo.getCuotas().stream()
-                    .filter(c -> "PAGADA".equalsIgnoreCase(c.getEstado()))
-                    .mapToDouble(Cuota::getInteres)
-                    .sum();
+
+            // Verificar si todas las cuotas están pagadas
+            boolean todasCuotasPagadas = prestamo.getCuotas().stream()
+                    .allMatch(c -> "PAGADA".equalsIgnoreCase(c.getEstado()));
+
+            double interes;
+            if (todasCuotasPagadas) {
+                interes = prestamo.getInteresTotal();  // usar el interés completo
+            } else {
+                interes = prestamo.getCuotas().stream()
+                        .filter(c -> "PAGADA".equalsIgnoreCase(c.getEstado()))
+                        .mapToDouble(Cuota::getInteres)
+                        .sum();
+            }
 
             resumen
                     .computeIfAbsent(admin, k -> new HashMap<>())
@@ -124,6 +158,7 @@ public class GraficoServiceImpl implements GraficoService {
                     .get(anio)
                     .merge("interes", interes, Double::sum);
         }
+
         return resumen;
     }
 

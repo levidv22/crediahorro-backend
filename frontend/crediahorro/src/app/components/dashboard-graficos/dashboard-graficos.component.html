@@ -50,7 +50,7 @@
       </div>
     </div>
     <div class="prestamos-admin-card mt-4 w-50">
-      <label class="form-label fw-semibold mb-2">Clientes Pagados por Admin</label>
+      <label class="form-label fw-semibold mb-2">Préstamos Actuales</label>
 
       <div class="table-responsive">
         <table class="table table-bordered table-sm align-middle">
@@ -79,6 +79,10 @@
               <td class="text-end fw-bold text-success">S/ {{ cliente.totalPagado.toFixed(2) }}</td>
             </tr>
           </ng-container>
+          <tr class="table-active fw-bold text-end">
+            <td colspan="3" class="text-start">Total</td>
+            <td class="text-success">S/ {{ totalImporteClientesPagados.toFixed(2) }}</td>
+          </tr>
           </tbody>
         </table>
       </div>
@@ -177,11 +181,11 @@
       <div class="mb-2"><strong>Int. Gen.:</strong> S/ {{ totalInteres.toFixed(2) }}</div>
       <div class="mb-5"><strong>Ingresos:</strong> S/ {{ totalIngresos.toFixed(2) }}</div>
 
-      <div class="mb-2"><strong>Prest. a socios:</strong> S/ 0.00</div>
+      <!--<div class="mb-2"><strong>Prest. a socios:</strong> S/ 0.00</div>
       <div class="mb-5"><strong>Saldo Banco:</strong> S/ 0.00</div>
 
       <div class="mb-2"><strong>Int. x Rec:</strong> S/ 0.00</div>
-      <div class="mb-2"><strong>Sald. Cont.:</strong> S/ 0.00</div>
+      <div class="mb-2"><strong>Sald. Cont.:</strong> S/ 0.00</div>-->
 
       <button class="btn btn-outline-danger w-100 mt-3" (click)="showRecaudoPanel = false">
         <i class="bi bi-x-circle"></i> Cerrar

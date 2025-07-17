@@ -108,6 +108,10 @@ export class DashboardGraficosComponent implements OnInit {
     });
   }
 
+  get totalImporteClientesPagados(): number {
+    return this.pagosPorAdminFiltrado.reduce((sum, pago) => sum + (pago.totalPagado || 0), 0);
+  }
+
   // Agrupamiento de clientes por socio (admin)
   get pagosAgrupadosPorSocio(): any[] {
     const agrupados: { [key: string]: any[] } = {};
