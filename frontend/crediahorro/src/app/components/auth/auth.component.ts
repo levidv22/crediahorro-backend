@@ -69,14 +69,18 @@ export class AuthComponent implements OnInit {
 
   onSubmit(): void {
     if (this.isLoginMode) {
-      this.isLoading = true;
+      this.isLoading = true; // Mostrar cargando
+
       this.authService.login(this.loginData).subscribe({
         next: () => {
-           this.notificationService.show('success', 'Código enviado a su email.');
-           this.router.navigate(['/verify-code']);
-           this.isLoading = false;
+          this.notificationService.show('success', 'Código enviado a su email.');
+          this.router.navigate(['/verify-code']);
+          this.isLoading = false; // Ocultar cargando
         },
-        error: () => this.notificationService.show('error', 'Usuario o contraseña incorrectos.'),
+        error: () => {
+          this.isLoading = false; // Ocultar cargando incluso si hay error
+          this.notificationService.show('error', 'Usuario o contraseña incorrectos.');
+        },
       });
     } else {
       this.validatePassword();
@@ -85,23 +89,26 @@ export class AuthComponent implements OnInit {
         return;
       }
 
-      // Si no se muestra campo de email, asegúrate de NO enviarlo
       if (!this.showEmailField) {
         this.registerData.email = '';
       }
 
+      this.isLoading = true; // Mostrar cargando al registrar
       this.authService.register(this.registerData).subscribe({
         next: () => {
           this.notificationService.show('success', 'Registro exitoso.');
           this.isLoginMode = true;
+          this.isLoading = false; // Ocultar cargando
         },
         error: (err) => {
           console.error(err);
           this.notificationService.show('error', 'Hubo un error al registrarse.');
+          this.isLoading = false; // Ocultar cargando si hay error
         },
       });
     }
   }
+
 
   showPasswordLogin: boolean = false;
   showPasswordRegister: boolean = false;

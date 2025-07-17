@@ -2,7 +2,7 @@ spring:
   application:
     name: admin-service
   profiles:
-    default: default
+    default: prod
   config:
    #import: configserver:http://localhost:8888
    import: configserver:${CONFIG_SERVER_HOST}
@@ -19,7 +19,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: 'create-drop'
+      ddl-auto: update
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
 
@@ -43,8 +43,6 @@ logging:
               BasicBinder: TRACE
 eureka:
   instance:
-    hostname: localhost
-    prefer-ip-address: false
     instance-id: "${spring.application.name}:${random.value}"
   client:
     service-url:

@@ -75,7 +75,7 @@
             <tr *ngFor="let cliente of grupo.clientes" [hidden]="!grupo.abierto">
               <td></td>
               <td>{{ cliente.nombreCliente }}</td>
-              <td>{{ cliente.fechaUltimaCuotaPagada || 'N/A' }}</td>
+              <td>{{ cliente.fechaUltimaCuotaPagada ? (cliente.fechaUltimaCuotaPagada | date:'dd/MM/yyyy') : 'N/A' }}</td>
               <td class="text-end fw-bold text-success">S/ {{ cliente.totalPagado.toFixed(2) }}</td>
             </tr>
           </ng-container>

@@ -2,7 +2,7 @@ spring:
   application:
     name: report-ms
   profiles:
-    default: default
+    default: prod
   config:
    #import: "configserver:http://localhost:8888"
    import: configserver:${CONFIG_SERVER_HOST}
@@ -14,8 +14,6 @@ server:
 
 eureka:
   instance:
-    hostname: localhost
-    prefer-ip-address: false
     instance-id: "${spring.application.name}:${random.value}"
   client:
     service-url:

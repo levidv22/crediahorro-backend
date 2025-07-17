@@ -39,6 +39,17 @@ export class ClientePrestamosComponent implements OnInit {
             prestamo.cuotas.sort((a, b) => new Date(a.fechaPago).getTime() - new Date(b.fechaPago).getTime());
           }
         });
+        // Ordenar los préstamos: ACTIVO primero, luego PAGADO, luego otros
+        cliente.prestamos.sort((a, b) => {
+          const ordenEstado = (estado: string) => {
+            switch (estado?.toUpperCase()) {
+              case 'ACTIVO': return 0;
+              case 'PAGADO': return 1;
+              default: return 2;
+            }
+          };
+          return ordenEstado(a.estado!) - ordenEstado(b.estado!);
+        });
       } else {
         cliente.prestamos = [];
       }
