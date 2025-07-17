@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import upeu.edu.pe.admin_core_service.dto.ClientePagoDTO;
+import upeu.edu.pe.admin_core_service.entities.Cliente;
 import upeu.edu.pe.admin_core_service.entities.Cuota;
 import upeu.edu.pe.admin_core_service.entities.Prestamo;
 import upeu.edu.pe.admin_core_service.repository.ClienteRepository;
@@ -13,11 +15,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class PrestamoServiceImpl implements PrestamoService {
-
 
     private final PrestamoRepository prestamoRepository;
     private final ClienteRepository clienteRepository;
@@ -103,9 +105,14 @@ public class PrestamoServiceImpl implements PrestamoService {
         }
         prestamo.setCuotas(cuotas);
 
-        double interesTotal = cuotas.stream()
-                .mapToDouble(Cuota::getInteres)
+        double montoTotal = cuotas.stream()
+                .mapToDouble(Cuota::getMontoCuota)
                 .sum();
+
+        prestamo.setMontoTotal(Math.round(montoTotal * 10) * 10.0 / 100.0);
+
+        // interés total = total cuotas - monto original
+        double interesTotal = prestamo.getMontoTotal() - prestamo.getMonto();
         prestamo.setInteresTotal(Math.round(interesTotal * 10) * 10.0 / 100.0);
     }
 
@@ -139,9 +146,14 @@ public class PrestamoServiceImpl implements PrestamoService {
         }
         prestamo.setCuotas(cuotas);
 
-        double interesTotal = cuotas.stream()
-                .mapToDouble(Cuota::getInteres)
+        double montoTotal = cuotas.stream()
+                .mapToDouble(Cuota::getMontoCuota)
                 .sum();
+
+        prestamo.setMontoTotal(Math.round(montoTotal * 10) * 10.0 / 100.0);
+
+        // interés total = total cuotas - monto original
+        double interesTotal = prestamo.getMontoTotal() - prestamo.getMonto();
         prestamo.setInteresTotal(Math.round(interesTotal * 10) * 10.0 / 100.0);
     }
 
@@ -157,5 +169,42 @@ public class PrestamoServiceImpl implements PrestamoService {
         cuota = Math.round(cuota * 10) * 10.0 / 100.0;
 
         return cuota;
+    }
+
+    @Override
+    public List<ClientePagoDTO> obtenerResumenPagosPorAdministrador() {
+        List<Cliente> clientes = clienteRepository.findAll(); // Asegúrate de tener este repositorio
+
+        List<ClientePagoDTO> resultado = new ArrayList<>();
+
+        for (Cliente cliente : clientes) {
+            for (Prestamo prestamo : cliente.getPrestamos()) {
+                if (prestamo.getCuotas() == null || prestamo.getCuotas().isEmpty()) continue;
+
+                List<Cuota> cuotasPagadas = prestamo.getCuotas().stream()
+                        .filter(c -> "PAGADA".equalsIgnoreCase(c.getEstado()))
+                        .collect(Collectors.toList());
+
+                if (cuotasPagadas.isEmpty()) continue;
+
+                double totalPagado = cuotasPagadas.stream()
+                        .mapToDouble(Cuota::getMontoCuota)
+                        .sum();
+
+                LocalDate fechaUltima = cuotasPagadas.stream()
+                        .map(Cuota::getFechaPagada)
+                        .max(LocalDate::compareTo)
+                        .orElse(null);
+
+                resultado.add(new ClientePagoDTO(
+                        prestamo.getUsernameAdministrador(),
+                        cliente.getNombre(),
+                        fechaUltima,
+                        totalPagado
+                ));
+            }
+        }
+
+        return resultado;
     }
 }

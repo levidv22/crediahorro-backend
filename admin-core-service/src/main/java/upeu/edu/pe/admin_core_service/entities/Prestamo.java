@@ -20,6 +20,7 @@ public class Prestamo {
 
     private String tipoCuota; // valores: "MENSUAL" o "DIARIO"
     private double interesTotal;
+    private double montoTotal;
 
     @Column(name = "username_administrador")
     private String usernameAdministrador;
@@ -89,6 +90,14 @@ public class Prestamo {
         this.interesTotal = interesTotal;
     }
 
+    public double getMontoTotal() {
+        return montoTotal;
+    }
+
+    public void setMontoTotal(double montoTotal) {
+        this.montoTotal = montoTotal;
+    }
+
     public String getUsernameAdministrador() {
         return usernameAdministrador;
     }
@@ -139,6 +148,7 @@ public class Prestamo {
                 ", numeroCuotas=" + numeroCuotas +
                 ", tipoCuota='" + tipoCuota + '\'' +
                 ", interesTotal=" + interesTotal +
+                ", montoTotal=" + montoTotal +
                 ", usernameAdministrador=" + usernameAdministrador +
                 ", fechaCreacion=" + fechaCreacion +
                 ", fechaInicio=" + fechaInicio +
@@ -151,11 +161,11 @@ public class Prestamo {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Prestamo prestamo = (Prestamo) o;
-        return Double.compare(monto, prestamo.monto) == 0 && Double.compare(tasaInteresMensual, prestamo.tasaInteresMensual) == 0 && numeroCuotas == prestamo.numeroCuotas && Double.compare(interesTotal, prestamo.interesTotal) == 0 && Objects.equals(id, prestamo.id) && Objects.equals(tipoCuota, prestamo.tipoCuota) && Objects.equals(usernameAdministrador, prestamo.usernameAdministrador) && Objects.equals(fechaCreacion, prestamo.fechaCreacion) && Objects.equals(fechaInicio, prestamo.fechaInicio) && Objects.equals(estado, prestamo.estado) && Objects.equals(cuotas, prestamo.cuotas);
+        return Double.compare(monto, prestamo.monto) == 0 && Double.compare(tasaInteresMensual, prestamo.tasaInteresMensual) == 0 && numeroCuotas == prestamo.numeroCuotas && Double.compare(interesTotal, prestamo.interesTotal) == 0 && Double.compare(montoTotal, prestamo.montoTotal) == 0 && Objects.equals(id, prestamo.id) && Objects.equals(tipoCuota, prestamo.tipoCuota) && Objects.equals(usernameAdministrador, prestamo.usernameAdministrador) && Objects.equals(fechaCreacion, prestamo.fechaCreacion) && Objects.equals(fechaInicio, prestamo.fechaInicio) && Objects.equals(estado, prestamo.estado) && Objects.equals(cuotas, prestamo.cuotas);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, monto, tasaInteresMensual, numeroCuotas, tipoCuota, interesTotal, usernameAdministrador, fechaCreacion, fechaInicio, estado, cuotas);
+        return Objects.hash(id, monto, tasaInteresMensual, numeroCuotas, tipoCuota, interesTotal, montoTotal, usernameAdministrador, fechaCreacion, fechaInicio, estado, cuotas);
     }
 }

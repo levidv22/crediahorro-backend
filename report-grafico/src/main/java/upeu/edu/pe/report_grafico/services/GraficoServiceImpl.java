@@ -1,6 +1,7 @@
 package upeu.edu.pe.report_grafico.services;
 
 import org.springframework.stereotype.Service;
+import upeu.edu.pe.report_grafico.dto.ClientePagoDTO;
 import upeu.edu.pe.report_grafico.models.Cuota;
 import upeu.edu.pe.report_grafico.models.Prestamo;
 import upeu.edu.pe.report_grafico.repositories.PrestamoRepository;
@@ -126,4 +127,8 @@ public class GraficoServiceImpl implements GraficoService {
         return resumen;
     }
 
+    @Override
+    public List<ClientePagoDTO> resumenPagosPorAdministrador() {
+        return prestamoRepository.obtenerResumenPagosPorAdministrador();
+    }
 }

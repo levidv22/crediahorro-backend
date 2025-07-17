@@ -84,9 +84,14 @@ public class ClienteServiceImpl implements ClienteService{
         }
         prestamo.setCuotas(cuotas);
 
-        double interesTotal = cuotas.stream()
-                .mapToDouble(Cuota::getInteres)
+        double montoTotal = cuotas.stream()
+                .mapToDouble(Cuota::getMontoCuota)
                 .sum();
+
+        prestamo.setMontoTotal(Math.round(montoTotal * 10) * 10.0 / 100.0);
+
+        // interés total = total cuotas - monto original
+        double interesTotal = prestamo.getMontoTotal() - prestamo.getMonto();
         prestamo.setInteresTotal(Math.round(interesTotal * 10) * 10.0 / 100.0);
     }
 
@@ -120,9 +125,14 @@ public class ClienteServiceImpl implements ClienteService{
         }
         prestamo.setCuotas(cuotas);
 
-        double interesTotal = cuotas.stream()
-                .mapToDouble(Cuota::getInteres)
+        double montoTotal = cuotas.stream()
+                .mapToDouble(Cuota::getMontoCuota)
                 .sum();
+
+        prestamo.setMontoTotal(Math.round(montoTotal * 10) * 10.0 / 100.0);
+
+        // interés total = total cuotas - monto original
+        double interesTotal = prestamo.getMontoTotal() - prestamo.getMonto();
         prestamo.setInteresTotal(Math.round(interesTotal * 10) * 10.0 / 100.0);
     }
 

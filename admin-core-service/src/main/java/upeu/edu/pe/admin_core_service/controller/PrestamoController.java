@@ -2,6 +2,7 @@ package upeu.edu.pe.admin_core_service.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import upeu.edu.pe.admin_core_service.dto.ClientePagoDTO;
 import upeu.edu.pe.admin_core_service.entities.Prestamo;
 import upeu.edu.pe.admin_core_service.helpers.JwtHelperAdmin;
 import upeu.edu.pe.admin_core_service.service.PrestamoService;
@@ -63,4 +64,10 @@ public class PrestamoController {
         prestamoService.eliminarPrestamo(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping(path = "/pagos-cliente-por-admin")
+    public List<ClientePagoDTO> getResumenPagosPorAdministrador() {
+        return prestamoService.obtenerResumenPagosPorAdministrador();
+    }
+
 }

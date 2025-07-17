@@ -19,6 +19,8 @@ export class DashboardGraficosComponent implements OnInit {
   anualPrestamosData: any[] = [];
   availableYears: string[] = [];
   capitalInteresAdmin: any[] = [];
+  pagosPorAdmin: any[] = [];
+  toggleEstados: { [admin: string]: boolean } = {};
   selectedYear: string = '';
   showRecaudoPanel: boolean = false;
 
@@ -69,6 +71,10 @@ export class DashboardGraficosComponent implements OnInit {
     this.reportService.getCapitalInteresPorAdmin().subscribe(data => {
       this.capitalInteresAdmin = this.mapCapitalInteresPorAdmin(data);
     });
+
+    this.reportService.getPagosClientePorAdmin().subscribe(data => {
+      this.pagosPorAdmin = data;
+    });
   }
 
   mapCapitalInteresPorAdmin(data: any): any[] {
@@ -88,6 +94,40 @@ export class DashboardGraficosComponent implements OnInit {
 
   get capitalInteresFiltrado(): any[] {
     return this.capitalInteresAdmin.filter(p => p.anio === this.selectedYear);
+  }
+
+  get totalCapitalInteres() {
+    const totalCapital = this.capitalInteresFiltrado.reduce((sum, p) => sum + p.capital, 0);
+    const totalInteres = this.capitalInteresFiltrado.reduce((sum, p) => sum + p.interes, 0);
+    return { capital: totalCapital, interes: totalInteres };
+  }
+
+  get pagosPorAdminFiltrado(): any[] {
+    return this.pagosPorAdmin.filter(p => {
+      return p.fechaUltimaCuotaPagada?.startsWith(this.selectedYear);
+    });
+  }
+
+  // Agrupamiento de clientes por socio (admin)
+  get pagosAgrupadosPorSocio(): any[] {
+    const agrupados: { [key: string]: any[] } = {};
+
+    this.pagosPorAdminFiltrado.forEach(pago => {
+      if (!agrupados[pago.usernameAdministrador]) {
+        agrupados[pago.usernameAdministrador] = [];
+      }
+      agrupados[pago.usernameAdministrador].push(pago);
+    });
+
+    return Object.entries(agrupados).map(([admin, clientes]) => ({
+      admin,
+      clientes,
+      abierto: this.toggleEstados[admin] || false
+    }));
+  }
+
+  toggleDetalles(admin: string): void {
+    this.toggleEstados[admin] = !this.toggleEstados[admin];
   }
 
   mapIntereses(data: any): any[] {

@@ -18,4 +18,7 @@ export class ReportGraficoService {
     return this.http.get(`${this.apiUrl}/capital-interes-por-admin`);
   }
 
+  getPagosClientePorAdmin(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/pagos-cliente-por-admin`);
+  }
 }

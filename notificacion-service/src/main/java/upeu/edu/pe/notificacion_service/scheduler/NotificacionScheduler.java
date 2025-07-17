@@ -27,7 +27,7 @@ public class NotificacionScheduler {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "0 36 18 * * *") // Todos los días a las 6:00 AM
+    @Scheduled(cron = "0 0 14 * * *") // Todos los días a las 6:00 AM
     public void enviarNotificaciones() {
         List<Cliente> clientes = adminClient.obtenerClientes();
         String adminEmail = authClient.obtenerAdminEmail();

@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import upeu.edu.pe.report_grafico.dto.ClientePagoDTO;
 import upeu.edu.pe.report_grafico.services.GraficoService;
 
 import java.util.List;
@@ -29,4 +30,8 @@ public class GraficoController {
         return graficoService.resumenCapitalEInteresPorAdminPorAnio();
     }
 
+    @GetMapping(path = "/pagos-cliente-por-admin")
+    public List<ClientePagoDTO> getPagosClientePorAdmin() {
+        return graficoService.resumenPagosPorAdministrador();
+    }
 }

@@ -209,3 +209,17 @@ ngx-charts-bar-vertical {
     width: 100%;
   }
 }
+
+.tarjeta-capital-interes table td,
+.tarjeta-capital-interes table th {
+  font-size: 0.9rem;
+}
+
+.table-secondary {
+  background-color: #f1f3f5;
+}
+
+.table-secondary:hover {
+  background-color: #e2e6ea;
+}
+

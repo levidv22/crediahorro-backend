@@ -5,6 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import upeu.edu.pe.report_grafico.beans.LoadBalancerConfiguration;
+import upeu.edu.pe.report_grafico.dto.ClientePagoDTO;
 import upeu.edu.pe.report_grafico.models.Prestamo;
 
 import java.util.List;
@@ -13,6 +14,9 @@ import java.util.List;
 @LoadBalancerClient(name = "admin-service", configuration = LoadBalancerConfiguration.class)
 public interface PrestamoRepository {
 
-    @GetMapping("admin-service/prestamos/all")
+    @GetMapping(path = "admin-service/prestamos/all")
     List<Prestamo> obtenerTodosLosPrestamos();
+
+    @GetMapping(path = "admin-service/prestamos/pagos-cliente-por-admin")
+    List<ClientePagoDTO> obtenerResumenPagosPorAdministrador();
 }

@@ -1,5 +1,6 @@
 package upeu.edu.pe.admin_core_service.service;
 
+import upeu.edu.pe.admin_core_service.dto.ClientePagoDTO;
 import upeu.edu.pe.admin_core_service.entities.Prestamo;
 
 import java.util.List;
@@ -11,4 +12,5 @@ public interface PrestamoService {
     Prestamo crearPrestamoParaCliente(Long clienteId, Prestamo prestamo);
     Prestamo actualizarPrestamo(Long id, Prestamo nuevoPrestamo);
     void eliminarPrestamo(Long id);
+    List<ClientePagoDTO> obtenerResumenPagosPorAdministrador();
 }
