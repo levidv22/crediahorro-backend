@@ -83,6 +83,7 @@ services:
       - ms-registry-server
     environment:
       EUREKA_URL: http://ms-registry-server:8761/eureka/
+      SPRING_PROFILES_ACTIVE: oauth2
     ports:
       - "4040:4040"
 
