@@ -11,14 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 @FeignClient(name = "admin-service")
-@LoadBalancerClient(name = "admin-service", configuration = LoadBalancerConfiguration.class)
 public interface ConsultaRepository {
 
-    @GetMapping(path = "admin-service/consultas/prestamos")
+    @GetMapping("/consultas/prestamos")
     List<Prestamo> obtenerPrestamosPorClienteYEstado(@RequestParam("nombre") String nombre,
                                                      @RequestParam("estado") String estado);
 
-    @GetMapping(path = "admin-service/consultas/cuotas")
+    @GetMapping("/consultas/cuotas")
     List<Cuota> obtenerCuotasPorClienteYEstado(@RequestParam("nombre") String nombre,
                                                @RequestParam("estado") String estado);
 }
