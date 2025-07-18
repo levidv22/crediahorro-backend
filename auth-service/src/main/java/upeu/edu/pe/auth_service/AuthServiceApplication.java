@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@EntityScan(basePackages = "upeu.edu.pe.admin_core_service.entities")
+@EntityScan(basePackages = "upeu.edu.pe.auth_service.entities")
 public class AuthServiceApplication {
 
 	public static void main(String[] args) {
