@@ -10,14 +10,14 @@ import upeu.edu.pe.report_ms.models.Prestamo;
 import java.util.List;
 import java.util.Optional;
 
-@FeignClient(name = "admin-service")
+@FeignClient(name = "admin-service", url = "https://ms-admin-core.onrender.com")
 public interface ConsultaRepository {
 
-    @GetMapping("/consultas/prestamos")
+    @GetMapping(path = "admin-service/consultas/prestamos")
     List<Prestamo> obtenerPrestamosPorClienteYEstado(@RequestParam("nombre") String nombre,
                                                      @RequestParam("estado") String estado);
 
-    @GetMapping("/consultas/cuotas")
+    @GetMapping(path = "admin-service/consultas/cuotas")
     List<Cuota> obtenerCuotasPorClienteYEstado(@RequestParam("nombre") String nombre,
                                                @RequestParam("estado") String estado);
 }
