@@ -1,16 +1,6 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:16.1
-    container_name: db-credi
-    restart: always
-    environment:
-      POSTGRES_DB: credi
-      POSTGRES_USER: crediahorro
-      POSTGRES_PASSWORD: levidv
-    ports:
-      - "5432:5432"
 
   ms-registry-server:
     build: ./registry-server
@@ -34,10 +24,12 @@ services:
     depends_on:
       - ms-config-server
       - ms-registry-server
-      - db
     environment:
       CONFIG_SERVER_HOST: http://ms-config-server:8888
       EUREKA_URL: http://ms-registry-server:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d1sqnler433s73ekut4g-a:5432/credi
+      SPRING_DATASOURCE_USERNAME: crediahorro
+      SPRING_DATASOURCE_PASSWORD: kKzXfS67Wfivr0dQ3nnJDWa9qhsl60Ag
 
   ms-report:
     build: ./report-ms
@@ -65,10 +57,12 @@ services:
     depends_on:
       - ms-config-server
       - ms-registry-server
-      - db
     environment:
       CONFIG_SERVER_HOST: http://ms-config-server:8888 
       EUREKA_URL: http://ms-registry-server:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d1sqnler433s73ekut4g-a:5432/credi
+      SPRING_DATASOURCE_USERNAME: crediahorro
+      SPRING_DATASOURCE_PASSWORD: kKzXfS67Wfivr0dQ3nnJDWa9qhsl60Ag
     ports:
       - "3030:3030"
 

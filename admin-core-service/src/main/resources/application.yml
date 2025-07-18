@@ -7,13 +7,13 @@ spring:
    #import: configserver:http://localhost:8888
    import: configserver:${CONFIG_SERVER_HOST}
   datasource:
-    url: ${db.url}
-    username: ${db.username}
-    password: ${db.password}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: ${db.maximum-pool-size}
-      connection-timeout: ${db.connection-timeout}
+      maximum-pool-size: 5
+      connection-timeout: 20000
     initialization-mode: always
 
   jpa:
