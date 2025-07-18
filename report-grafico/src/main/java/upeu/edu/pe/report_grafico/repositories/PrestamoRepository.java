@@ -11,12 +11,11 @@ import upeu.edu.pe.report_grafico.models.Prestamo;
 import java.util.List;
 
 @FeignClient(name = "admin-service")
-@LoadBalancerClient(name = "admin-service", configuration = LoadBalancerConfiguration.class)
 public interface PrestamoRepository {
 
-    @GetMapping(path = "admin-service/prestamos/all")
+    @GetMapping("/prestamos/all")
     List<Prestamo> obtenerTodosLosPrestamos();
 
-    @GetMapping(path = "admin-service/prestamos/pagos-cliente-por-admin")
+    @GetMapping("/prestamos/pagos-cliente-por-admin")
     List<ClientePagoDTO> obtenerResumenPagosPorAdministrador();
 }
