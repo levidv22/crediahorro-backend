@@ -9,9 +9,8 @@ import upeu.edu.pe.notificacion_service.model.Cliente;
 import java.util.List;
 
 @FeignClient(name = "admin-service")
-@LoadBalancerClient(name = "admin-service", configuration = LoadBalancerConfiguration.class)
 public interface AdminClient {
-    @GetMapping(path = "admin-service/clientes")
+    @GetMapping("/clientes")
     List<Cliente> obtenerClientes();
 }
 
