@@ -1,13 +1,12 @@
 version: '3.8'
 
 services:
-
   ms-registry-server:
     build: ./registry-server
     container_name: ms-registry-server
     ports:
       - "8761:8761"
-
+      
   ms-config-server:
     build: ./config-server
     container_name: ms-config-server
