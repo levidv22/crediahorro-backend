@@ -27,7 +27,7 @@ services:
     environment:
       CONFIG_SERVER_HOST: http://ms-config-server:8888
       EUREKA_URL: http://ms-registry-server:8761/eureka/
-      SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d1sqnler433s73ekut4g-a:5432/credi
+      SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d1sqnler433s73ekut4g-a.oregon-postgres.render.com:5432/credi
       SPRING_DATASOURCE_USERNAME: crediahorro
       SPRING_DATASOURCE_PASSWORD: kKzXfS67Wfivr0dQ3nnJDWa9qhsl60Ag
 
@@ -60,7 +60,7 @@ services:
     environment:
       CONFIG_SERVER_HOST: http://ms-config-server:8888 
       EUREKA_URL: http://ms-registry-server:8761/eureka/
-      SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d1sqnler433s73ekut4g-a:5432/credi
+      SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d1sqnler433s73ekut4g-a.oregon-postgres.render.com:5432/credi
       SPRING_DATASOURCE_USERNAME: crediahorro
       SPRING_DATASOURCE_PASSWORD: kKzXfS67Wfivr0dQ3nnJDWa9qhsl60Ag
     ports:

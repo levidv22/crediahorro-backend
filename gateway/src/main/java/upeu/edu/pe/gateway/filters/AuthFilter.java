@@ -15,7 +15,7 @@ public class AuthFilter implements GatewayFilter {
     private final WebClient webClient;
     //local
     //private static final String AUTH_VALIDATE_URI = "http://localhost:3030/auth-service/auth/jwt";
-    private static final String AUTH_VALIDATE_URI = "http://ms-auth-service:3030/auth-service/auth/jwt";
+    private static final String AUTH_VALIDATE_URI = "http://ms-auth-service.onrender.com/auth-service/auth/jwt";
     //build in server
     private static final String ACCESS_TOKEN_HEADER_NAME = "accessToken";
 
