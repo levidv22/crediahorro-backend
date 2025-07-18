@@ -16,9 +16,9 @@ public class CorsGlobalConfiguration {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
-                "https://ms-frontend.onrender.com",
                 "https://credi-frontend.onrender.com"
         ));
+        corsConfig.setMaxAge(8000L);
         corsConfig.addAllowedMethod("*");
         corsConfig.addAllowedHeader("*");
         corsConfig.setAllowCredentials(true);
@@ -29,3 +29,4 @@ public class CorsGlobalConfiguration {
         return new CorsWebFilter(source);
     }
 }
+
