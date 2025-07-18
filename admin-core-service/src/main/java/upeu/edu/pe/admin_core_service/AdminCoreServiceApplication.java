@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableDiscoveryClient //habilitar el registro en el registry-server
 @EnableFeignClients
 @EnableScheduling
+@EntityScan(basePackages = "upeu.edu.pe.admin_core_service.entities")
 public class AdminCoreServiceApplication {
 
 	public static void main(String[] args) {
