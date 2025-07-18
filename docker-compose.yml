@@ -1,12 +1,14 @@
 version: '3.8'
 
 services:
+  # 🌐 Eureka Server
   ms-registry-server:
     build: ./registry-server
     container_name: ms-registry-server
     ports:
-      - "8761:8761"
-      
+      - "8761:8761" # http://localhost:8761
+
+  # ⚙️ Config Server
   ms-config-server:
     build: ./config-server
     container_name: ms-config-server
@@ -15,8 +17,9 @@ services:
     environment:
       EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
     ports:
-      - "8888:8888"
+      - "8888:8888" # http://localhost:8888
 
+  # 🧑‍💼 Admin Core Service
   ms-admin-core:
     build: ./admin-core-service
     container_name: ms-admin-core
@@ -29,7 +32,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d1sqnler433s73ekut4g-a.oregon-postgres.render.com:5432/credi
       SPRING_DATASOURCE_USERNAME: crediahorro
       SPRING_DATASOURCE_PASSWORD: kKzXfS67Wfivr0dQ3nnJDWa9qhsl60Ag
+    ports:
+      - "8081:8081" # http://localhost:8081/admin-service
 
+  # 📊 Report Microservice
   ms-report:
     build: ./report-ms
     container_name: ms-report
@@ -39,7 +45,10 @@ services:
     environment:
       CONFIG_SERVER_HOST: https://ms-config-server-ewr2.onrender.com
       EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
+    ports:
+      - "8082:8082" # http://localhost:8082/report-ms
 
+  # 📈 Gráfico Report Microservice
   ms-report-grafico:
     build: ./report-grafico
     container_name: ms-report-grafico
@@ -49,7 +58,10 @@ services:
     environment:
       CONFIG_SERVER_HOST: https://ms-config-server-ewr2.onrender.com
       EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
+    ports:
+      - "8083:8083" # http://localhost:8083/report-grafico
 
+  # 🔐 Auth Service
   ms-auth-service:
     build: ./auth-service
     container_name: ms-auth-service
@@ -63,8 +75,9 @@ services:
       SPRING_DATASOURCE_USERNAME: crediahorro
       SPRING_DATASOURCE_PASSWORD: kKzXfS67Wfivr0dQ3nnJDWa9qhsl60Ag
     ports:
-      - "3030:3030"
+      - "3030:3030" # http://localhost:3030/auth-service
 
+  # ✉️ Notificaciones
   ms-notificacion-service:
     build: ./notificacion-service
     container_name: notificacion-service
@@ -75,6 +88,7 @@ services:
     ports:
       - "5555:5555"
 
+  # 🚪 API Gateway
   ms-gateway:
     build: ./gateway
     container_name: ms-gateway
@@ -84,12 +98,13 @@ services:
       EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
       SPRING_PROFILES_ACTIVE: oauth2
     ports:
-      - "4040:4040"
+      - "4040:4040" # http://localhost:4040
 
+  # 🎨 Angular Frontend (serving over Nginx)
   ms-frontend:
     build: ./frontend/crediahorro
     container_name: ms-frontend
     depends_on:
       - ms-gateway
     ports:
-      - "4200:80"
+      - "4200:80" # http://localhost:4200

@@ -62,21 +62,21 @@ public class GatewayBeans {
                 .route(route -> route
                         .path("/admin-service/**")
                         .filters(filter -> filter.filter(this.authFilter))
-                        .uri("lb://admin-service")  //load balance = lb = balanceo de carga
+                        .uri("https://ms-admin-core.onrender.com")  //load balance = lb = balanceo de carga
                 )
                 .route(route -> route
                         .path("/report-ms/**")
                         .filters(filter -> filter.filter(this.authFilter))
-                        .uri("lb://report-ms")
+                        .uri("https://ms-report.onrender.com")
                 )
                 .route(route -> route
                         .path("/report-grafico/**")
                         .filters(filter -> filter.filter(this.authFilter))
-                        .uri("lb://report-grafico")
+                        .uri("https://ms-report-grafico.onrender.com")
                 )
                 .route(route -> route
                         .path("/auth-service/auth/**")
-                        .uri("lb://auth-service")
+                        .uri("https://ms-auth-service-es6r.onrender.com")
                 )
                 .build();
     }

@@ -10,7 +10,7 @@ spring:
 server:
   servlet:
     context-path: /report-ms
-  port:  0
+  port:  8082
 
 eureka:
   instance:

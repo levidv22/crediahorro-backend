@@ -6,7 +6,7 @@ spring:
     import: configserver:${CONFIG_SERVER_HOST}
 
 server:
-  port: 0
+  port: 8083
   servlet:
     context-path: /report-grafico
 
