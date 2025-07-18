@@ -6,21 +6,14 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-
 @Configuration
 public class CorsGlobalConfiguration {
 
     @Bean
     public CorsWebFilter corsWebFilter() {
-        System.out.println("✅ CorsWebFilter activado");
-
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(Arrays.asList(
-                "http://localhost:4200",
-                "https://credi-frontend.onrender.com"
-        ));
-        corsConfig.setMaxAge(8000L);
+        corsConfig.addAllowedOrigin("http://localhost:4200");  // Frontend Angular
+        corsConfig.addAllowedOrigin("http://ms-frontend");
         corsConfig.addAllowedMethod("*");
         corsConfig.addAllowedHeader("*");
         corsConfig.setAllowCredentials(true);
@@ -31,4 +24,3 @@ public class CorsGlobalConfiguration {
         return new CorsWebFilter(source);
     }
 }
-
