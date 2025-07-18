@@ -24,7 +24,7 @@ services:
       - ms-config-server
       - ms-registry-server
     environment:
-      CONFIG_SERVER_HOST: http://ms-config-server:8888
+      CONFIG_SERVER_HOST: https://ms-config-server-ewr2.onrender.com
       EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
       SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d1sqnler433s73ekut4g-a.oregon-postgres.render.com:5432/credi
       SPRING_DATASOURCE_USERNAME: crediahorro
@@ -37,7 +37,7 @@ services:
       - ms-config-server
       - ms-registry-server
     environment:
-      CONFIG_SERVER_HOST: http://ms-config-server:8888
+      CONFIG_SERVER_HOST: https://ms-config-server-ewr2.onrender.com
       EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
 
   ms-report-grafico:
@@ -47,7 +47,7 @@ services:
       - ms-config-server
       - ms-registry-server
     environment:
-      CONFIG_SERVER_HOST: http://ms-config-server:8888
+      CONFIG_SERVER_HOST: https://ms-config-server-ewr2.onrender.com
       EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
 
   ms-auth-service:
@@ -57,7 +57,7 @@ services:
       - ms-config-server
       - ms-registry-server
     environment:
-      CONFIG_SERVER_HOST: http://ms-config-server:8888
+      CONFIG_SERVER_HOST: https://ms-config-server-ewr2.onrender.com
       EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
       SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d1sqnler433s73ekut4g-a.oregon-postgres.render.com:5432/credi
       SPRING_DATASOURCE_USERNAME: crediahorro
