@@ -10,12 +10,12 @@ import upeu.edu.pe.report_grafico.models.Prestamo;
 
 import java.util.List;
 
-@FeignClient(name = "admin-service")
+@FeignClient(name = "admin-service", url = "https://ms-admin-core.onrender.com")
 public interface PrestamoRepository {
 
-    @GetMapping("/prestamos/all")
+    @GetMapping(path = "admin-service/prestamos/all")
     List<Prestamo> obtenerTodosLosPrestamos();
 
-    @GetMapping("/prestamos/pagos-cliente-por-admin")
+    @GetMapping(path = "admin-service/prestamos/pagos-cliente-por-admin")
     List<ClientePagoDTO> obtenerResumenPagosPorAdministrador();
 }
