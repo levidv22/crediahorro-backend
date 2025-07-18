@@ -15,7 +15,7 @@ services:
     depends_on:
       - ms-registry-server
     environment:
-      EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
+      EUREKA_URL: https://ms-registry-server-ta22.onrender.com
     ports:
       - "8888:8888" # http://localhost:8888
 
@@ -28,7 +28,7 @@ services:
       - ms-registry-server
     environment:
       CONFIG_SERVER_HOST: https://ms-config-server-ewr2.onrender.com
-      EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
+      EUREKA_URL: https://ms-registry-server-ta22.onrender.com
       SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d1sqnler433s73ekut4g-a.oregon-postgres.render.com:5432/credi
       SPRING_DATASOURCE_USERNAME: crediahorro
       SPRING_DATASOURCE_PASSWORD: kKzXfS67Wfivr0dQ3nnJDWa9qhsl60Ag
@@ -44,7 +44,7 @@ services:
       - ms-registry-server
     environment:
       CONFIG_SERVER_HOST: https://ms-config-server-ewr2.onrender.com
-      EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
+      EUREKA_URL: https://ms-registry-server-ta22.onrender.com
     ports:
       - "8082:8082" # http://localhost:8082/report-ms
 
@@ -57,7 +57,7 @@ services:
       - ms-registry-server
     environment:
       CONFIG_SERVER_HOST: https://ms-config-server-ewr2.onrender.com
-      EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
+      EUREKA_URL: https://ms-registry-server-ta22.onrender.com
     ports:
       - "8083:8083" # http://localhost:8083/report-grafico
 
@@ -70,7 +70,7 @@ services:
       - ms-registry-server
     environment:
       CONFIG_SERVER_HOST: https://ms-config-server-ewr2.onrender.com
-      EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
+      EUREKA_URL: https://ms-registry-server-ta22.onrender.com
       SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-d1sqnler433s73ekut4g-a.oregon-postgres.render.com:5432/credi
       SPRING_DATASOURCE_USERNAME: crediahorro
       SPRING_DATASOURCE_PASSWORD: kKzXfS67Wfivr0dQ3nnJDWa9qhsl60Ag
@@ -84,7 +84,7 @@ services:
     depends_on:
       - ms-registry-server
     environment:
-      EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
+      EUREKA_URL: https://ms-registry-server-ta22.onrender.com
     ports:
       - "5555:5555"
 
@@ -95,7 +95,7 @@ services:
     depends_on:
       - ms-registry-server
     environment:
-      EUREKA_URL: https://ms-registry-server-ta22.onrender.com/eureka/
+      EUREKA_URL: https://ms-registry-server-ta22.onrender.com
       SPRING_PROFILES_ACTIVE: oauth2
     ports:
       - "4040:4040" # http://localhost:4040
