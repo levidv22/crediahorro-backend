@@ -10,7 +10,7 @@ import upeu.edu.pe.report_ms.models.Prestamo;
 import java.util.List;
 import java.util.Optional;
 
-@FeignClient(name = "admin-service")
+@FeignClient(name = "admin-service", url = "https://admin-service-production-1c43.up.railway.app")
 @LoadBalancerClient(name = "admin-service", configuration = LoadBalancerConfiguration.class)
 public interface ConsultaRepository {
 
