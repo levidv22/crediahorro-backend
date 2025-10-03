@@ -2,6 +2,7 @@ package upeu.edu.pe.admin_core_service.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -17,8 +18,9 @@ public class Cuota {
     private double montoCuota;
     private double capital;
     private double interes;
-    private String estado; // PENDIENTE o PAGADA
+    private String estado; // PENDIENTE, PAGADA, NO_PAGADA
     private String tipoPago; // Pagó Capital, Pagó Interés, Pagó Completo
+    private Double montoPagado;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaPagada;
 
@@ -89,6 +91,14 @@ public class Cuota {
         this.fechaPagada = fechaPagada;
     }
 
+    public Double getMontoPagado() {
+        return montoPagado;
+    }
+
+    public void setMontoPagado(Double montoPagado) {
+        this.montoPagado = montoPagado;
+    }
+
     @Override
     public String toString() {
         return "Cuota{" +
@@ -100,6 +110,7 @@ public class Cuota {
                 ", estado='" + estado + '\'' +
                 ", tipoPago='" + tipoPago + '\'' +
                 ", fechaPagada=" + fechaPagada +
+                ", montoPagado=" + montoPagado +
                 '}';
     }
 
@@ -107,11 +118,11 @@ public class Cuota {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Cuota cuota = (Cuota) o;
-        return Double.compare(montoCuota, cuota.montoCuota) == 0 && Double.compare(capital, cuota.capital) == 0 && Double.compare(interes, cuota.interes) == 0 && Objects.equals(id, cuota.id) && Objects.equals(fechaPago, cuota.fechaPago) && Objects.equals(estado, cuota.estado) && Objects.equals(tipoPago, cuota.tipoPago) && Objects.equals(fechaPagada, cuota.fechaPagada);
+        return Double.compare(montoCuota, cuota.montoCuota) == 0 && Double.compare(capital, cuota.capital) == 0 && Double.compare(interes, cuota.interes) == 0 && Objects.equals(id, cuota.id) && Objects.equals(fechaPago, cuota.fechaPago) && Objects.equals(estado, cuota.estado) && Objects.equals(tipoPago, cuota.tipoPago) && Objects.equals(montoPagado, cuota.montoPagado) && Objects.equals(fechaPagada, cuota.fechaPagada);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, fechaPago, montoCuota, capital, interes, estado, tipoPago, fechaPagada);
+        return Objects.hash(id, fechaPago, montoCuota, capital, interes, estado, tipoPago, montoPagado, fechaPagada);
     }
 }

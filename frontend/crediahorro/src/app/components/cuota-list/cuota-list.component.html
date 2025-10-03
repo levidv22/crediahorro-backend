@@ -3,7 +3,7 @@
     <div class="card-header bg-gradient text-white d-flex justify-content-between align-items-center rounded-top-4"
          style="background: linear-gradient(to right, #4e73df, #1cc88a);">
       <h4 class="m-0" style="color: black;">
-        <i class="bi bi-calendar-check-fill"></i> Cuotas del Préstamo
+        <i class="bi bi-calendar-check-fill"></i> Cuotas
       </h4>
       <button class="btn btn-light btn-sm" (click)="volver()">
         <i class="bi bi-arrow-left-circle"></i> Volver a Clientes
@@ -47,35 +47,66 @@
             <th><i class="bi bi-calendar-event"></i> Fecha Pagada</th>
             <th>S/ Monto Cuota</th>
             <th><i class="bi bi-clipboard-check"></i> Estado</th>
-            <th><i class="bi bi-file-earmark-text"></i> Tipo de Pago</th>
-            <!-- <th><i class="bi bi-gear-fill"></i> Acciones</th> -->
+            <th>----------</th>
+            <th>----------</th>
+            <th>----------</th>
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let cuota of cuotas">
+          <tr *ngFor="let cuota of cuotas; let i = index">
             <td>{{ cuota.fechaPago | date: 'dd/MM/yyyy' }}</td>
             <td>{{ cuota.fechaPagada ? (cuota.fechaPagada | date: 'dd/MM/yyyy') : '- -/- -/- - - -' }}</td>
             <td>{{ cuota.montoCuota | currency: 'S/':'symbol':'1.2-2' }}</td>
             <td>
-                <span [ngSwitch]="cuota.estado">
-                  <span *ngSwitchCase="'PAGADA'" class="badge rounded-pill bg-success px-3 py-2">Pagada</span>
-                  <span *ngSwitchCase="'PENDIENTE'" class="badge rounded-pill bg-warning text-dark px-3 py-2">Pendiente</span>
-                  <span *ngSwitchCase="'ADELANTADO'" class="badge rounded-pill bg-primary px-3 py-2">Adelantado</span>
-                  <span *ngSwitchDefault class="badge bg-secondary">{{ cuota.estado }}</span>
-                </span>
+              <ng-container *ngIf="cuota.tipoPago === 'NO_PAGADA'; else estadoNormal">
+                <span class="badge rounded-pill bg-danger px-3 py-2">No Pagada</span>
+              </ng-container>
+
+              <ng-template #estadoNormal>
+  <span *ngIf="cuota.tipoPago === 'PAGO_INCOMPLETO'" class="badge rounded-pill bg-info text-dark px-3 py-2">
+    Pago Parcial
+  </span>
+                <span *ngIf="cuota.tipoPago === 'Adelanto_MIXTO'" class="badge rounded-pill bg-secondary text-white px-3 py-2">
+    Interés + Capital Incompleto
+  </span>
+                <span *ngIf="cuota.estado === 'PAGADA' && cuota.tipoPago !== 'PAGO_INCOMPLETO' && cuota.tipoPago !== 'Adelanto_MIXTO'" class="badge rounded-pill bg-success px-3 py-2">
+    Pagada
+  </span>
+                <span *ngIf="cuota.estado === 'PENDIENTE'" class="badge rounded-pill bg-warning text-dark px-3 py-2">
+    Pendiente
+  </span>
+                <span *ngIf="cuota.estado === 'ADELANTADO'" class="badge rounded-pill bg-primary px-3 py-2">
+    Adelantado
+  </span>
+              </ng-template>
             </td>
             <td>
-              <span *ngIf="cuota.tipoPago"><strong>{{ cuota.tipoPago }}</strong></span>
-              <button *ngIf="!cuota.tipoPago" class="btn btn-sm btn-info ms-2" (click)="abrirModal(cuota)">
-                <i class="bi bi-search"></i> Ver Detalles
+              <button
+                class="btn btn-success btn-sm me-1"
+                [disabled]="!esPagarHabilitado(i)"
+                *ngIf="cuota.estado === 'PENDIENTE'"
+                (click)="pagarCuota(cuota.id)">
+                <i class="bi bi-check"></i> Pagar
               </button>
             </td>
-            <!-- <td>
-              <button *ngIf="cuota.estado === 'PENDIENTE'" class="btn btn-success btn-sm px-3"
-                      (click)="pagarCuota(cuota.id)">
-                <i class="bi bi-cash-coin"></i> Pagar Completo
+            <td>
+              <button
+                class="btn btn-danger btn-sm me-1"
+                [disabled]="!esOtroHabilitado(i)"
+                *ngIf="cuota.estado === 'PENDIENTE'"
+                (click)="noPagarCuota(cuota.id)">
+                <i class="bi bi-x"></i> No Pagar
               </button>
-            </td> -->
+            </td>
+            <td>
+              <button
+                class="btn btn-info btn-sm me-1"
+                [disabled]="!esOtroHabilitado(i)"
+                *ngIf="cuota.estado === 'PENDIENTE'"
+                (click)="abrirModalPagoParcial(cuota.id)">
+                <i class="bi bi-cash"></i> Ingresar Monto
+              </button>
+            </td>
           </tr>
           </tbody>
         </table>
@@ -120,49 +151,31 @@
     </div>
   </div>
 </main>
-
-<!-- Modal -->
-<div *ngIf="showModal" class="modal-overlay" (click)="cerrarModal()">
-  <div class="modal-content shadow" (click)="$event.stopPropagation()">
-    <h5 class="mb-3">
-      <i class="bi bi-cash-stack text-primary"></i> Detalles de Cuota
-    </h5>
-
-    <p><strong>Fecha de Pago:</strong> {{ cuotaSeleccionada?.fechaPago | date: 'dd/MM/yyyy' }}</p>
-
-    <!-- Mostrar Capital e Interés solo si NO es simplificado
-    <ng-container *ngIf="!esModalSimplificado">
-      <p><strong>Capital:</strong> S/ {{ cuotaSeleccionada?.capital | number: '1.2-2' }}</p>
-      <p><strong>Interés:</strong> S/ {{ cuotaSeleccionada?.interes | number: '1.2-2' }}</p>
-    </ng-container>-->
-
-    <p><strong>Monto Total:</strong>
-      S/ {{
-      (cuotaSeleccionada?.capital ?? 0) + (cuotaSeleccionada?.interes ?? 0) | number: '1.2-2'
-      }}
-    </p>
-
-    <!-- Mostrar botones parciales solo si NO es simplificado
-    <ng-container *ngIf="!esModalSimplificado">
-      <button class="btn btn-outline-success w-100 my-2" (click)="pagarAvanzado('Capital')">
-        <i class="bi bi-arrow-down-circle"></i> Pagar Solo Capital
-      </button>
-      <button class="btn btn-outline-warning w-100 my-2" (click)="pagarAvanzado('Interes')">
-        <i class="bi bi-arrow-up-circle"></i> Pagar Solo Interés
-      </button>
-    </ng-container>-->
-
-    <!-- Siempre mostrar Pagar Monto Total -->
-    <button
-      class="btn btn-outline-primary w-100 my-2"
-      [disabled]="!esCuotaHabilitadaParaPago(cuotaSeleccionada!)"
-      (click)="pagarAvanzado('Completo')">
-      <i class="bi bi-cash"></i> Pagar Monto Total
-    </button>
-
-    <button class="btn btn-outline-dark w-100" (click)="cerrarModal()">
-      <i class="bi bi-x-circle"></i> Cerrar
-    </button>
+<!-- Modal para ingresar monto -->
+<div class="modal fade" id="modalPagoParcial" tabindex="-1" aria-labelledby="modalPagoParcialLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-3 shadow">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title" id="modalPagoParcialLabel">
+          <i class="bi bi-cash-coin"></i> Ingresar Monto Parcial
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <label for="inputMontoParcial" class="form-label">Monto a pagar</label>
+        <input
+          type="number"
+          min="0.01"
+          class="form-control"
+          id="inputMontoParcial"
+          [(ngModel)]="montoParcial"
+          placeholder="Ingrese el monto a pagar">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" (click)="confirmarPagoParcial()">Confirmar</button>
+      </div>
+    </div>
   </div>
 </div>
 

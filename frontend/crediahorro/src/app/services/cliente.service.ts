@@ -22,7 +22,7 @@ export interface Prestamo {
   tipoCuota: 'MENSUAL' | 'DIARIO';
   fechaInicio: string;
   estado?: string;
-  fechaCreacion?: string;
+  fechaCreacion: string;
   cuotas?: Cuota[];
 }
 

@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Cliente, ClienteService } from '../../services/cliente.service';
+import { PrestamoService } from '../../services/prestamo.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ViewEncapsulation } from '@angular/core';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-cliente-prestamos',
@@ -27,6 +29,7 @@ export class ClientePrestamosComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private clienteService: ClienteService,
+    private prestamoService: PrestamoService,
     private router: Router
   ) {}
 
@@ -56,4 +59,11 @@ export class ClientePrestamosComponent implements OnInit {
       this.cliente = cliente;
     });
   }
+
+  exportarExcel(prestamoId: number): void {
+        this.prestamoService.exportarPrestamoPagado(prestamoId).subscribe(blob => {
+          const filename = `prestamo-${prestamoId}.xlsx`;
+          saveAs(blob, filename);
+        });
+      }
 }

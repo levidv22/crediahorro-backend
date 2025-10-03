@@ -62,21 +62,25 @@ public class GatewayBeans {
                 .route(route -> route
                         .path("/admin-service/**")
                         .filters(filter -> filter.filter(this.authFilter))
-                        .uri("https://https://admin-service-production-1c43.up.railway.app")  //load balance = lb = balanceo de carga
+                        .uri("lb://admin-service")
+                        //.uri("https://admin-service-production-1c43.up.railway.app")
                 )
                 .route(route -> route
                         .path("/report-ms/**")
                         .filters(filter -> filter.filter(this.authFilter))
-                        .uri("https://report-ms-production.up.railway.app")
+                        .uri("lb://report-ms")
+                        //.uri("https://report-ms-production.up.railway.app")
                 )
                 .route(route -> route
                         .path("/report-grafico/**")
                         .filters(filter -> filter.filter(this.authFilter))
-                        .uri("https://report-grafico-production.up.railway.app")
+                        .uri("lb://report-grafico")
+                        //.uri("https://report-grafico-production.up.railway.app")
                 )
                 .route(route -> route
                         .path("/auth-service/auth/**")
-                        .uri("https://auth-service-production-b27b.up.railway.app")
+                        .uri("lb://auth-service")
+                        //.uri("https://auth-service-production-b27b.up.railway.app")
                 )
                 .build();
     }

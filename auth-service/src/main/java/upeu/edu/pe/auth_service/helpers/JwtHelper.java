@@ -22,16 +22,27 @@ public class JwtHelper {
     @Value("${application.jwt.secret}")
     private String jwtSecret;
 
-    public String createToken(String username) {
+    public String createToken(String username, String role) {
         final var now = new Date();
         final var expirationDate = new Date(now.getTime() + (3600 * 1000));
         return Jwts
                 .builder()
                 .setSubject(username)
+                .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(expirationDate)
                 .signWith(this.getSecretKey())
                 .compact();
+    }
+
+    public String extractRole(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(this.getSecretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
     }
 
     //validacion del token

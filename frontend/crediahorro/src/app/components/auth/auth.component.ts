@@ -16,7 +16,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./auth.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent {
   isLoginMode: boolean = true;
   loginData: UserDto = { username: '', password: '' };
   registerData: RegisterDto = { username: '', password: '', whatsapp: '', email: '' };
@@ -24,7 +24,6 @@ export class AuthComponent implements OnInit {
   passwordTouched: boolean = false;
   passwordValid: boolean = false;
   isLoading: boolean = false;
-  showEmailField: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -33,33 +32,11 @@ export class AuthComponent implements OnInit {
     private notificationService: NotificationService
   ) {}
 
-  ngOnInit(): void {
-    this.checkAdminExists();
-  }
-
-  checkAdminExists(): void {
-    this.http.get<boolean>(`${environment.apiUrl}/auth-service/auth/admin-exists`)
-      .subscribe({
-        next: (twoAdminsExist) => {
-          this.showEmailField = !twoAdminsExist;
-          if (twoAdminsExist) {
-            this.registerData.email = '';
-          }
-        },
-        error: () => {
-          this.notificationService.show('error', 'Error verificando admin.');
-        }
-      });
-  }
-
   toggleMode(): void {
     this.isLoginMode = !this.isLoginMode;
     this.errorMessage = '';
     this.passwordTouched = false;
     this.passwordValid = false;
-    if (!this.isLoginMode) {
-      this.checkAdminExists();
-    }
   }
 
   validatePassword(): void {
@@ -69,16 +46,16 @@ export class AuthComponent implements OnInit {
 
   onSubmit(): void {
     if (this.isLoginMode) {
-      this.isLoading = true; // Mostrar cargando
+      this.isLoading = true;
 
       this.authService.login(this.loginData).subscribe({
         next: () => {
-          this.notificationService.show('success', 'Código enviado a su email.');
-          this.router.navigate(['/verify-code']);
-          this.isLoading = false; // Ocultar cargando
+          this.notificationService.show('success', 'Sesión iniciada.');
+          this.router.navigate(['/clientes']); // Redirigir directo a clientes
+          this.isLoading = false;
         },
         error: () => {
-          this.isLoading = false; // Ocultar cargando incluso si hay error
+          this.isLoading = false;
           this.notificationService.show('error', 'Usuario o contraseña incorrectos.');
         },
       });
@@ -89,21 +66,17 @@ export class AuthComponent implements OnInit {
         return;
       }
 
-      if (!this.showEmailField) {
-        this.registerData.email = '';
-      }
-
-      this.isLoading = true; // Mostrar cargando al registrar
+      this.isLoading = true;
       this.authService.register(this.registerData).subscribe({
         next: () => {
           this.notificationService.show('success', 'Registro exitoso.');
           this.isLoginMode = true;
-          this.isLoading = false; // Ocultar cargando
+          this.isLoading = false;
         },
         error: (err) => {
           console.error(err);
           this.notificationService.show('error', 'Hubo un error al registrarse.');
-          this.isLoading = false; // Ocultar cargando si hay error
+          this.isLoading = false;
         },
       });
     }

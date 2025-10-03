@@ -22,7 +22,7 @@ export interface Prestamo {
   tipoCuota: 'MENSUAL' | 'DIARIO';
   fechaInicio: string;
   estado?: string;
-  fechaCreacion?: string;
+  fechaCreacion: string;
   cuotas?: Cuota[]
 }
 
@@ -49,4 +49,9 @@ export class PrestamoService {
   eliminarPrestamo(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+
+  exportarPrestamoPagado(prestamoId: number): Observable<Blob> {
+      const url = `${this.baseUrl}/exportar/prestamo-pagado/${prestamoId}`;
+      return this.http.get(url, { responseType: 'blob' });
+    }
 }

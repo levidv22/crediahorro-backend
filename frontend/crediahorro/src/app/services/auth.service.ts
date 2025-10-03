@@ -40,14 +40,14 @@ export class AuthService {
     this.initInactivityWatcher();
   }
   login(user: UserDto): Observable<TokenDto> {
-    return this.http.post<TokenDto>(`${this.baseUrl}/login`, user)
-      .pipe(
-        tap(() => {
-          localStorage.setItem('username', user.username);
-          this.usernameSubject.next(user.username);
-          this.resetInactivityTimer();
-        })
-      );
+    return this.http.post<TokenDto>(`${this.baseUrl}/login`, user).pipe(
+      tap(res => {
+        localStorage.setItem('accessToken', res.accessToken);
+        localStorage.setItem('username', user.username);
+        this.usernameSubject.next(user.username);
+        this.resetInactivityTimer();
+      })
+    );
   }
 
   register(registerDto: RegisterDto): Observable<void> {
@@ -55,12 +55,8 @@ export class AuthService {
   }
 
   verifyCode(codeDto: CodeDto): Observable<TokenDto> {
-    return this.http.post<TokenDto>(`${this.baseUrl}/verify-code`, codeDto).pipe(
-      tap(res => {
-        localStorage.setItem('accessToken', res.accessToken);
-        this.resetInactivityTimer();
-      })
-    );
+    // Eliminado porque ya no se usa
+    return new Observable();
   }
 
   logout(): void {
@@ -101,7 +97,7 @@ export class AuthService {
             this.notificationService.show('success', '⏰ Sesión cerrada por inactividad.');
             location.href = '/auth';
           });
-        }, 3 * 60 * 1000); // 3 minutos
+        }, 15 * 60 * 1000); // 3 minutos
       }
     }
 

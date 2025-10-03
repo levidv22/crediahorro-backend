@@ -7,47 +7,40 @@
     </div>
 
     <div class="card-body p-4">
-      <form (ngSubmit)="aplicarPagoAdelantado()" #adelantoForm="ngForm" novalidate>
+      <form novalidate>
         <div class="row g-4">
-          <div class="col-md-6">
-            <label for="tipoPago" class="form-label fw-semibold">Tipo de Pago <span class="text-danger">*</span></label>
-            <select id="tipoPago" name="tipoPago"
-                    class="form-select"
-                    [(ngModel)]="tipoPago"
-                    (change)="actualizarMonto()"
-                    required
-                    #tipoInput="ngModel">
-
-              <option [ngValue]="null" disabled [selected]="!tipoPago">Seleccione una opción</option>
-
-              <option *ngIf="opcionesDisponibles.includes('CAPITAL')" value="CAPITAL">Reducir Capital</option>
-              <option *ngIf="opcionesDisponibles.includes('INTERES')" value="INTERES">Reducir Interés</option>
-              <option *ngIf="opcionesDisponibles.includes('COMPLETO')" value="COMPLETO">Pago Completo</option>
-            </select>
-            <div class="text-danger mt-1" *ngIf="tipoInput.invalid && tipoInput.touched">
-              Debe seleccionar un tipo de pago válido.
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label for="monto" class="form-label fw-semibold">Monto Adelantado <span class="text-danger">*</span></label>
-            <div class="input-group">
-              <span class="input-group-text bg-white">S/</span>
-              <input type="number" step="0.01" min="0" id="monto" name="monto"
-                     [(ngModel)]="monto"
-                     class="form-control"
-                     required
-                     #montoInput="ngModel">
-            </div>
-            <div class="text-danger mt-1" *ngIf="montoInput.invalid && montoInput.touched">
-              El monto es obligatorio.
+          <div *ngFor="let tipo of opcionesDisponibles" class="col-md-6">
+            <div class="card border-dark shadow-sm">
+              <div class="card-header fw-semibold bg-light text-black">
+                {{ tipo === 'MIXTO' ? 'Interés + Parte de Capital' : tipo }}
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <div class="input-group">
+                    <span class="input-group-text bg-white">S/</span>
+                    <input type="number"
+                           class="form-control"
+                           [(ngModel)]="montos[tipo]"
+                           [readonly]="tipo !== 'MIXTO'"
+                           name="monto-{{ tipo }}"
+                           [min]="tipo === 'MIXTO' ? saldoInteres : 0"
+                           required />
+                  </div>
+                  <small *ngIf="tipo === 'MIXTO'" class="text-muted">Mínimo: S/ {{ saldoInteres.toFixed(2) }}</small>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button type="button"
+                          class="btn btn-warning"
+                          (click)="aplicarPagoAdelantado(tipo)">
+                    <i class="bi bi-check-circle-fill"></i> Aplicar Adelanto
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="mt-4 d-flex justify-content-end gap-2">
-          <button type="submit" class="btn btn-success" [disabled]="adelantoForm.invalid">
-            <i class="bi bi-check-circle-fill"></i> Aplicar Adelanto
-          </button>
+        <div class="mt-4 d-flex justify-content-end">
           <button type="button" class="btn btn-secondary" (click)="volver()">
             <i class="bi bi-x-circle-fill"></i> Cancelar
           </button>

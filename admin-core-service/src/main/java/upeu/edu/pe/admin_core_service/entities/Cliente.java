@@ -18,6 +18,8 @@ public class Cliente {
     private String direccion;
     private String telefonoWhatsapp;
     private String correoElectronico;
+    private String username;
+    private String passwordTemporal;
 
     //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -94,6 +96,22 @@ public class Cliente {
         this.direccion = direccion;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPasswordTemporal() {
+        return passwordTemporal;
+    }
+
+    public void setPasswordTemporal(String passwordTemporal) {
+        this.passwordTemporal = passwordTemporal;
+    }
+
     @Override
     public String toString() {
         return "Cliente{" +
@@ -103,6 +121,8 @@ public class Cliente {
                 ", direccion='" + direccion + '\'' +
                 ", telefonoWhatsapp='" + telefonoWhatsapp + '\'' +
                 ", correoElectronico='" + correoElectronico + '\'' +
+                ", username='" + username + '\'' +
+                ", passwordTemporal='" + passwordTemporal + '\'' +
                 ", fechaCreacion=" + fechaCreacion +
                 ", prestamos=" + prestamos +
                 '}';
@@ -112,11 +132,11 @@ public class Cliente {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Cliente cliente = (Cliente) o;
-        return Objects.equals(id, cliente.id) && Objects.equals(nombre, cliente.nombre) && Objects.equals(dni, cliente.dni) && Objects.equals(direccion, cliente.direccion) && Objects.equals(telefonoWhatsapp, cliente.telefonoWhatsapp) && Objects.equals(correoElectronico, cliente.correoElectronico) && Objects.equals(fechaCreacion, cliente.fechaCreacion) && Objects.equals(prestamos, cliente.prestamos);
+        return Objects.equals(id, cliente.id) && Objects.equals(nombre, cliente.nombre) && Objects.equals(dni, cliente.dni) && Objects.equals(direccion, cliente.direccion) && Objects.equals(telefonoWhatsapp, cliente.telefonoWhatsapp) && Objects.equals(correoElectronico, cliente.correoElectronico) && Objects.equals(username, cliente.username) && Objects.equals(passwordTemporal, cliente.passwordTemporal) && Objects.equals(fechaCreacion, cliente.fechaCreacion) && Objects.equals(prestamos, cliente.prestamos);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nombre, dni, direccion, telefonoWhatsapp, correoElectronico, fechaCreacion, prestamos);
+        return Objects.hash(id, nombre, dni, direccion, telefonoWhatsapp, correoElectronico, username, passwordTemporal, fechaCreacion, prestamos);
     }
 }

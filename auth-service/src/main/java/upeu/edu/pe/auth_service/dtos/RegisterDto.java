@@ -6,15 +6,17 @@ public class RegisterDto {
     private String password;
     private String whatsapp;
     private String email;
+    private String role;
 
     public RegisterDto() {
     }
 
-    public RegisterDto(String username, String password, String whatsapp, String email) {
+    public RegisterDto(String username, String password, String whatsapp, String email, String role) {
         this.username = username;
         this.password = password;
         this.whatsapp = whatsapp;
         this.email = email;
+        this.role = role;
     }
 
     public String getUsername() {
@@ -49,12 +51,21 @@ public class RegisterDto {
         this.email = email;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public static class Builder {
 
         private String username;
         private String password;
         private String whatsapp;
         private String email;
+        private String role;
 
 
         public RegisterDto.Builder username(String username) {
@@ -77,9 +88,14 @@ public class RegisterDto {
             return this;
         }
 
+        public RegisterDto.Builder role(String role) {
+            this.role = role;
+            return this;
+        }
+
 
         public RegisterDto build() {
-            return new RegisterDto(username, password, whatsapp, email);
+            return new RegisterDto(username, password, whatsapp, email, role);
         }
     }
 

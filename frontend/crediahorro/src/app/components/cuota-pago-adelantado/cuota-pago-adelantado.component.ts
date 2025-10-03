@@ -22,6 +22,7 @@ export class CuotaPagoAdelantadoComponent implements OnInit {
   saldoInteres: number = 0;
   saldoTotal: number = 0;
   opcionesDisponibles: string[] = [];
+  montos: { [tipo: string]: number } = {};
 
   constructor(
     private cuotaService: CuotaService,
@@ -35,59 +36,66 @@ export class CuotaPagoAdelantadoComponent implements OnInit {
     this.cargarSaldos();
 
     const ultimoPago = localStorage.getItem(`ultimoTipoPago-${this.prestamoId}`);
-    if (ultimoPago === 'CAPITAL') {
-      this.opcionesDisponibles = ['INTERES'];
-      this.tipoPago = 'INTERES';
-    } else if (ultimoPago === 'INTERES') {
-      this.opcionesDisponibles = ['CAPITAL'];
-      this.tipoPago = 'CAPITAL';
-    } else {
-      this.opcionesDisponibles = ['CAPITAL', 'INTERES', 'COMPLETO'];
+      this.opcionesDisponibles = ['CAPITAL', 'INTERES', 'COMPLETO', 'MIXTO'];
       this.tipoPago = null!;
-    }
   }
 
   cargarSaldos() {
-      this.cuotaService.getSaldosByPrestamo(this.prestamoId).subscribe({
-        next: data => {
-          this.saldoCapital = data.capital;
-          this.saldoInteres = data.interes;
-          this.saldoTotal = data.total;
+    this.cuotaService.getSaldosByPrestamo(this.prestamoId).subscribe({
+      next: data => {
+        this.saldoCapital = data.capital;
+        this.saldoInteres = data.interes;
+        this.saldoTotal = data.total;
 
-          // Inicializa el monto con capital por defecto
-          this.actualizarMonto();
-        },
-        error: err => {
-          alert('Error al cargar saldos: ' + err.message);
-        }
-      });
-    }
+        this.montos = {
+          'CAPITAL': this.saldoCapital,
+          'INTERES': this.saldoInteres,
+          'COMPLETO': this.saldoTotal,
+          'MIXTO': this.saldoInteres + 10 // sugerencia mínima
+        };
+      },
+      error: err => {
+        alert('Error al cargar saldos: ' + err.message);
+      }
+    });
+  }
 
   actualizarMonto() {
-      switch (this.tipoPago) {
-        case 'CAPITAL':
-          this.monto = this.saldoCapital;
-          break;
-        case 'INTERES':
-          this.monto = this.saldoInteres;
-          break;
-        case 'COMPLETO':
-          this.monto = this.saldoTotal;
-          break;
-        default:
-          this.monto = 0;
-          break;
-      }
+    switch (this.tipoPago) {
+      case 'CAPITAL':
+        this.monto = this.saldoCapital;
+        break;
+      case 'INTERES':
+        this.monto = this.saldoInteres;
+        break;
+      case 'COMPLETO':
+        this.monto = this.saldoTotal;
+        break;
+      case 'MIXTO':
+        // ⚠️ Aquí el monto se debe dejar libre o poner un mínimo sugerido
+        this.monto = this.saldoInteres + 10; // sugerencia mínima
+        break;
+      default:
+        this.monto = 0;
+    }
+  }
+
+  aplicarPagoAdelantado(tipo: string) {
+    const monto = this.montos[tipo];
+
+    if (tipo === 'MIXTO' && monto < this.saldoInteres) {
+      this.notificationService.show('error', 'El monto debe cubrir al menos el interés pendiente.');
+      return;
     }
 
-  aplicarPagoAdelantado() {
-    this.cuotaService.aplicarPagoAdelantado(this.prestamoId, this.monto, this.tipoPago).subscribe({
+    this.cuotaService.aplicarPagoAdelantado(this.prestamoId, monto, tipo).subscribe({
       next: () => {
-        if (this.tipoPago === 'CAPITAL' || this.tipoPago === 'INTERES') {
-          localStorage.setItem(`ultimoTipoPago-${this.prestamoId}`, this.tipoPago);
+        if (tipo === 'CAPITAL' || tipo === 'INTERES') {
+          localStorage.setItem(`ultimoTipoPago-${this.prestamoId}`, tipo);
         } else {
           localStorage.removeItem(`ultimoTipoPago-${this.prestamoId}`);
         }
+
         this.notificationService.show('success', '✅ ¡Pago adelantado aplicado correctamente!');
         this.router.navigate(['/cuotas', this.prestamoId]);
       },

@@ -137,7 +137,7 @@
                 <label class="btn btn-outline-success" for="diario{{i}}">Diario</label>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label for="monto{{i}}" class="form-label fw-semibold">Monto <span class="text-danger">*</span></label>
               <input
                 type="number"
@@ -170,7 +170,17 @@
                 required
               />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
+              <label for="fechaC{{i}}" class="form-label fw-semibold">Fecha Préstamo</label>
+              <input
+                type="date"
+                id="fechaC{{i}}"
+                class="form-control"
+                [(ngModel)]="prestamo.fechaCreacion"
+                name="prestamoFechaC{{i}}"
+              />
+            </div>
+            <div class="col-md-2">
               <label for="fecha{{i}}" class="form-label fw-semibold">Fecha 1ra cuota <span class="text-danger">*</span></label>
               <input
                 type="date"
@@ -183,9 +193,12 @@
             </div>
           </div>
 
-          <div class="text-end mt-3">
+          <div class="d-flex justify-content-between mt-4">
             <button type="button" class="btn btn-outline-danger btn-sm" (click)="eliminarPrestamo(i)">
               <i class="bi bi-trash3"></i> Quitar Préstamo
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="mostrarCuotas(prestamo)">
+              <i class="bi bi-eye-fill"></i> Ver Cuotas
             </button>
           </div>
         </div>
@@ -199,13 +212,40 @@
 
       <!-- Botones -->
       <div class="d-flex gap-2 justify-content-end mt-5">
-        <button type="submit" class="btn btn-success px-4" [disabled]="clienteForm.invalid">
-          <i class="bi bi-check2-circle"></i> Guardar
+        <button type="submit" class="btn btn-success px-4" [disabled]="clienteForm.invalid || isSubmitting">
+          <i class="bi bi-check2-circle"></i> {{ isSubmitting ? 'Guardando...' : 'Guardar' }}
         </button>
         <button type="button" class="btn btn-secondary px-4" routerLink="/clientes">
           <i class="bi bi-arrow-return-left"></i> Cancelar
         </button>
       </div>
     </form>
+  </div>
+  <div class="modal fade" id="cuotasModal" tabindex="-1" aria-labelledby="cuotasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content rounded-4">
+        <div class="modal-header bg-primary text-white rounded-top-4">
+          <h5 class="modal-title" id="cuotasModalLabel"><i class="bi bi-calendar-check"></i> Detalle de Cuotas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group">
+            <li *ngFor="let cuota of cuotasGeneradas" class="list-group-item d-flex justify-content-between">
+              <span><i class="bi bi-calendar-event"></i> {{ formatearFecha(cuota.fechaPago) }}</span>
+              <span class="fw-bold text-success">S/ {{ cuota.montoCuota | number:'1.2-2' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between bg-light fw-bold">
+              <span>Total</span>
+              <span class="text-primary">S/ {{ totalCuotas | number:'1.2-2' }}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle"></i> Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

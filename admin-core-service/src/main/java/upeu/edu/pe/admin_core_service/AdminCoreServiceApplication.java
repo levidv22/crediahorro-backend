@@ -2,6 +2,7 @@ package upeu.edu.pe.admin_core_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -10,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableDiscoveryClient //habilitar el registro en el registry-server
 @EnableFeignClients
 @EnableScheduling
+@EntityScan(basePackages = "upeu.edu.pe.admin_core_service.entities")
 public class AdminCoreServiceApplication {
 
 	public static void main(String[] args) {

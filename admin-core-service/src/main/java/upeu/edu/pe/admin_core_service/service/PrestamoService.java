@@ -11,6 +11,7 @@ public interface PrestamoService {
     List<Prestamo> obtenerTodos();
     Prestamo crearPrestamoParaCliente(Long clienteId, Prestamo prestamo);
     Prestamo actualizarPrestamo(Long id, Prestamo nuevoPrestamo);
+    double calcularCuota(double monto, double tasa, int numeroCuotas);
     void eliminarPrestamo(Long id);
     List<ClientePagoDTO> obtenerResumenPagosPorAdministrador();
 }

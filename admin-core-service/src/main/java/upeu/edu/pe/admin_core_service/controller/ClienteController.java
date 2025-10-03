@@ -1,8 +1,11 @@
 package upeu.edu.pe.admin_core_service.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import upeu.edu.pe.admin_core_service.entities.Cliente;
+import upeu.edu.pe.admin_core_service.entities.Cuota;
+import upeu.edu.pe.admin_core_service.entities.Prestamo;
 import upeu.edu.pe.admin_core_service.helpers.JwtHelperAdmin;
 import upeu.edu.pe.admin_core_service.service.ClienteService;
 
@@ -71,5 +74,6 @@ public class ClienteController {
         Cliente nuevoCliente = clienteService.guardarCliente(cliente);
         return ResponseEntity.ok(nuevoCliente);
     }
+
 
 }

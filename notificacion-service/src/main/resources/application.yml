@@ -4,16 +4,29 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: levidiaz222@gmail.com
-    password: amxc hlnt ldtb wlgp
+    username: levidiaz2209@gmail.com
+#    username: levidiaz222@gmail.com
+    password: yjow xfnt tfld zpqo
+#    password: amxc hlnt ldtb wlgp
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
+  devtools:
+    restart:
+      enabled: false
 
 server:
   port: 5555
 
 eureka:
+  instance:
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 60
+    prefer-ip-address: true
+    instance-id: "${spring.application.name}:${random.value}"
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
-      defaultZone: ${EUREKA_URL}
+      #defaultZone: http://localhost:8761/eureka/
+      defaultZone: https://registry-server-production-9b34.up.railway.app/eureka/

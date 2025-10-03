@@ -12,15 +12,20 @@ spring:
           default-label: master
           clone-on-start: true
           username: Vane2706
-          password: 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
+          password: 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
           #password: ${GIT_TOKEN}
 server:
   port: 8888
 
 eureka:
   instance:
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 60
+    prefer-ip-address: true
     instance-id: "${spring.application.name}:${random.value}"
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
       #defaultZone: http://localhost:8761/eureka/
       defaultZone: ${EUREKA_URL}

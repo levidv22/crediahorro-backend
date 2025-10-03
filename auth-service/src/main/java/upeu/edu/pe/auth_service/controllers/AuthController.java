@@ -29,7 +29,8 @@ public class AuthController {
 
     @PostMapping(path = "login") //password = secret2025
     public ResponseEntity<TokenDto> jwtCreate(@RequestBody UserDto user) {
-        return ResponseEntity.ok(this.authService.login(user));
+        TokenDto token = authService.login(user);
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping(path = "register")
@@ -45,18 +46,6 @@ public class AuthController {
         return
                 ResponseEntity.ok(
                         this.authService.validateToken(TokenDto.builder().accessToken(accessToken).build()));
-    }
-
-    @GetMapping("/admin-exists")
-    public boolean existeAdminRegistrado() {
-        return userRepository.findAll().stream()
-                .filter(u -> u.getEmail() != null && !u.getEmail().isBlank())
-                .count() >= 2;
-    }
-
-    @PostMapping(path = "verify-code") // Valida código y genera JWT real
-    public ResponseEntity<TokenDto> verifyAccessCode(@RequestBody CodeDto codeDto) {
-        return ResponseEntity.ok(authService.verifyAccessCode(codeDto));
     }
 
     @GetMapping(path = "admin-email/{username}")

@@ -58,9 +58,13 @@ export class CuotaService {
     });
   }
 
-  pagarCuotaAvanzado(cuotaId: number, tipoPago: string): Observable<Cuota> {
-    return this.http.post<Cuota>(`${this.baseUrl}/${cuotaId}/pagar-avanzado`, null, {
-      params: { tipoPago }
+  marcarCuotaNoPagada(cuotaId: number): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/${cuotaId}/no-pagar`, {});
+  }
+
+  pagarCuotaParcial(cuotaId: number, monto: number): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/${cuotaId}/pago-parcial`, null, {
+      params: { monto: monto.toString() }
     });
   }
 }

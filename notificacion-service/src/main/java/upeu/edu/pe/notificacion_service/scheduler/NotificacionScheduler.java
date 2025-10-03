@@ -1,18 +1,19 @@
 package upeu.edu.pe.notificacion_service.scheduler;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import upeu.edu.pe.notificacion_service.client.AdminClient;
 import upeu.edu.pe.notificacion_service.client.AuthClient;
 import upeu.edu.pe.notificacion_service.model.Cliente;
 import upeu.edu.pe.notificacion_service.model.Cuota;
 import upeu.edu.pe.notificacion_service.model.Prestamo;
 import upeu.edu.pe.notificacion_service.service.EmailService;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Service
 public class NotificacionScheduler {
@@ -27,14 +28,14 @@ public class NotificacionScheduler {
         this.emailService = emailService;
     }
 
-    // Se ejecuta 3 veces al día (8am, 2pm, 8pm)
-    @Scheduled(cron = "0 0 8,14,20 * * *")
+    // Se ejecuta 3 veces al día (8am, 2pm, 9pm)
+    @Scheduled(cron = "0 6 9,11,20 * * *")
     public void notificarCuotasQueVencenHoy() {
         enviarNotificacionesFiltradas(0);
     }
 
     // Solo una vez al día
-    @Scheduled(cron = "0 10 9 * * *")
+    @Scheduled(cron = "0 6 11 * * *")
     public void notificarCuotasProximasOVencidas() {
         enviarNotificacionesFiltradas(-1); // Maneja casos distintos de 0
     }

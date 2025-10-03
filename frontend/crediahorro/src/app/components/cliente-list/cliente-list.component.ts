@@ -100,7 +100,10 @@ export class ClienteListComponent implements OnInit, OnDestroy {
   ordinal(n: number): string {
     const ordinals = ['1ra', '2da', '3ra', '4ta', '5ta', '6ta', '7ma', '8va', '9na', '10ma',
       '11va', '12va', '13va', '14va', '15va', '16va', '17va', '18va', '19va', '20va',
-      '21va', '22va', '23va', '24va'];
+      '21va', '22va', '23va', '24va', '25va', '26va', '27va', '28va', '29va', '30va',
+      '31va', '32va', '33va', '34va', '35va', '36va', '37va', '38va', '39va', '40va',
+      '41va', '42va', '43va', '44va', '45va', '46va', '47va', '48va', '49va', '50va',
+      '51va', '52va', '53va', '54va', '55va', '56va', '57va', '58va', '59va', '60va'];
     return ordinals[n - 1] || `${n}ta`;
   }
 

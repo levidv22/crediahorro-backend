@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import upeu.edu.pe.admin_core_service.entities.Cuota;
 import upeu.edu.pe.admin_core_service.entities.Prestamo;
-import upeu.edu.pe.admin_core_service.repository.PrestamoRepository;
 import upeu.edu.pe.admin_core_service.repository.CuotaRepository;
+import upeu.edu.pe.admin_core_service.repository.PrestamoRepository;
 import upeu.edu.pe.admin_core_service.service.CuotaService;
 import upeu.edu.pe.admin_core_service.service.PagoAdelantadoService;
 
@@ -89,6 +89,13 @@ public class CuotaController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{cuotaId}/pago-parcial")
+    public ResponseEntity<Cuota> pagarCuotaParcial(
+            @PathVariable Long cuotaId,
+            @RequestParam double monto) {
+        Cuota cuota = cuotaService.pagarCuotaParcial(cuotaId, monto);
+        return ResponseEntity.ok(cuota);
+    }
 
     @PostMapping(path = "/prestamos/{prestamoId}/pago-adelantado")
     public ResponseEntity<Void> aplicarPagoAdelantado(
@@ -99,12 +106,9 @@ public class CuotaController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(path = "/{cuotaId}/pagar-avanzado")
-    public ResponseEntity<Cuota> pagarCuotaAvanzado(@PathVariable Long cuotaId,
-                                                    @RequestParam String tipoPago) {
-        Cuota cuota = cuotaService.pagarCuotaAvanzado(cuotaId, tipoPago);
+    @PostMapping("/{cuotaId}/no-pagar")
+    public ResponseEntity<Cuota> marcarCuotaNoPagada(@PathVariable Long cuotaId) {
+        Cuota cuota = cuotaService.marcarCuotaComoNoPagadaYReprogramar(cuotaId);
         return ResponseEntity.ok(cuota);
     }
-
-
 }

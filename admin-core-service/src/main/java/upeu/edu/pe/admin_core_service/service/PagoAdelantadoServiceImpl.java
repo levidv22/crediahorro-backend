@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,6 +64,10 @@ public class PagoAdelantadoServiceImpl implements PagoAdelantadoService {
 
             case "COMPLETO":
                 aplicarPagoCompleto(prestamo);
+                break;
+
+            case "MIXTO":
+                aplicarPagoMixto(prestamo, monto);
                 break;
 
             default:
@@ -173,6 +176,104 @@ public class PagoAdelantadoServiceImpl implements PagoAdelantadoService {
         }
         prestamo.setEstado("PAGADO");
     }
-}
 
+    private void aplicarPagoMixto(Prestamo prestamo, double montoIngresado) {
+        double capitalTotal = prestamo.getMonto();
+        double interesTotal = prestamo.getInteresTotal();
+        int cuotasTotales = prestamo.getNumeroCuotas();
+        String tipoCuota = prestamo.getTipoCuota();
+
+        double capitalPagado = prestamo.getCuotas().stream()
+                .filter(c -> "PAGADA".equalsIgnoreCase(c.getEstado()))
+                .mapToDouble(Cuota::getCapital)
+                .sum();
+
+        double interesPagado = prestamo.getCuotas().stream()
+                .filter(c -> "PAGADA".equalsIgnoreCase(c.getEstado()))
+                .mapToDouble(Cuota::getInteres)
+                .sum();
+
+        double capitalPendiente = capitalTotal - capitalPagado;
+        double interesPendiente = interesTotal - interesPagado;
+
+        // Validación
+        if (montoIngresado < interesPendiente) {
+            throw new RuntimeException("Debe pagar al menos todo el interés pendiente antes de reducir el capital.");
+        }
+
+        double pagoCapital = montoIngresado - interesPendiente;
+        if (pagoCapital > capitalPendiente) {
+            throw new RuntimeException("El monto ingresado excede el capital e interés pendiente.");
+        }
+
+        double nuevoCapitalPendiente = capitalPendiente - pagoCapital;
+
+        // Eliminar cuotas pendientes actuales
+        List<Cuota> cuotasPendientes = prestamo.getCuotas().stream()
+                .filter(c -> "PENDIENTE".equalsIgnoreCase(c.getEstado()))
+                .toList();
+
+        cuotaRepository.deleteAll(cuotasPendientes);
+        prestamo.getCuotas().removeAll(cuotasPendientes);
+
+        // 1. Registrar cuota MIXTA (capital + interés)
+        Cuota cuotaMixta = new Cuota();
+        cuotaMixta.setFechaPago(LocalDate.now());
+        cuotaMixta.setFechaPagada(LocalDate.now());
+        cuotaMixta.setCapital(redondearConDecimalFinal0(pagoCapital));
+        cuotaMixta.setInteres(redondearConDecimalFinal0(interesPendiente));
+        cuotaMixta.setMontoCuota(redondearConDecimalFinal0(montoIngresado));
+        cuotaMixta.setEstado("PAGADA");
+        cuotaMixta.setTipoPago("Adelanto_MIXTO");
+        prestamo.getCuotas().add(cuotaMixta);
+
+        // 2. Reprogramar nuevas cuotas si queda capital
+        if (nuevoCapitalPendiente > 0) {
+            int cuotasRestantes = cuotasPendientes.size();
+            if (cuotasRestantes == 0) {
+                cuotasRestantes = 1;
+            }
+
+            double interesMensual = prestamo.getTasaInteresMensual();
+            List<Cuota> nuevasCuotas = new ArrayList<>();
+            LocalDate fechaInicio = LocalDate.now();
+
+            if (tipoCuota.equals("DIARIO")) {
+                fechaInicio = fechaInicio.plusDays(1);
+            } else {
+                fechaInicio = fechaInicio.plusMonths(1);
+            }
+
+            double interesNuevo = nuevoCapitalPendiente * (interesMensual / 100);
+            double interesTotalActualizado = interesTotal + interesNuevo;
+            double montoTotal = capitalTotal + interesNuevo;
+
+            // Actualizar los campos del préstamo
+            prestamo.setInteresTotal(redondearConDecimalFinal0(interesTotalActualizado));
+            prestamo.setMontoTotal(redondearConDecimalFinal0(montoTotal));
+
+            double montoCuota = redondearConDecimalFinal0((nuevoCapitalPendiente + interesNuevo) / cuotasRestantes);
+            double capitalPorCuota = redondearConDecimalFinal0(nuevoCapitalPendiente / cuotasRestantes);
+            double interesPorCuota = redondearConDecimalFinal0(interesNuevo / cuotasRestantes);
+
+            for (int i = 0; i < cuotasRestantes; i++) {
+                Cuota nueva = new Cuota();
+                nueva.setFechaPago(tipoCuota.equals("DIARIO") ? fechaInicio.plusDays(i) : fechaInicio.plusMonths(i));
+                nueva.setCapital(capitalPorCuota);
+                nueva.setInteres(interesPorCuota);
+                nueva.setMontoCuota(capitalPorCuota + interesPorCuota);
+                nueva.setEstado("PENDIENTE");
+                nueva.setTipoPago("Reprogramado");
+                nuevasCuotas.add(nueva);
+            }
+
+            prestamo.getCuotas().addAll(nuevasCuotas);
+        }
+    }
+
+    private double redondearConDecimalFinal0(double valor) {
+        double redondeado = Math.round(valor * 10.0) / 10.0;
+        return Math.round(redondeado * 10.0) / 10.0;
+    }
+}
 

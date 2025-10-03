@@ -80,7 +80,14 @@
               >
                 <i class="bi bi-pencil-square"></i> Editar préstamo
               </a>
-
+              <button
+                *ngIf="prestamo.estado === 'PAGADO'"
+                class="btn btn-outline-success btn-sm"
+                (click)="exportarExcel(prestamo.id!)"
+                title="Exportar a Excel"
+              >
+                <i class="bi bi-file-earmark-excel-fill"></i> Exportar Excel
+              </button>
             </div>
           </td>
         </tr>

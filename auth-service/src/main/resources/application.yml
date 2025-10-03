@@ -1,20 +1,22 @@
 spring:
   profiles:
-    default: prod
+    default: default
+    #default: prod
   application:
     name: auth-service
-  h2:
-    console:
-      enabled: true
   config:
     #import: "configserver:http://localhost:8888"
     import: configserver:${CONFIG_SERVER_HOST}
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:mysql://localhost/credi?serverTimezone=America/Lima&useSSL=false
+    username: root
+    password: raticate2024
+    #datasource:
+    #url: ${SPRING_DATASOURCE_URL}
+    #username: ${SPRING_DATASOURCE_USERNAME}
+    #password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 5
       connection-timeout: 20000
@@ -24,26 +26,27 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: levidiaz222@gmail.com
-    password: amxc hlnt ldtb wlgp
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
+    database-platform: org.hibernate.dialect.MySQLDialect
+  #    properties:
+  #      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
 
 server:
   port: 3030
   servlet:
     context-path: /auth-service
+
+#eureka:
+#  instance:
+#    lease-renewal-interval-in-seconds: 10
+#    lease-expiration-duration-in-seconds: 60
+#    prefer-ip-address: true
+#    instance-id: "${spring.application.name}:${random.value}"
+#  client:
+#    register-with-eureka: true
+#    fetch-registry: true
+#    service-url:
+#      #defaultZone: http://localhost:8761/eureka/
+#      defaultZone: ${EUREKA_URL}
 
 eureka:
   instance:

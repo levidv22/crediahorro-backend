@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import upeu.edu.pe.admin_core_service.entities.Cliente;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {

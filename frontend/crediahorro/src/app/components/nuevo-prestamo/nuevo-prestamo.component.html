@@ -78,7 +78,7 @@
         </div>
 
         <!-- Cuotas -->
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label for="numeroCuotas" class="form-label fw-semibold">Número de Cuotas <span class="text-danger">*</span></label>
           <input
             type="number"
@@ -95,8 +95,19 @@
         </div>
 
         <!-- Fecha -->
-        <div class="col-md-6">
-          <label for="fechaInicio" class="form-label fw-semibold">Fecha de Inicio <span class="text-danger">*</span></label>
+        <div class="col-md-4">
+          <label for="fechaCreacion" class="form-label fw-semibold">Fecha Préstamo</label>
+          <input
+            type="date"
+            id="fechaCreacion"
+            class="form-control"
+            [(ngModel)]="prestamo.fechaCreacion"
+            name="fechaCreacion"
+            #fecha="ngModel"
+          />
+        </div>
+        <div class="col-md-4">
+          <label for="fechaInicio" class="form-label fw-semibold">Fecha 1ra cuota <span class="text-danger">*</span></label>
           <input
             type="date"
             id="fechaInicio"
@@ -110,6 +121,11 @@
             La fecha de inicio es obligatoria.
           </div>
         </div>
+        <div class="d-flex justify-content-between mt-4">
+          <button type="button" class="btn btn-outline-primary btn-sm" (click)="mostrarCuotas(prestamo)">
+            <i class="bi bi-eye-fill"></i> Ver Cuotas
+          </button>
+        </div>
       </div>
 
       <!-- Botones -->
@@ -122,5 +138,32 @@
         </button>
       </div>
     </form>
+  </div>
+  <div class="modal fade" id="cuotasModal" tabindex="-1" aria-labelledby="cuotasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content rounded-4">
+        <div class="modal-header bg-primary text-white rounded-top-4">
+          <h5 class="modal-title" id="cuotasModalLabel"><i class="bi bi-calendar-check"></i> Detalle de Cuotas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group">
+            <li *ngFor="let cuota of cuotasGeneradas" class="list-group-item d-flex justify-content-between">
+              <span><i class="bi bi-calendar-event"></i> {{ formatearFecha(cuota.fechaPago) }}</span>
+              <span class="fw-bold text-success">S/ {{ cuota.montoCuota | number:'1.2-2' }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between bg-light fw-bold">
+              <span>Total</span>
+              <span class="text-primary">S/ {{ totalCuotas | number:'1.2-2' }}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle"></i> Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </main>

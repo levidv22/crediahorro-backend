@@ -80,22 +80,24 @@ public class GraficoServiceImpl implements GraficoService {
                     mesData.put("interesPagado", ((Number) mesData.get("interesPagado")).doubleValue() + prestamo.getInteresTotal());
                 }
             } else {
-                // ACTIVO: sumar intereses de cuotas pagadas
-                for (Cuota cuota : prestamo.getCuotas()) {
-                    if (!"PAGADA".equalsIgnoreCase(cuota.getEstado())) continue;
+                // ACTIVO: acumular intereses pagados pero asignarlos al mes de inicio del préstamo
+                LocalDate fecha = prestamo.getFechaCreacion(); // Usamos la misma lógica de los préstamos PAGADOS
+                String anio = String.valueOf(fecha.getYear());
+                String mesNombre = fecha.getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
+                List<Map<String, Object>> meses = resultado.get(anio);
 
-                    int anio = cuota.getFechaPago().getYear();
-                    String mesNombre = cuota.getFechaPago().getMonth().getDisplayName(TextStyle.FULL, new Locale("es"));
-                    List<Map<String, Object>> meses = resultado.get(String.valueOf(anio));
+                if (meses != null) {
+                    Map<String, Object> mesData = meses.stream()
+                            .filter(m -> m.get("mes").equals(mesNombre))
+                            .findFirst()
+                            .orElseThrow();
 
-                    if (meses != null) {
-                        Map<String, Object> mesData = meses.stream()
-                                .filter(m -> m.get("mes").equals(mesNombre))
-                                .findFirst()
-                                .orElseThrow();
+                    double interesAcumulado = prestamo.getCuotas().stream()
+                            .filter(c -> "PAGADA".equalsIgnoreCase(c.getEstado()))
+                            .mapToDouble(Cuota::getInteres)
+                            .sum();
 
-                        mesData.put("interesPagado", ((Number) mesData.get("interesPagado")).doubleValue() + cuota.getInteres());
-                    }
+                    mesData.put("interesPagado", ((Number) mesData.get("interesPagado")).doubleValue() + interesAcumulado);
                 }
             }
         }

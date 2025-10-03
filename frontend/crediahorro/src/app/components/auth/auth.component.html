@@ -40,7 +40,7 @@
       </div>
 
       <!-- Email (solo registro y solo si NO existe admin) -->
-      <div class="mb-3 position-relative" *ngIf="!isLoginMode && showEmailField">
+      <div class="mb-3 position-relative" *ngIf="!isLoginMode">
         <label class="form-label">Correo electrónico</label>
         <input
           type="email"

@@ -59,7 +59,7 @@
             <th style="width: 180px;">Socio</th>
             <th>NomClien</th>
             <th>FecDev</th>
-            <th>Importe</th>
+            <th>Importe(S/)</th>
           </tr>
           </thead>
           <tbody>
@@ -76,12 +76,12 @@
               <td></td>
               <td>{{ cliente.nombreCliente }}</td>
               <td>{{ cliente.fechaUltimaCuotaPagada ? (cliente.fechaUltimaCuotaPagada | date:'dd/MM/yyyy') : 'N/A' }}</td>
-              <td class="text-end fw-bold text-success">S/ {{ cliente.totalPagado.toFixed(2) }}</td>
+              <td class="text-end fw-bold text-success">{{ cliente.totalPagado.toFixed(2) }}</td>
             </tr>
           </ng-container>
           <tr class="table-active fw-bold text-end">
             <td colspan="3" class="text-start">Total</td>
-            <td class="text-success">S/ {{ totalImporteClientesPagados.toFixed(2) }}</td>
+            <td class="text-success">{{ totalImporteClientesPagados.toFixed(2) }}</td>
           </tr>
           </tbody>
         </table>

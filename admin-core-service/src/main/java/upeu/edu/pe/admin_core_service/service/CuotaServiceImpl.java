@@ -63,71 +63,103 @@ public class CuotaServiceImpl implements CuotaService {
     }
 
     @Override
-    public Long findPrestamoIdByCuotaId(Long cuotaId) {
-        return cuotaRepository.findPrestamoIdByCuotaId(cuotaId);
+    public Cuota marcarCuotaComoNoPagadaYReprogramar(Long cuotaId) {
+        Cuota cuotaActual = cuotaRepository.findById(cuotaId)
+                .orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
+
+        if (!cuotaActual.getEstado().equals("PENDIENTE")) {
+            throw new RuntimeException("Solo se puede reprogramar cuotas pendientes");
+        }
+
+        // Marcar como no pagada
+        cuotaActual.setEstado("PAGADA");
+        cuotaActual.setTipoPago("NO_PAGADA");
+        cuotaActual.setFechaPagada(LocalDate.now());
+
+        double montoOriginal = cuotaActual.getMontoCuota();
+        cuotaActual.setMontoCuota(0);
+        cuotaRepository.save(cuotaActual);
+
+        // Buscar siguiente cuota pendiente
+        Optional<Prestamo> prestamoOpt = prestamoRepository.findAll().stream()
+                .filter(p -> p.getCuotas().stream().anyMatch(c -> c.getId().equals(cuotaId)))
+                .findFirst();
+
+        if (prestamoOpt.isPresent()) {
+            Prestamo prestamo = prestamoOpt.get();
+            List<Cuota> cuotasOrdenadas = prestamo.getCuotas().stream()
+                    .sorted(Comparator.comparing(Cuota::getFechaPago))
+                    .toList();
+
+            boolean found = false;
+            for (Cuota cuota : cuotasOrdenadas) {
+                if (found && cuota.getEstado().equals("PENDIENTE")) {
+                    // Sumar monto a la siguiente cuota
+                    cuota.setMontoCuota(Math.round((cuota.getMontoCuota() + montoOriginal) * 100.0) / 100.0);
+                    cuotaRepository.save(cuota);
+                    break;
+                }
+                if (cuota.getId().equals(cuotaActual.getId())) {
+                    found = true;
+                }
+            }
+        }
+
+        return cuotaActual;
     }
 
     @Override
-    public Cuota pagarCuotaAvanzado(Long cuotaId, String tipoPago) {
+    public Cuota pagarCuotaParcial(Long cuotaId, double montoIngresado) {
         Cuota cuota = cuotaRepository.findById(cuotaId)
                 .orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
 
-        if (cuota.getEstado().equalsIgnoreCase("PAGADA")) {
-            throw new IllegalStateException("Esta cuota ya está pagada");
+        if (!cuota.getEstado().equals("PENDIENTE")) {
+            throw new RuntimeException("Solo se pueden pagar cuotas pendientes");
         }
 
-        double capital = cuota.getCapital();
-        double interes = cuota.getInteres();
-        double nuevoMonto = 0.0;
-
-        if (tipoPago.equalsIgnoreCase("Capital")) {
-            pasarAProximaCuota(cuotaId, "interes", interes);
-            nuevoMonto = capital;
-            cuota.setTipoPago("Capital");
-
-        } else if (tipoPago.equalsIgnoreCase("Interes")) {
-            pasarAProximaCuota(cuotaId, "capital", capital);
-            nuevoMonto = interes;
-            cuota.setTipoPago("Interés");
-
-        } else if (tipoPago.equalsIgnoreCase("Completo")) {
-            nuevoMonto = capital + interes;
-            cuota.setTipoPago("Completo");
-
-        } else {
-            throw new IllegalArgumentException("Tipo de pago inválido");
+        if (montoIngresado > cuota.getMontoCuota()) {
+            throw new RuntimeException("El monto ingresado no puede ser mayor a la cuota");
         }
 
-        cuota.setMontoCuota(nuevoMonto);
-        cuota.setEstado("PAGADA");
+        double diferencia = cuota.getMontoCuota() - montoIngresado;
+
+        // Actualizar cuota actual
+        cuota.setMontoPagado(montoIngresado);
+        cuota.setMontoCuota(montoIngresado); // actualiza visual
         cuota.setFechaPagada(LocalDate.now());
+        cuota.setEstado("PAGADA");
+        cuota.setTipoPago("PAGO_INCOMPLETO");
         cuotaRepository.save(cuota);
 
-        actualizarEstadoPrestamoSiEsNecesario(cuota);
+        // Buscar siguiente cuota pendiente
+        Optional<Prestamo> prestamoOpt = prestamoRepository.findAll().stream()
+                .filter(p -> p.getCuotas().stream().anyMatch(c -> c.getId().equals(cuotaId)))
+                .findFirst();
+
+        if (prestamoOpt.isPresent()) {
+            Prestamo prestamo = prestamoOpt.get();
+            List<Cuota> cuotasOrdenadas = prestamo.getCuotas().stream()
+                    .sorted(Comparator.comparing(Cuota::getFechaPago))
+                    .toList();
+
+            boolean found = false;
+            for (Cuota siguienteCuota : cuotasOrdenadas) {
+                if (found && siguienteCuota.getEstado().equals("PENDIENTE")) {
+                    siguienteCuota.setMontoCuota(Math.round((siguienteCuota.getMontoCuota() + diferencia) * 100.0) / 100.0);
+                    cuotaRepository.save(siguienteCuota);
+                    break;
+                }
+                if (siguienteCuota.getId().equals(cuotaId)) {
+                    found = true;
+                }
+            }
+        }
+
         return cuota;
     }
 
-    private void pasarAProximaCuota(Long cuotaId, String tipo, double montoTransferir) {
-        Cuota actual = cuotaRepository.findById(cuotaId).orElseThrow();
-        Long prestamoId = findPrestamoIdByCuotaId(cuotaId);
-
-        Prestamo prestamo = prestamoRepository.findById(prestamoId).orElseThrow();
-        List<Cuota> cuotas = prestamo.getCuotas();
-
-        cuotas.sort(Comparator.comparing(Cuota::getFechaPago));
-        int index = cuotas.indexOf(actual);
-        if (index + 1 < cuotas.size()) {
-            Cuota siguiente = cuotas.get(index + 1);
-            if (tipo.equals("capital")) {
-                siguiente.setCapital(siguiente.getCapital() + montoTransferir);
-            } else {
-                siguiente.setInteres(siguiente.getInteres() + montoTransferir);
-            }
-            siguiente.setMontoCuota(siguiente.getCapital() + siguiente.getInteres());
-            cuotaRepository.save(siguiente);
-        }
+    @Override
+    public Long findPrestamoIdByCuotaId(Long cuotaId) {
+        return cuotaRepository.findPrestamoIdByCuotaId(cuotaId);
     }
-
-
-
 }
