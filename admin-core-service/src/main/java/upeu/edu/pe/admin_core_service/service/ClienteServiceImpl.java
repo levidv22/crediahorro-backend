@@ -52,7 +52,7 @@ public class ClienteServiceImpl implements ClienteService{
 
         RegisterRequest req = new RegisterRequest();
         req.setUsername(clienteGuardado.getDni());   // dni será el username
-        req.setPassword(randomPassword);      // dni será el password
+        req.setPassword(randomPassword);      // el password será random
         req.setWhatsapp(clienteGuardado.getTelefonoWhatsapp());
         req.setEmail(clienteGuardado.getCorreoElectronico());
         req.setRole("USUARIO");
