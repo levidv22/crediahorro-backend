@@ -13,7 +13,7 @@ public class CorsGlobalConfiguration {
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.addAllowedOriginPattern("http://localhost:*");  // Frontend Angular
-        corsConfig.addAllowedOrigin("https://frontend-production-3945.up.railway.app");
+        //corsConfig.addAllowedOrigin("https://frontend-production-3945.up.railway.app");
         corsConfig.addAllowedMethod("*");
         corsConfig.addAllowedHeader("*");
         corsConfig.setAllowCredentials(true);

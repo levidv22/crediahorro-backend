@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
         validPassword(user, userFromDB);
 
         // Generar JWT directamente
-        String token = jwtHelper.createToken(userFromDB.getUsername(), userFromDB.getRole());
+        String token = jwtHelper.createToken(userFromDB.getUsername(), userFromDB.getRole(), userFromDB.getEmail(), userFromDB.getWhatsapp());
 
         return TokenDto.builder()
                 .accessToken(token)

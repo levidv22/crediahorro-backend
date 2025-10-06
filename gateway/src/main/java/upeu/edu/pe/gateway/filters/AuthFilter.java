@@ -16,6 +16,7 @@ public class AuthFilter implements GatewayFilter {
     //local
     private static final String AUTH_VALIDATE_URI = "http://localhost:3030/auth-service/auth/jwt";
     //private static final String AUTH_VALIDATE_URI = "https://auth-service-production-b27b.up.railway.app/auth-service/auth/jwt";
+    //private static final String AUTH_VALIDATE_URI = "https://auth-service-production-5d86.up.railway.app/auth-service/auth/jwt";
     //build in server
     private static final String ACCESS_TOKEN_HEADER_NAME = "accessToken";
 

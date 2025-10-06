@@ -22,13 +22,16 @@ public class JwtHelper {
     @Value("${application.jwt.secret}")
     private String jwtSecret;
 
-    public String createToken(String username, String role) {
+    public String createToken(String username, String role, String email, String whatsapp) {
         final var now = new Date();
-        final var expirationDate = new Date(now.getTime() + (3600 * 1000));
+        final long threeWeeksInMs = 21L * 24 * 60 * 60 * 1000;
+        final var expirationDate = new Date(now.getTime() + threeWeeksInMs);
         return Jwts
                 .builder()
                 .setSubject(username)
                 .claim("role", role)
+                .claim("email", email)
+                .claim("whatsapp", whatsapp)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(expirationDate)
                 .signWith(this.getSecretKey())
