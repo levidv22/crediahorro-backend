@@ -2,18 +2,18 @@ spring:
   application:
     name: admin-service
   profiles:
-    default: default
-#    default: prod
+#    default: default
+    default: prod
   config:
     #import: configserver:http://localhost:8888
     import: configserver:${CONFIG_SERVER_HOST}
   datasource:
-    url: jdbc:mysql://localhost/credi?serverTimezone=America/Lima&useSSL=false
-    username: root
-    password: raticate2024
-#    url: ${SPRING_DATASOURCE_URL}
-#    username: ${SPRING_DATASOURCE_USERNAME}
-#    password: ${SPRING_DATASOURCE_PASSWORD}
+#    url: jdbc:mysql://localhost/credi?serverTimezone=America/Lima&useSSL=false
+#    username: root
+#    password: raticate2024
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 5
@@ -23,7 +23,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     database-platform: org.hibernate.dialect.MySQLDialect
   #    properties:
   #      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -31,28 +31,32 @@ spring:
 server:
   servlet:
     context-path: /admin-service
-  port: 0
-#  port: 8081
-#eureka:
-#  instance:
-#    lease-renewal-interval-in-seconds: 10
-#    lease-expiration-duration-in-seconds: 60
-#    prefer-ip-address: true
-#    instance-id: "${spring.application.name}:${random.value}"
-#  client:
-#    register-with-eureka: true
-#    fetch-registry: true
-#    service-url:
-#      #defaultZone: http://localhost:8761/eureka/
-#      defaultZone: ${EUREKA_URL}
-
+#  port: 0
+  port: 8081
 eureka:
   instance:
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 60
+    prefer-ip-address: true
     instance-id: "${spring.application.name}:${random.value}"
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
       #defaultZone: http://localhost:8761/eureka/
       defaultZone: ${EUREKA_URL}
 
+#eureka:
+#  instance:
+#    instance-id: "${spring.application.name}:${random.value}"
+#  client:
+#    service-url:
+#      #defaultZone: http://localhost:8761/eureka/
+#      defaultZone: ${EUREKA_URL}
+
 auth-service:
-  url: http://localhost:4040   # Puerto donde corre auth-service
+  url: ${GATEWAY_URL} #http://localhost:4040
+
+
+app:
+  upload-dir: /app/static/comprobantes

@@ -33,7 +33,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 // 👮 Restricción: si es USUARIO, solo puede entrar a /clientes/mis-prestamos o /clientes/mis-cuotas/**
                 if ("USUARIO".equalsIgnoreCase(role)) {
-                    if (!(path.startsWith("/admin-service/usuarios/mis-prestamos") || path.startsWith("/admin-service/usuarios/mis-cuotas"))) {
+                    boolean rutaPermitida =
+                            path.startsWith("/admin-service/usuarios/mis-prestamos") ||
+                                    path.startsWith("/admin-service/usuarios/mis-cuotas") ||
+                                    path.startsWith("/admin-service/usuarios-solicitudes-pago");
+
+                    if (!rutaPermitida) {
                         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                         response.getWriter().write("Acceso denegado para usuarios");
                         return;

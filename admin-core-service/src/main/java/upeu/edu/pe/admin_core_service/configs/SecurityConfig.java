@@ -23,7 +23,11 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin-service/usuarios/mis-prestamos/**", "/admin-service/usuarios/mis-cuotas/**").authenticated()
+                        .requestMatchers(
+                                "/admin-service/usuarios/mis-prestamos/**",
+                                "/admin-service/usuarios/mis-cuotas/**",
+                                "/admin-service/usuarios-solicitudes-pago/**"
+                        ).authenticated()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
