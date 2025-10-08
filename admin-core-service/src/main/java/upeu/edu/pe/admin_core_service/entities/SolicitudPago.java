@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
@@ -24,7 +25,9 @@ public class SolicitudPago {
     private String mensajeCliente; // mensaje o comentario del cliente
     private String mensajeAdministrador; // motivo del rechazo o comentario del admin
 
-    private String comprobanteUrl; // ruta del archivo guardado en el servidor
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] comprobante;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fechaSolicitud;
@@ -91,12 +94,12 @@ public class SolicitudPago {
         this.mensajeCliente = mensajeCliente;
     }
 
-    public String getComprobanteUrl() {
-        return comprobanteUrl;
+    public byte[] getComprobante() {
+        return comprobante;
     }
 
-    public void setComprobanteUrl(String comprobanteUrl) {
-        this.comprobanteUrl = comprobanteUrl;
+    public void setComprobante(byte[] comprobante) {
+        this.comprobante = comprobante;
     }
 
     public String getMensajeAdministrador() {
@@ -134,7 +137,7 @@ public class SolicitudPago {
                 ", montoParcial=" + montoParcial +
                 ", mensajeCliente='" + mensajeCliente + '\'' +
                 ", mensajeAdministrador='" + mensajeAdministrador + '\'' +
-                ", comprobanteUrl='" + comprobanteUrl + '\'' +
+                ", comprobante=" + Arrays.toString(comprobante) +
                 ", fechaSolicitud=" + fechaSolicitud +
                 ", fechaRespuesta=" + fechaRespuesta +
                 '}';
@@ -144,12 +147,12 @@ public class SolicitudPago {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         SolicitudPago that = (SolicitudPago) o;
-        return Objects.equals(id, that.id) && Objects.equals(cuotaId, that.cuotaId) && Objects.equals(clienteId, that.clienteId) && Objects.equals(tipoSolicitud, that.tipoSolicitud) && Objects.equals(estado, that.estado) && Objects.equals(montoParcial, that.montoParcial) && Objects.equals(mensajeCliente, that.mensajeCliente) && Objects.equals(mensajeAdministrador, that.mensajeAdministrador) && Objects.equals(comprobanteUrl, that.comprobanteUrl) && Objects.equals(fechaSolicitud, that.fechaSolicitud) && Objects.equals(fechaRespuesta, that.fechaRespuesta);
+        return Objects.equals(id, that.id) && Objects.equals(cuotaId, that.cuotaId) && Objects.equals(clienteId, that.clienteId) && Objects.equals(tipoSolicitud, that.tipoSolicitud) && Objects.equals(estado, that.estado) && Objects.equals(montoParcial, that.montoParcial) && Objects.equals(mensajeCliente, that.mensajeCliente) && Objects.equals(mensajeAdministrador, that.mensajeAdministrador) && Objects.deepEquals(comprobante, that.comprobante) && Objects.equals(fechaSolicitud, that.fechaSolicitud) && Objects.equals(fechaRespuesta, that.fechaRespuesta);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, cuotaId, clienteId, tipoSolicitud, estado, montoParcial, mensajeCliente, mensajeAdministrador, comprobanteUrl, fechaSolicitud, fechaRespuesta);
+        return Objects.hash(id, cuotaId, clienteId, tipoSolicitud, estado, montoParcial, mensajeCliente, mensajeAdministrador, Arrays.hashCode(comprobante), fechaSolicitud, fechaRespuesta);
     }
 }
 

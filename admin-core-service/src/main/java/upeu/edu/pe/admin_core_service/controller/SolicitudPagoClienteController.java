@@ -18,9 +18,6 @@ import java.util.*;
 @RequestMapping(path = "usuarios-solicitudes-pago")
 public class SolicitudPagoClienteController {
 
-    @Value("${app.upload-dir}")
-    private String uploadDir;
-
     private final SolicitudPagoRepository solicitudPagoRepository;
     private final ClienteService clienteService;
     private final JwtHelperAdmin jwtHelper;
@@ -32,7 +29,7 @@ public class SolicitudPagoClienteController {
     }
 
     // 🔹 Enviar comprobante de pago
-    @PostMapping(path = "{cuotaId}/enviar")
+    @PostMapping(path = "{cuotaId}/enviar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> enviarSolicitudPago(
             @PathVariable Long cuotaId,
             @RequestParam String tipoSolicitud, // PAGO_COMPLETO o PAGO_PARCIAL
@@ -61,29 +58,19 @@ public class SolicitudPagoClienteController {
 
         Cliente cliente = clienteOpt.get();
 
-        // 🔹 Guardar comprobante subido desde el celular (galería)
-        String comprobanteUrl = null;
-        if (comprobante != null && !comprobante.isEmpty()) {
-            Path carpetaComprobantes = Paths.get(uploadDir);
-            Files.createDirectories(carpetaComprobantes);
-
-            String nombreArchivo = UUID.randomUUID() + "_" + comprobante.getOriginalFilename();
-            Path rutaArchivo = carpetaComprobantes.resolve(nombreArchivo);
-            Files.write(rutaArchivo, comprobante.getBytes());
-            comprobanteUrl = "https://gateway-production-e6b2.up.railway.app/admin-service/comprobantes/" + nombreArchivo;
-
-        }
-
         // 🔹 Crear solicitud
         SolicitudPago solicitud = new SolicitudPago();
         solicitud.setCuotaId(cuotaId);
         solicitud.setClienteId(cliente.getId());
         solicitud.setTipoSolicitud(tipoSolicitud);
         solicitud.setMensajeCliente(mensajeCliente);
-        solicitud.setComprobanteUrl(comprobanteUrl);
-        solicitud.setEstado("PENDIENTE");
         solicitud.setMontoParcial(montoParcial);
+        solicitud.setEstado("PENDIENTE");
         solicitud.setFechaSolicitud(LocalDateTime.now());
+
+        if (comprobante != null && !comprobante.isEmpty()) {
+            solicitud.setComprobante(comprobante.getBytes());
+        }
 
         solicitudPagoRepository.save(solicitud);
 

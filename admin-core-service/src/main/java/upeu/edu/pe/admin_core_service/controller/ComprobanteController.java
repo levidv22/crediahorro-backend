@@ -6,32 +6,36 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import upeu.edu.pe.admin_core_service.entities.SolicitudPago;
+import upeu.edu.pe.admin_core_service.repository.SolicitudPagoRepository;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "comprobantes")
 public class ComprobanteController {
 
-    @Value("${app.upload-dir}")
-    private String uploadDir;
+    private final SolicitudPagoRepository solicitudPagoRepository;
 
-    @GetMapping(path = "{nombreArchivo:.+}")
-    public ResponseEntity<Resource> obtenerComprobante(@PathVariable String nombreArchivo) throws IOException {
-        Path ruta = Paths.get(uploadDir).resolve(nombreArchivo).normalize();
+    public ComprobanteController(SolicitudPagoRepository solicitudPagoRepository) {
+        this.solicitudPagoRepository = solicitudPagoRepository;
+    }
 
-        if (!Files.exists(ruta)) {
+    @GetMapping(path = "{id}")
+    public ResponseEntity<byte[]> obtenerComprobante(@PathVariable Long id) {
+        Optional<SolicitudPago> solicitudOpt = solicitudPagoRepository.findById(id);
+
+        if (solicitudOpt.isEmpty() || solicitudOpt.get().getComprobante() == null) {
             return ResponseEntity.notFound().build();
         }
 
-        UrlResource recurso = new UrlResource(ruta.toUri());
-        String contentType = Files.probeContentType(ruta);
-        if (contentType == null) contentType = "application/octet-stream";
+        SolicitudPago solicitud = solicitudOpt.get();
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .body((Resource) recurso);
+                .contentType(MediaType.IMAGE_JPEG) // o IMAGE_PNG, según tipo esperado
+                .body(solicitud.getComprobante());
     }
 }
 

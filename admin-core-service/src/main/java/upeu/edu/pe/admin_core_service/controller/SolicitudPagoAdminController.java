@@ -10,10 +10,7 @@ import upeu.edu.pe.admin_core_service.repository.*;
 import upeu.edu.pe.admin_core_service.service.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -42,10 +39,16 @@ public class SolicitudPagoAdminController {
             dto.put("id", s.getId());
             dto.put("tipoSolicitud", s.getTipoSolicitud());
             dto.put("mensajeCliente", s.getMensajeCliente());
-            dto.put("comprobanteUrl", s.getComprobanteUrl());
             dto.put("estado", s.getEstado());
             dto.put("fechaSolicitud", s.getFechaSolicitud());
             dto.put("montoParcial", s.getMontoParcial());
+
+            if (s.getComprobante() != null) {
+                String comprobanteUrl = "https://gateway-production-e6b2.up.railway.app/admin-service/comprobantes/" + s.getId();
+                dto.put("comprobanteUrl", comprobanteUrl);
+            } else {
+                dto.put("comprobanteUrl", null);
+            }
 
             // 🔹 Agregar nombre del cliente
             Cliente cliente = clienteRepository.findById(s.getClienteId()).orElse(null);

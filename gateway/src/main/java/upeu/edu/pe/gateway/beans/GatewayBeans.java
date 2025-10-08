@@ -59,12 +59,16 @@ public class GatewayBeans {
     public RouteLocator routeLocatorOauth2(RouteLocatorBuilder builder) {
         return builder
                 .routes()
+                .route("admin-comprobantes", route -> route
+                        .path("/admin-service/comprobantes/**")
+                        .uri("https://admin-service-production-712d.up.railway.app")
+                )
                 .route(route -> route
                         .path("/admin-service/**")
                         .filters(filter -> filter.filter(this.authFilter))
-                        .uri("lb://admin-service")
+                        //.uri("lb://admin-service")
                         //.uri("https://admin-service-production-1c43.up.railway.app")
-                        //.uri("https://admin-service-production-712d.up.railway.app")
+                        .uri("https://admin-service-production-712d.up.railway.app")
                 )
                 .route(route -> route
                         .path("/report-ms/**")
@@ -80,9 +84,9 @@ public class GatewayBeans {
                 )
                 .route(route -> route
                         .path("/auth-service/auth/**")
-                        .uri("lb://auth-service")
+                        //.uri("lb://auth-service")
                         //.uri("https://auth-service-production-b27b.up.railway.app")
-                        //.uri("https://auth-service-production-5d86.up.railway.app")
+                        .uri("https://auth-service-production-5d86.up.railway.app")
                 )
                 .build();
     }

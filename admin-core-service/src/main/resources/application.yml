@@ -56,7 +56,3 @@ eureka:
 
 auth-service:
   url: ${GATEWAY_URL} #http://localhost:4040
-
-
-app:
-  upload-dir: /app/static/comprobantes
